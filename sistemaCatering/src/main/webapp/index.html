@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Start Page</title>
+        <title>Inicio de sesion</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" type="text/css" href="css/estilo.css">
     </head>
-    <body>
-        <h1>Hello World!</h1>
+<body>
+        <h1>Inicio de sesión</h1>
+        <form method="post" action="Controlador">
+            <p>
+                <label for="usuario">Usuario:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </p>
+            <p>
+                <label for="contrasenia">Contraseña:</label>
+                <input type="password" id="contrasenia" name="contrasenia" required>
+            </p>
+            <input type="hidden" name="dirIP" value="localhost">
+            <input type="hidden" name="nomBD" value="catering">
+            <input type="submit" value="Iniciar sesión">
+        </form>
     </body>
 </html>

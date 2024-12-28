@@ -1,0 +1,86 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 28 dic 2024, 18:22:41
+    Author     : MANUELA
+*/
+
+/* Estilos Globales */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Fondo oscuro */
+    color: #ffffff; /* Color de texto blanco */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    height: 100vh; /* Altura completa de la ventana */
+}
+
+/* Estilos del contenedor del formulario de inicio de sesión */
+form {
+    background-color: #ffffff; /* Fondo blanco */
+    padding: 30px; /* Espaciado interno */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+    width: 100%;
+    max-width: 400px; /* Ancho máximo del formulario */
+    text-align: center; /* Centra el contenido dentro del formulario */
+}
+
+/* Estilos de los encabezados */
+h1 {
+    text-align: center; /* Centra el texto del encabezado */
+    color: #fff; /* Color blanco para el encabezado */
+    margin-bottom: 20px; /* Espacio debajo del encabezado */
+    font-size: 24px; /* Tamaño de fuente del encabezado */
+}
+
+/* Estilos de los grupos de entrada */
+p {
+    margin-bottom: 15px; /* Espacio entre los campos de entrada */
+}
+
+/* Estilos de las etiquetas */
+label {
+    display: block; /* Hace que la etiqueta ocupe toda la línea */
+    margin-bottom: 5px; /* Espacio debajo de la etiqueta */
+    color: #333; /* Color de la etiqueta */
+}
+
+/* Estilos de los campos de entrada */
+input[type="text"],
+input[type="password"] {
+    width: 100%; /* Ancho completo del campo */
+    padding: 10px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde del campo */
+    border-radius: 4px; /* Bordes redondeados de los campos */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+    background-color: #f4f4f4; /* Fondo gris claro para los campos de entrada */
+    color: #333; /* Color de texto en los campos */
+}
+
+/* Estilo para los botones */
+input[type="submit"] {
+    width: 100%; /* Ancho completo del botón */
+    padding: 10px; /* Espaciado interno */
+    background-color: #2196F3; /* Color de fondo del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados del botón */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    font-size: 16px; /* Tamaño de fuente del botón */
+    margin-top: 20px; /* Espacio superior del botón */
+}
+
+/* Efecto hover para el botón */
+input[type="submit"]:hover {
+    background-color: #1976D2; /* Color de fondo del botón al pasar el mouse */
+}
+
+/* Estilo para los campos ocultos */
+input[type="hidden"] {
+    display: none;
+}
