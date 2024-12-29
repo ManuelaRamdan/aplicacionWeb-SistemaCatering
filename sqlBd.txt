@@ -67,10 +67,10 @@ CREATE TABLE Reserva (
     tipoServicio VARCHAR(255),
     cantidadPersonas INT,
     precio INT,
-    modoDeReserva VARCHAR(255),
+    modoDeReserva ENUM('TELEFONO', 'MAIL', 'PRESENCIAL'),
     direccionDeEntrega_id INT,
     estaEntregado BOOLEAN,
-    FOREIGN KEY (direccionDeEntrega_id) REFERENCES Domicilio(id)
+    FOREIGN KEY (direccionDeEntrega_id) REFERENCES Domicilio(id),
     FOREIGN KEY (codCliente) REFERENCES Cliente(id)
 );
 
