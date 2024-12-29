@@ -1,0 +1,103 @@
+-- Crear la base de datos
+CREATE DATABASE catering;
+USE catering;
+
+-- Tabla Persona (clase base abstracta para Cliente y Coordinador)
+CREATE TABLE Persona (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(255),
+    password VARCHAR(255)
+);
+
+-- Tabla Administrador
+CREATE TABLE Administrador (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    persona_id INT,
+    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+);
+
+-- Tabla Cliente
+CREATE TABLE Cliente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codCliente INT,
+    nombre VARCHAR(255),
+    apellido VARCHAR(255),
+    telReferencia INT,
+    email VARCHAR(255),
+    persona_id INT,
+    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+);
+
+-- Tabla Coordinador
+CREATE TABLE Coordinador (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    persona_id INT,
+    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+);
+
+-- Tabla Domicilio
+CREATE TABLE Domicilio (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    calle VARCHAR(255),
+    altura INT,
+    barrio VARCHAR(255)
+);
+
+-- Tabla Plato
+CREATE TABLE Plato (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255)
+);
+
+-- Tabla Menu
+CREATE TABLE Menu (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombreMenu VARCHAR(255),
+    precio INT
+);
+
+-- Tabla Reserva
+CREATE TABLE Reserva (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codCliente INT,
+    fechaInicioEvento DATETIME,
+    fechaFinEvento DATETIME,
+    restirccionesDieteticas TEXT,
+    preferenciaCliente TEXT,
+    tipoServicio VARCHAR(255),
+    cantidadPersonas INT,
+    precio INT,
+    modoDeReserva ENUM('TELEFONO', 'MAIL', 'PRESENCIAL'),
+    direccionDeEntrega_id INT,
+    estaEntregado BOOLEAN,
+    FOREIGN KEY (direccionDeEntrega_id) REFERENCES Domicilio(id),
+    FOREIGN KEY (codCliente) REFERENCES Cliente(id)
+);
+
+-- Tabla Servicio
+CREATE TABLE Servicio (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombreServicio VARCHAR(255)
+);
+
+-- Relaciones adicionales para arrays (si necesario usar una tabla intermedia)
+CREATE TABLE Reserva_Servicio (
+    reserva_id INT,
+    servicio_id INT,
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(id),
+    FOREIGN KEY (servicio_id) REFERENCES Servicio(id)
+);
+
+CREATE TABLE Menu_Plato (
+    menu_id INT,
+    plato_id INT,
+    FOREIGN KEY (menu_id) REFERENCES Menu(id),
+    FOREIGN KEY (plato_id) REFERENCES Plato(id)
+);
+
+CREATE TABLE Servicio_Menu (
+    servicio_id INT,
+    menu_id INT,
+    FOREIGN KEY (servicio_id) REFERENCES Servicio(id),
+    FOREIGN KEY (menu_id) REFERENCES Menu(id)
+);
