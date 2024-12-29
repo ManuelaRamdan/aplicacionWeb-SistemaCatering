@@ -12,8 +12,8 @@ CREATE TABLE Persona (
 -- Tabla Administrador
 CREATE TABLE Administrador (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(255),
-    password VARCHAR(255)
+    persona_id INT,
+    FOREIGN KEY (persona_id) REFERENCES Persona(id)
 );
 
 -- Tabla Cliente
@@ -31,7 +31,6 @@ CREATE TABLE Cliente (
 -- Tabla Coordinador
 CREATE TABLE Coordinador (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codCoordinador INT,
     persona_id INT,
     FOREIGN KEY (persona_id) REFERENCES Persona(id)
 );
