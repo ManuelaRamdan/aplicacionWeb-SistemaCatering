@@ -59,7 +59,6 @@ CREATE TABLE Menu (
 -- Tabla Reserva
 CREATE TABLE Reserva (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codReserva INT,
     codCliente INT,
     fechaInicioEvento DATETIME,
     fechaFinEvento DATETIME,
@@ -72,6 +71,7 @@ CREATE TABLE Reserva (
     direccionDeEntrega_id INT,
     estaEntregado BOOLEAN,
     FOREIGN KEY (direccionDeEntrega_id) REFERENCES Domicilio(id)
+    FOREIGN KEY (codCliente) REFERENCES Cliente(id)
 );
 
 -- Tabla Servicio
