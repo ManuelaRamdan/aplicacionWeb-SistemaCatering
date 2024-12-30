@@ -101,3 +101,26 @@ CREATE TABLE Servicio_Menu (
     FOREIGN KEY (servicio_id) REFERENCES Servicio(id),
     FOREIGN KEY (menu_id) REFERENCES Menu(id)
 );
+
+-- Inserción de personas en la tabla Persona
+INSERT INTO Persona (usuario, password) VALUES ('admin_user', 'admin_pass');
+INSERT INTO Persona (usuario, password) VALUES ('coord_user', 'coord_pass');
+INSERT INTO Persona (usuario, password) VALUES ('cliente1_user', 'cliente1_pass');
+INSERT INTO Persona (usuario, password) VALUES ('cliente2_user', 'cliente2_pass');
+
+-- Obtenemos los IDs generados automáticamente para las personas
+-- Nota: Si tu base de datos no tiene soporte para LAST_INSERT_ID, consulta los IDs manualmente.
+
+-- Insertar al administrador en la tabla Administrador
+INSERT INTO Administrador (persona_id) VALUES (1); -- ID de la persona correspondiente al administrador
+
+-- Insertar al coordinador en la tabla Coordinador
+INSERT INTO Coordinador (persona_id) VALUES (2); -- ID de la persona correspondiente al coordinador
+
+-- Insertar a los clientes en la tabla Cliente
+INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) 
+VALUES (1001, 'Juan', 'Pérez', 123456789, 'juan.perez@example.com', 3); -- Cliente 1
+
+INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) 
+VALUES (1002, 'Ana', 'Gómez', 987654321, 'ana.gomez@example.com', 4); -- Cliente 2
+

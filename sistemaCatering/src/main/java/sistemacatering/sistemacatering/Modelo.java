@@ -34,25 +34,6 @@ public class Modelo {
         }
     }
 
-    /*public void consultarPorColor(String c) {
-        try {
-            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            Statement stmt = con.createStatement();
-            stmt.execute("SELECT marca, color, foto FROM cervezas WHERE color='" + c + "';");
-            ResultSet rs = stmt.getResultSet();
-            while (rs.next()) {
-                CervezaBean cerveza = new CervezaBean();
-                cerveza.setMarca(rs.getString(1));
-                cerveza.setColor(rs.getString(2));
-                cerveza.setFoto(rs.getString(3));
-                resultado.add(cerveza);
-            }
-            con.close();
-        } catch (SQLException e) {
-            reportException(e.getMessage());
-        }
-    }*/
-
     public ArrayList<Persona> getResultado() {
         return resultado;
     }
@@ -66,5 +47,54 @@ public class Modelo {
 
     public void addExceptionListener(ActionListener listener) {
         this.listener = listener;
+    }
+
+    public String verificarUsuario(String usuario, String password) {
+        String id = null;
+        try {
+            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            Statement stmt = con.createStatement();
+            stmt.execute("SELECT persona.id FROM Persona WHERE persona.usuario ='" + usuario + "' and persona.password ='" + password + "'");
+            ResultSet rs = stmt.getResultSet();
+            while (rs.next()) {
+                id = rs.getString(1);
+            }
+            con.close();
+        } catch (SQLException e) {
+            reportException(e.getMessage());
+        }
+
+        return id;
+    }
+
+    public String buscarTipoUsuario(String rol) {
+        String tipo = null;
+        try {
+            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            Statement stmt = con.createStatement();
+            stmt.execute("SELECT\n"
+                    + "    p.id AS persona_id,\n"
+                    + "    CASE\n"
+                    + "        WHEN a.id IS NOT NULL THEN 'Administrador'\n"
+                    + "        WHEN c.id IS NOT NULL THEN 'Cliente'\n"
+                    + "        WHEN co.id IS NOT NULL THEN 'Coordinador'\n"
+                    + "        ELSE 'Otro'\n"
+                    + "    END AS rol\n"
+                    + "FROM Persona p\n"
+                    + "LEFT JOIN Administrador a ON p.id = a.persona_id\n"
+                    + "LEFT JOIN Cliente c ON p.id = c.persona_id\n"
+                    + "LEFT JOIN Coordinador co ON p.id = co.persona_id\n"
+                    + "WHERE p.id = '"+rol +"';");
+            ResultSet rs = stmt.getResultSet();
+            while (rs.next()) {
+                tipo = rs.getString(2);
+            }
+            con.close();
+        } catch (SQLException e) {
+            reportException(e.getMessage());
+        }
+
+        return tipo;
+
     }
 }
