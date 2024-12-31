@@ -9,29 +9,30 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Gestion Administrador</title>
+        <link rel="stylesheet" type="text/css" href="css/estilos.css">
+        <title>Gestión Administrador</title>
     </head>
     <body>
-        <div>
-            <h1>ADMINISTRADOR</h1>
-            <br><br>
-            <table>
-                <tr>
-                    <td class="contenedor-centrado"><a href="alta.html">ABM de un servicio</a></td>
-                </tr>
-                <tr>
-                    <td class="contenedor-centrado "><a href="lista.html">ABM de un coordinador</a></td>
-                </tr>
-                <tr>
-                    <td class="contenedor-centrado "><a href="modificar.html">ABM de un cliente</a></td>
-                </tr>
-                <tr>
-                    <td class="contenedor-centrado "><a href="eliminar.html">Mostrar el contenido del sistema</a></td>
-                </tr>
-                <tr>
-                    <td class="contenedor-centrado "><a href="eliminar.html">Salir</a></td>
-                </tr>
-            </table>
-            <br><br><br><br><br><br><br><br>
-            </body>
-            </html>
+        <h1>Servicio de Catering</h1>
+        <div class="contenedor-centrado">
+            <form>
+                <h1>ADMINISTRADOR</h1>
+                <p>
+                    <input type="submit" value="ABM de un servicio">
+                </p>
+                <p>
+                    <input type="submit" value="ABM de un coordinador">
+                </p>
+                <p>
+                    <input type="submit" value="ABM de un cliente">
+                </p>
+                <p>
+                    <input type="submit" value="Mostrar el contenido del sistema">
+                </p>
+                <p>
+                    <input type="submit" value="Salir">
+                </p>
+            </form>
+        </div>
+    </body>
+</html>

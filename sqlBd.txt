@@ -103,10 +103,10 @@ CREATE TABLE Servicio_Menu (
 );
 
 -- Inserción de personas en la tabla Persona
-INSERT INTO Persona (usuario, password) VALUES ('admin_user', 'admin_pass');
-INSERT INTO Persona (usuario, password) VALUES ('coord_user', 'coord_pass');
-INSERT INTO Persona (usuario, password) VALUES ('cliente1_user', 'cliente1_pass');
-INSERT INTO Persona (usuario, password) VALUES ('cliente2_user', 'cliente2_pass');
+INSERT INTO Persona (usuario, password) VALUES ('admin', '123');
+INSERT INTO Persona (usuario, password) VALUES ('coord', '123');
+INSERT INTO Persona (usuario, password) VALUES ('cliente1', '123');
+INSERT INTO Persona (usuario, password) VALUES ('cliente2', '123');
 
 -- Obtenemos los IDs generados automáticamente para las personas
 -- Nota: Si tu base de datos no tiene soporte para LAST_INSERT_ID, consulta los IDs manualmente.
