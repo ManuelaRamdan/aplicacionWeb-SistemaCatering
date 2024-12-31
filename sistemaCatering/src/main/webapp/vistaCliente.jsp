@@ -9,9 +9,24 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <link rel="stylesheet" type="text/css" href="css/estilos.css">
+        <title>Gestión Cliente</title>
     </head>
     <body>
-        <h1>Clienteeeeeeeeeeeeeeee</h1>
+        <h1>Servicio de Catering</h1>
+        <div class="contenedor-centrado">
+            <form>
+                <h1>Cliente</h1>
+                <p>
+                    <input type="submit" value="Mostrar sus datos">
+                </p>
+                <p>
+                    <input type="submit" value="Mostrar sus reservas">
+                </p>
+                <p>
+                    <input type="submit" value="Salir">
+                </p>
+            </form>
+        </div>
     </body>
 </html>
