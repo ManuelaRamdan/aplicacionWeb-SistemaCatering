@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -18,9 +19,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "Controlador", urlPatterns = {"/Controlador"})
 public class Controlador extends HttpServlet {
-
-    HttpServletRequest request;
-    HttpServletResponse response;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -35,29 +33,31 @@ public class Controlador extends HttpServlet {
 
         if (rol != null) {
             String tipoUsuario = modelo.buscarTipoUsuario(rol);
+            
+            // Crear sesión y guardar ID del usuario autenticado
+            HttpSession session = request.getSession();
+            session.setAttribute("userId", rol); // Guardar ID del usuario
+
+            // Redirigir según el tipo de usuario
             switch (tipoUsuario) {
                 case "Administrador":
-                    RequestDispatcher adminView = request.getRequestDispatcher("vistaAdministrador.jsp");
-                    adminView.forward(request, response);
+                    response.sendRedirect("ControladorAdm");
                     break;
                 case "Cliente":
-                    RequestDispatcher clienteView = request.getRequestDispatcher("vistaCliente.jsp");
-                    clienteView.forward(request, response);
+                    response.sendRedirect("ControladorCliente");
                     break;
                 case "Coordinador":
-                    RequestDispatcher coordView = request.getRequestDispatcher("vistaCoordinador.jsp");
-                    coordView.forward(request, response);
+                    response.sendRedirect("ControladorCoordinador");
                     break;
-                case "Otro":
+                default:
                     request.setAttribute("mensajeError", "Usuario o contraseña incorrectos");
-                    RequestDispatcher errorView = request.getRequestDispatcher("vistaError.jsp");
-                    errorView.forward(request, response);
+                    request.getRequestDispatcher("vistaError.jsp").forward(request, response);
                     break;
             }
         } else {
             request.setAttribute("mensajeError", "Usuario o contraseña incorrectos");
-            RequestDispatcher errorView = request.getRequestDispatcher("vistaError.jsp");
-            errorView.forward(request, response);
+            request.getRequestDispatcher("vistaError.jsp").forward(request, response);
         }
     }
 }
+

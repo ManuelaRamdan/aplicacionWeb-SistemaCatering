@@ -84,7 +84,7 @@ public class Modelo {
                     + "LEFT JOIN Administrador a ON p.id = a.persona_id\n"
                     + "LEFT JOIN Cliente c ON p.id = c.persona_id\n"
                     + "LEFT JOIN Coordinador co ON p.id = co.persona_id\n"
-                    + "WHERE p.id = '"+rol +"';");
+                    + "WHERE p.id = '" + rol + "';");
             ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
                 tipo = rs.getString(2);
@@ -97,4 +97,25 @@ public class Modelo {
         return tipo;
 
     }
+
+    public String obtenerNombreAdministrador(String idAdministrador) {
+        String nombre = "Administrador";
+        try {
+            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            String query = "SELECT nombre FROM Persona WHERE id = ?";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, idAdministrador);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                nombre = rs.getString("nombre");
+            }
+
+            con.close();
+        } catch (SQLException e) {
+            reportException(e.getMessage());
+        }
+        return nombre;
+    }
+
 }

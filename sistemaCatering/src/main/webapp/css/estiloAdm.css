@@ -1,0 +1,77 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 12 feb 2025, 18:39:40
+    Author     : MANUELA
+*/
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos del menú lateral */
+.menu-lateral {
+    width: 200px;
+    height: 100vh;
+    background-color: rgb(176, 130, 221);
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-lateral ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-lateral li {
+    padding: 15px;
+    font-size: 18px;
+    color: rgb(138, 18, 138);
+    cursor: pointer;
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgb(247, 244, 248);
+    margin-bottom: 10px;
+}
+
+.menu-lateral li:hover {
+    background-color: rgb(138, 18, 138);
+    color: rgb(234, 217, 235);
+}
+
+/* Menú desplegable */
+.submenu {
+    display: none;
+    background-color: rgb(234, 217, 235);
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.submenu li {
+    padding: 10px;
+    font-size: 16px;
+    background-color: rgb(234, 217, 235);
+}
+
+.submenu li:hover {
+    background-color: rgb(176, 130, 221);
+}
+
+/* Mostrar el submenú cuando el cursor está sobre "Alta" */
+.menu-lateral li:hover .submenu {
+    display: block;
+}
+
+.contenido-central {
+    text-align: center;
+    margin-left: 220px;
+    padding-top: 50px;
+}
