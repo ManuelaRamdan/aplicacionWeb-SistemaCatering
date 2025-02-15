@@ -118,4 +118,140 @@ public class Modelo {
         return nombre;
     }
 
+    public boolean registrarCoordinador(String usuario, String password) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement persona = null;
+        PreparedStatement coordinador = null;
+        ResultSet idGenerado = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false); // Iniciar transacción, puse false para que los cambios que se le hace a la bd no sea de inmediato
+
+            // Insertar en Persona
+            String sqlPersona = "INSERT INTO Persona (usuario, password) VALUES (?, ?)";
+            persona = con.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
+            persona.setString(1, usuario);
+            persona.setString(2, password);
+            int seInserto = persona.executeUpdate();
+
+            if (seInserto == 0) {
+                throw new SQLException("No se pudo insertar en Persona.");
+            }
+
+            // Obtener el ID generado
+            idGenerado = persona.getGeneratedKeys();
+            int personaId = 0;
+            if (idGenerado.next()) {
+                personaId = idGenerado.getInt(1);
+            }
+
+            // Insertar en Coordinador
+            String sqlCoordinador = "INSERT INTO Coordinador (persona_id) VALUES (?)";
+            coordinador = con.prepareStatement(sqlCoordinador);
+            coordinador.setInt(1, personaId);
+            coordinador.executeUpdate();
+
+            con.commit(); // Confirmar transacción
+            registrado = true;
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Revertir cambios en caso de error
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (persona != null) {
+                    persona.close();
+                }
+                if (coordinador != null) {
+                    coordinador.close();
+                }
+                if (idGenerado != null) {
+                    idGenerado.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+        return registrado;
+    }
+
+    public boolean registrarAdministrador(String usuario, String password) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement persona = null;
+        PreparedStatement administrador = null;
+        ResultSet idGenerado = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false); // Iniciar transacción, puse false para que los cambios que se le hace a la bd no sea de inmediato
+
+            // Insertar en Persona
+            String sqlPersona = "INSERT INTO Persona (usuario, password) VALUES (?, ?)";
+            persona = con.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
+            persona.setString(1, usuario);
+            persona.setString(2, password);
+            int seInserto = persona.executeUpdate();
+
+            if (seInserto == 0) {
+                throw new SQLException("No se pudo insertar en Persona.");
+            }
+
+            // Obtener el ID generado
+            idGenerado = persona.getGeneratedKeys();
+            int personaId = 0;
+            if (idGenerado.next()) {
+                personaId = idGenerado.getInt(1);
+            }
+
+            // Insertar en Coordinador
+            String sqlAdministrador= "INSERT INTO Administrador (persona_id) VALUES (?)";
+            administrador = con.prepareStatement(sqlAdministrador);
+            administrador.setInt(1, personaId);
+            administrador.executeUpdate();
+
+            con.commit(); // Confirmar transacción
+            registrado = true;
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Revertir cambios en caso de error
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (persona != null) {
+                    persona.close();
+                }
+                if (administrador != null) {
+                    administrador.close();
+                }
+                if (idGenerado != null) {
+                    idGenerado.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+        return registrado;
+    }
+
+
+
 }
