@@ -56,26 +56,35 @@
             <!-- Formulario Alta Cliente -->
             <div class="formulario-contenedor">
                 <h2>Alta de Cliente</h2>
-                <form class="formulario" action="procesarAltaCliente.jsp" method="POST">
-                    <label>Código Cliente:</label>
-                    <input type="number" name="codCliente" required>
+                <form action="ControladorAdm" method="POST">
+                    <input type="hidden" name="action" value="registrarCliente"> <!-- Acción que se envía al controlador -->
 
-                    <label>Nombre:</label>
-                    <input type="text" name="nombre" required>
+                    <label for="usuario">Usuario:</label>
+                    <input type="text" id="usuario" name="usuario" required>
 
-                    <label>Apellido:</label>
-                    <input type="text" name="apellido" required>
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
 
-                    <label>Teléfono:</label>
-                    <input type="number" name="telReferencia" required>
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required>
 
-                    <label>Email:</label>
-                    <input type="email" name="email" required>
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" name="apellido" required>
 
-                    <input type="submit" value="Registrar Cliente">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="number" id="telefono" name="telefono" required>
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <button type="submit">Registrar Cliente</button>
+
+                    <% String mensajeCliente = (String) request.getAttribute("mensaje"); %>
+                    <% if (mensajeCliente != null) {%>
+                    <p><%= mensajeCliente%></p>
+                    <% } %>
                 </form>
             </div>
-
             <hr>
 
             <!-- Formulario Alta Administrador -->

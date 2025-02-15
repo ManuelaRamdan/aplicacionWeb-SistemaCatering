@@ -22,9 +22,9 @@ public class ControladorAdm extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
-        String idAdministrador = (String) session.getAttribute("userId"); 
+        String idAdministrador = (String) session.getAttribute("userId");
 
         if (idAdministrador != null) {
             Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la BD
@@ -37,19 +37,21 @@ public class ControladorAdm extends HttpServlet {
         RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
         dispatcher.forward(request, response);
     }
-    
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        String action = request.getParameter("action"); /* toma lo que le envio el formulario */
+
+        String action = request.getParameter("action");
+        /* toma lo que le envio el formulario */
         Modelo modelo = new Modelo("localhost", "catering");
 
-        if ("registrarCoordinador".equals(action)) { /* se fija si la accion que recivio es la que necesitamos*/
+        if ("registrarCoordinador".equals(action)) {
+            /* se fija si la accion que recivio es la que necesitamos*/
             String usuario = request.getParameter("usuario");
             String password = request.getParameter("password");
 
             boolean registrado = modelo.registrarCoordinador(usuario, password);
-            
+
             /* dependiendo si se pudo registrar o no , muestra un mensaje */
             if (registrado) {
                 request.setAttribute("mensaje", "Coordinador registrado correctamente.");
@@ -59,12 +61,12 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
             dispatcher.forward(request, response);
-        }else if("registrarAdministrador".equals(action)){
+        } else if ("registrarAdministrador".equals(action)) {
             String usuario = request.getParameter("usuario");
             String password = request.getParameter("password");
 
             boolean registrado = modelo.registrarAdministrador(usuario, password);
-            
+
             /* dependiendo si se pudo registrar o no , muestra un mensaje */
             if (registrado) {
                 request.setAttribute("mensaje", "Administrador registrado correctamente.");
@@ -74,12 +76,25 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
             dispatcher.forward(request, response);
-        } else {
-        }
-        
-        
-    }
-    
-    
-}
+        } else if ("registrarCliente".equals(action)) {
+            String usuario = request.getParameter("usuario");
+            String password = request.getParameter("password");
+            String nombre = request.getParameter("nombre");
+            String apellido = request.getParameter("apellido");
+            String telefono = request.getParameter("telefono");
+            String email = request.getParameter("email");
 
+            boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+            if (registrado) {
+                request.setAttribute("mensaje", "Cliente registrado correctamente.");
+            } else {
+                request.setAttribute("mensaje", "Error al registrar el cliente.");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+            dispatcher.forward(request, response);
+        }
+
+    }
+
+}

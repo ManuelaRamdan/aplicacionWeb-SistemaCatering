@@ -215,7 +215,7 @@ public class Modelo {
             }
 
             // Insertar en Coordinador
-            String sqlAdministrador= "INSERT INTO Administrador (persona_id) VALUES (?)";
+            String sqlAdministrador = "INSERT INTO Administrador (persona_id) VALUES (?)";
             administrador = con.prepareStatement(sqlAdministrador);
             administrador.setInt(1, personaId);
             administrador.executeUpdate();
@@ -252,6 +252,85 @@ public class Modelo {
         return registrado;
     }
 
+    public boolean registrarCliente(String usuario, String password, String nombre, String apellido, String telefono, String email) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement persona = null;
+        PreparedStatement cliente = null;
+        ResultSet idGenerado = null;
 
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false); // Iniciar transacción
+
+            // Insertar en Persona
+            String sqlPersona = "INSERT INTO Persona (usuario, password) VALUES (?, ?)";
+            persona = con.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
+            persona.setString(1, usuario);
+            persona.setString(2, password);
+            int seRegistro = persona.executeUpdate();
+
+            if (seRegistro == 0) {
+                throw new SQLException("No se pudo insertar en Persona.");
+            }
+
+            // Obtener el ID generado
+            idGenerado = persona.getGeneratedKeys();
+            int personaId = 0;
+            if (idGenerado.next()) {
+                personaId = idGenerado.getInt(1);
+            }
+
+            String sqlCodCliente = "SELECT MAX(codCliente) FROM Cliente";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlCodCliente);
+            int maxCodCliente = 0;
+            if (rs.next()) {
+                maxCodCliente = rs.getInt(1); // Obtener el máximo valor de codCliente
+            }
+            int codCliente = maxCodCliente + 1; // Incrementar el valor máximo encontrado
+
+            // Insertar en Cliente
+            String sqlCliente = "INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) VALUES (?, ?, ?, ?, ?, ?)";
+            cliente = con.prepareStatement(sqlCliente);
+            cliente.setInt(1, codCliente);
+            cliente.setString(2, nombre);
+            cliente.setString(3, apellido);
+            cliente.setString(4, telefono);
+            cliente.setString(5, email);
+            cliente.setInt(6, personaId);
+            cliente.executeUpdate();
+
+            con.commit(); // Confirmar transacción
+            registrado = true;
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Revertir cambios en caso de error
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (persona != null) {
+                    persona.close();
+                }
+                if (cliente != null) {
+                    cliente.close();
+                }
+                if (idGenerado != null) {
+                    idGenerado.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+        return registrado;
+    }
 
 }
