@@ -258,12 +258,13 @@
                             <!-- Iterar sobre los servicios -->
                             <c:forEach var="servicio" items="${servicios}">
                                 <tr>
-                                    <td>${servicio.nombre}</td>
+                                    <td>${servicio.nombreServicio}</td>
                                     <td>
                                         <!-- Formulario para eliminar servicio -->
                                         <form action="ControladorAdm" method="POST" style="display:inline;">
                                             <input type="hidden" name="action" value="eliminarServicio">
-                                            <input type="hidden" name="nombreServicio" value="${servicio.nombre}">
+                                            <!-- Pasamos el id del servicio en lugar del nombre -->
+                                            <input type="hidden" name="idServicio" value="${servicio.id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
                                         </form>
                                     </td>
@@ -277,6 +278,7 @@
                     <p>No hay servicios disponibles para eliminar.</p>
                 </c:if>
             </div>
+
 
         </div>
     </body>

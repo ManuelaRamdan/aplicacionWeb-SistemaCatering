@@ -73,6 +73,9 @@ public class ControladorAdm extends HttpServlet {
 
                     request.setAttribute("menus", menus);
 
+                    List<Servicio> servicios = modelo.obtenerServiciosBd();
+                    request.setAttribute("servicios", servicios);
+
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
                     break;
 
@@ -261,7 +264,19 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
             dispatcher.forward(request, response);
+        } else if ("eliminarServicio".equals(action)) {
+            int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+            boolean eliminado = modelo.eliminarServicio(idServicio);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaServicio", "Servicio dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaServicio", "Error, no se pudo eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
         }
 
+        }
     }
-}

@@ -349,7 +349,7 @@ public class Modelo {
 
     public List<Plato> obtenerPlatosBd() {
         List<Plato> listaPlatos = new ArrayList<>();
-        String query = "SELECT id, nombre FROM Plato WHERE plato.estado = 1" ;
+        String query = "SELECT id, nombre FROM Plato WHERE plato.estado = 1";
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -834,7 +834,7 @@ public class Modelo {
         }
     }
 
-    boolean eliminarPlato(int idPlato) {
+    public boolean eliminarPlato(int idPlato) {
         String query = "UPDATE Plato SET estado = 0 WHERE id = ?";
 
         Connection con = null;
@@ -868,7 +868,7 @@ public class Modelo {
         }
     }
 
-    boolean eliminarMenu(int idMenu) {
+    public boolean eliminarMenu(int idMenu) {
         String query = "UPDATE Menu SET estado = 0 WHERE id = ?";
 
         Connection con = null;
@@ -900,6 +900,82 @@ public class Modelo {
                 e.printStackTrace(); // Mostrar errores en el cierre de recursos
             }
         }
+    }
+
+    public boolean eliminarServicio(int idServicio) {
+        String query = "UPDATE Servicio SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idServicio); // Establecer el ID en el prepared statement
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
+    public List<Servicio> obtenerServiciosBd() {
+        List<Servicio> listaServicios = new ArrayList<>();
+        String query = "SELECT id, nombreServicio FROM Servicio WHERE servicio.estado = 1";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombreServicio");
+                listaServicios.add(new Servicio(id, nombre));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaServicios;
     }
 
 }
