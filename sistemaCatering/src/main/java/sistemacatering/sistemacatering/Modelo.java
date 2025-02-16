@@ -476,12 +476,127 @@ public class Modelo {
             return new ArrayList<>();
         }
         List<Integer> listaIds = new ArrayList<>();
-        for (String id: platosId) {
+        for (String id : platosId) {
             int idInt = Integer.parseInt(id);
             listaIds.add(idInt);
         }
 
         return listaIds;
+    }
+
+    public boolean registrarServicio(String nombreServicio, List<Integer> menus) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement servicio = null;
+        PreparedStatement servicioMenu = null;
+        ResultSet idGenerado = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // 1. Insertar en Servicio
+            String servicioSql = "INSERT INTO Servicio (nombreServicio) VALUES (?)";
+            servicio = con.prepareStatement(servicioSql, Statement.RETURN_GENERATED_KEYS);
+            servicio.setString(1, nombreServicio);
+            int servicioInserted = servicio.executeUpdate();
+
+            if (servicioInserted == 0) {
+                throw new SQLException("Error al crear el servicio, no se insertaron filas.");
+            }
+
+            idGenerado = servicio.getGeneratedKeys();
+            int servicioId = 0;
+            if (idGenerado.next()) {
+                servicioId = idGenerado.getInt(1);
+            }
+
+            // 2. Asociar menús al servicio
+            String servicioMenuSql = "INSERT INTO Servicio_Menu (servicio_id, menu_id) VALUES (?, ?)";
+            servicioMenu = con.prepareStatement(servicioMenuSql);
+
+            for (int menuId : menus) {
+                servicioMenu.setInt(1, servicioId);
+                servicioMenu.setInt(2, menuId);
+                servicioMenu.addBatch();
+            }
+            servicioMenu.executeBatch();
+
+            con.commit();
+            registrado = true;
+
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (idGenerado != null) {
+                    idGenerado.close();
+                }
+                if (servicioMenu != null) {
+                    servicioMenu.close();
+                }
+                if (servicio != null) {
+                    servicio.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return registrado;
+    }
+
+    public List<Menu> obtenerMenusBd() {
+        List<Menu> listaMenus = new ArrayList<>();
+        String query = "SELECT id, nombreMenu, precio FROM Menu";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y ejecutamos la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombreMenu = rs.getString("nombreMenu");
+                int precio = rs.getInt("precio");
+                listaMenus.add(new Menu(id, nombreMenu, precio));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaMenus;
     }
 
 }

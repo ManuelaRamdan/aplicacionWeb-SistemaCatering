@@ -4,6 +4,7 @@
     Author     : MANUELA
 --%>
 
+<%@page import="sistemacatering.sistemacatering.Menu"%>
 <%@page import="sistemacatering.sistemacatering.Plato"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -190,20 +191,36 @@
             <!-- Formulario Alta Servicio -->
             <div class="formulario-contenedor">
                 <h2>Alta de Servicio</h2>
-                <form class="formulario" action="procesarAltaServicio.jsp" method="POST">
+                <form action="ControladorAdm" method="POST">
+                    <input type="hidden" name="action" value="registrarServicio">
                     <label>Nombre del Servicio:</label>
                     <input type="text" name="nombreServicio" required>
 
-                    <label>Seleccionar Menú:</label>
-                    <select name="menu_id">
-                        <option value="">Seleccione un Menú</option>
-                        <option value="1">Menú Ejecutivo</option>
-                        <option value="2">Menú Infantil</option>
-                        <option value="3">Menú Gourmet</option>
-                    </select>
+                    <p>Selecciona los Menus:</p>
+                    <%
+                        List<Menu> menus = (List<Menu>) request.getAttribute("menus");
+                        if (menus == null || menus.isEmpty()) {
+                    %>
+                    <p>No hay Menús disponibles.</p>
+                    <% } else {
+                        for (Menu menu : menus) {
+                    %>
+                    <label>
+                        <input type="checkbox" name="menus[]" value="<%= menu.getId()%>"> <%= menu.getNombreMenu()%>
+                    </label><br>
+                    <%
+                            } 
+                        } 
+                    %>
+
 
                     <input type="submit" value="Registrar Servicio">
                 </form>
+
+                <% String mensajeServicio = (String) request.getAttribute("mensajeServicio"); %>
+                <% if (mensajeServicio != null) {%>
+                <p><%= mensajeServicio%></p>
+                <% }%>
             </div>
 
         </div>

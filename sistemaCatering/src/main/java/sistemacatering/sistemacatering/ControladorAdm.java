@@ -49,16 +49,14 @@ public class ControladorAdm extends HttpServlet {
                     System.out.println("Acción mostrarAlta ejecutada");
 
                     List<Plato> platos = modelo.obtenerPlatosBd();
-
-                    System.out.println("Platos obtenidos:");
-                    for (Plato p : platos) {
-                        System.out.println(p.getId() + " - " + p.getNombre());
-                    }
+                    List<Menu> menus = modelo.obtenerMenusBd();
 
                     request.setAttribute("platosEntrada", platos);
                     request.setAttribute("platosPrincipal", platos);
+                    request.setAttribute("menus", menus);
                     request.getRequestDispatcher("vistaAdmAlta.jsp").forward(request, response);
                     break;
+
                 default:
                     // Si la acción no es reconocida, redirige a una página de error
                     request.setAttribute("mensajeError", "Acción no válida");
@@ -158,6 +156,23 @@ public class ControladorAdm extends HttpServlet {
                 request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
             } else {
                 request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+            dispatcher.forward(request, response);
+        } else if ("registrarServicio".equals(action)) {  // Nueva acción para registrar servicio
+            String nombreServicio = request.getParameter("nombreServicio");
+
+            // Obtener IDs de menús seleccionados
+            String[] menuIds = request.getParameterValues("menus[]");
+            List<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
+
+            boolean registrado = modelo.registrarServicio(nombreServicio, menusSeleccionados);
+
+            if (registrado) {
+                request.setAttribute("mensajeServicio", "Servicio registrado correctamente.");
+            } else {
+                request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
             }
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
