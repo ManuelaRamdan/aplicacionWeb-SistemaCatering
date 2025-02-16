@@ -349,7 +349,7 @@ public class Modelo {
 
     public List<Plato> obtenerPlatosBd() {
         List<Plato> listaPlatos = new ArrayList<>();
-        String query = "SELECT id, nombre FROM Plato";
+        String query = "SELECT id, nombre FROM Plato WHERE plato.estado = 1" ;
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -558,7 +558,7 @@ public class Modelo {
 
     public List<Menu> obtenerMenusBd() {
         List<Menu> listaMenus = new ArrayList<>();
-        String query = "SELECT id, nombreMenu, precio FROM Menu";
+        String query = "SELECT id, nombreMenu, precio FROM Menu WHERE menu.estado = 1";
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -733,6 +733,157 @@ public class Modelo {
             int filasAfectadas = stmt.executeUpdate();
 
             return filasAfectadas > 0; // Si se actualizaron filas, la operación fue exitosa
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
+    public List<Cliente> obtenerClientesBd() {
+        List<Cliente> listaClientes = new ArrayList<>();
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email "
+                + "FROM Cliente c "
+                + "WHERE c.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String telReferencia = rs.getString("telReferencia");
+                String email = rs.getString("email");
+
+                // Crear el objeto Cliente y agregarlo a la lista
+                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaClientes;
+    }
+
+    public boolean eliminarCliente(int idCliente) {
+        String query = "UPDATE Cliente SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idCliente); // Establecer el ID en el prepared statement
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
+    boolean eliminarPlato(int idPlato) {
+        String query = "UPDATE Plato SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idPlato); // Establecer el ID en el prepared statement
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
+    boolean eliminarMenu(int idMenu) {
+        String query = "UPDATE Menu SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idMenu); // Establecer el ID en el prepared statement
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, funciono
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
             return false;

@@ -63,6 +63,16 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("coordinadores", coordinadores);
                     request.setAttribute("administradores", administradores);
 
+                    List<Cliente> clientes = modelo.obtenerClientesBd();
+                    request.setAttribute("clientes", clientes);
+
+                    platos = modelo.obtenerPlatosBd();
+                    menus = modelo.obtenerMenusBd();
+
+                    request.setAttribute("platos", platos);
+
+                    request.setAttribute("menus", menus);
+
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
                     break;
 
@@ -200,7 +210,7 @@ public class ControladorAdm extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
             dispatcher.forward(request, response);
 
-        }else if ("eliminarAdministrador".equals(action)) {
+        } else if ("eliminarAdministrador".equals(action)) {
             int idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
 
             boolean eliminado = modelo.eliminarAdministrador(idAdministrador);
@@ -214,6 +224,44 @@ public class ControladorAdm extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
             dispatcher.forward(request, response);
 
+        } else if ("eliminarCliente".equals(action)) {
+            int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+
+            boolean eliminado = modelo.eliminarCliente(idCliente);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
+        } else if ("eliminarPlato".equals(action)) {
+            int idPlato = Integer.parseInt(request.getParameter("idPlato"));
+            boolean eliminado = modelo.eliminarPlato(idPlato);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaPlato", "Plato dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
+        } else if ("eliminarMenu".equals(action)) {
+            int idMenu = Integer.parseInt(request.getParameter("idMenu"));
+            boolean eliminado = modelo.eliminarMenu(idMenu);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaMenu", "Menú dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaMenu", "Error, no se pudo eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
         }
+
     }
 }

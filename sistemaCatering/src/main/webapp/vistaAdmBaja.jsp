@@ -4,10 +4,10 @@
     Author     : MANUELA
 --%>
 
-<%@page import="sistemacatering.sistemacatering.Administrador"%>
-<%@page import="sistemacatering.sistemacatering.Coordinador"%>
-<%@page import="java.util.List"%>
+
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -22,7 +22,7 @@
         <div class="menu-lateral">
             <ul>
                 <li><a href="ControladorAdm?accion=mostrarAlta">Alta</a></li>
-                <li><a href="vistaAdmBaja.jsp">Baja</a></li>
+                <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
                 <li><a href="vistaAdmModificacion.jsp">Modificación</a></li>
                 <li><a href="vistaAdmMostrar.jsp">Mostrar</a></li>
             </ul>
@@ -33,55 +33,97 @@
             <div class="formulario-contenedor">
                 <h2>Eliminar Coordinador</h2>
 
-                <p>Seleccione el ID del Coordinador que desea eliminar:</p>
+                <p>Seleccione el Coordinador que desea eliminar:</p>
 
-                <table border="1">
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                    </tr>
-                    <%
-                        List<Coordinador> coordinadores = (List<Coordinador>) request.getAttribute("coordinadores");
-                        if (coordinadores != null && !coordinadores.isEmpty()) {
-                            for (Coordinador coordinador : coordinadores) {
-                    %>
-                    <tr>
-                        <td><%= coordinador.getCodCoordinador()%></td>
-                        <td><%= coordinador.getUsuario()%></td>
-                    </tr>
-                    <%
-                        }
-                    } else {
-                    %>
-                    <tr>
-                        <td colspan="2">No hay coordinadores disponibles.</td>
-                    </tr>
-                    <% }%>
-                </table>
+                <!-- Verificación de si la lista de coordinadores no está vacía -->
+                <c:if test="${not empty coordinadores}">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Iterar sobre los coordinadores -->
+                            <c:forEach var="coordinador" items="${coordinadores}">
+                                <tr>
+                                    <td>${coordinador.codCoordinador}</td>
+                                    <td>${coordinador.usuario}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar coordinador -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="eliminarCoordinador">
+                                            <input type="hidden" name="idCoordinador" value="${coordinador.codCoordinador}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
 
-                <form action="ControladorAdm" method="post">
-                    <input type="hidden" name="action" value="eliminarCoordinador">
 
-                    <label for="idCoordinador">ID del Coordinador:</label>
-                    <input type="number" id="idCoordinador" name="idCoordinador" required>
-
-                    <input type="submit" value="Eliminar Coordinador">
-                </form>
             </div>
 
             <hr>
-            <!-- Formulario Baja Cliente -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Cliente</h2>
-                <form action="ControladorAdm" method="POST">
-                    <input type="hidden" name="action" value="eliminarCliente">
 
-                    <label for="usuario">Usuario:</label>
-                    <input type="text" id="usuario" name="usuario" required>
+                <c:if test="${not empty mensajeBajaCliente}">
+                    <div class="mensaje">${mensajeBajaCliente}</div>
+                </c:if>
 
-                    <input type="submit" value="Eliminar Cliente">
-                </form>
+                <!-- Verificación de si la lista de clientes no está vacía -->
+                <c:if test="${not empty clientes}">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="cliente" items="${clientes}">
+                                <tr>
+                                    <td>${cliente.id}</td>
+                                    <td>${cliente.nombre}</td>
+                                    <td>${cliente.apellido}</td>
+                                    <td>${cliente.telReferencia}</td>
+                                    <td>${cliente.email}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar cliente -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="eliminarCliente">
+                                            <input type="hidden" name="idCliente" value="${cliente.id}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+
+
+                </c:if>
+
+                <c:if test="${empty clientes}">
+                    <p>No se encontraron clientes disponibles.</p>
+                </c:if>
+
             </div>
+
+
+
+
+
+
             <hr>
             <!-- Formulario Baja Administrador -->
             <div class="formulario-contenedor">
@@ -90,74 +132,155 @@
                 <p>Seleccione el ID del Administrador que desea eliminar:</p>
 
                 <table border="1">
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                    </tr>
-                    <%
-                        List<Administrador> administradores = (List<Administrador>) request.getAttribute("administradores");
-                        if (administradores != null && !administradores.isEmpty()) {
-                            for (Administrador administrador : administradores) {
-                    %>
-                    <tr>
-                        <td><%= administrador.getcodAdministrador()%></td>
-                        <td><%= administrador.getUsuario()%></td>
-                    </tr>
-                    <%
-                        }
-                    } else {
-                    %>
-                    <tr>
-                        <td colspan="2">No hay Administradores disponibles.</td>
-                    </tr>
-                    <% }%>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Eliminar</th> <!-- Columna para el botón -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="administrador" items="${administradores}">
+                            <tr>
+                                <td>${administrador.codAdministrador}</td>
+                                <td>${administrador.usuario}</td>
+                                <td>
+                                    <!-- Formulario para eliminar administrador -->
+                                    <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <input type="hidden" name="action" value="eliminarAdministrador">
+                                        <input type="hidden" name="idAdministrador" value="${administrador.codAdministrador}">
+                                        <input type="submit" value="Eliminar" class="btn-eliminar">
+                                    </form>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty administradores}">
+                            <tr>
+                                <td colspan="3">No hay Administradores disponibles.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
                 </table>
-
-                <form action="ControladorAdm" method="post">
-                    <input type="hidden" name="action" value="eliminarAdministrador">
-
-                    <label for="idAdministrador">ID del Administrador:</label>
-                    <input type="number" id="idAdministrador" name="idAdministrador" required>
-
-                    <input type="submit" value="Eliminar Administrador">
-                </form>
-
             </div>
+
             <hr>
             <!-- Formulario Baja de Platos -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Plato</h2>
-                <form class="formulario" action="ControladorAdm" method="POST">
-                    <input type="hidden" name="action" value="eliminarPlato">
-                    <label>Nombre del Plato:</label>
-                    <input type="text" name="nombrePlato" required>
-                    <input type="submit" value="Eliminar Plato">
-                </form>
+
+                <!-- Verificación de si la lista de platos no está vacía -->
+                <c:if test="${not empty platos}">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Plato</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Iterar sobre los platos -->
+                            <c:forEach var="plato" items="${platos}">
+                                <tr>
+                                    <td>${plato.nombre}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar plato -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="eliminarPlato">
+                                            <input type="hidden" name="idPlato" value="${plato.id}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+
+                <c:if test="${empty platos}">
+                    <p>No hay platos disponibles para eliminar.</p>
+                </c:if>
             </div>
+
             <hr>
             <!-- Formulario Baja de Menú -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Menú</h2>
-                <form action="ControladorAdm" method="POST">
-                    <input type="hidden" name="action" value="eliminarMenu">
-                    <label>Nombre del Menú:</label>
-                    <input type="text" name="nombreMenu" required>
-                    <input type="submit" value="Eliminar Menú">
-                </form>
+
+                <!-- Verificación de si la lista de menús no está vacía -->
+                <c:if test="${not empty menus}">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Menú</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="menu" items="${menus}">
+                                <tr>
+                                    <td>${menu.nombreMenu}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar menú -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="eliminarMenu">
+                                            <input type="hidden" name="idMenu" value="${menu.id}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+
+                <c:if test="${empty menus}">
+                    <p>No hay menús disponibles para eliminar.</p>
+                </c:if>
+
             </div>
+
+
             <hr>
             <!-- Formulario Baja Servicio -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Servicio</h2>
-                <form action="ControladorAdm" method="POST">
-                    <input type="hidden" name="action" value="eliminarServicio">
-                    <label>Nombre del Servicio:</label>
-                    <input type="text" name="nombreServicio" required>
-                    <input type="submit" value="Eliminar Servicio">
-                </form>
+
+                <!-- Verificación de si la lista de servicios no está vacía -->
+                <c:if test="${not empty servicios}">
+                    <table border="1">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Servicio</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Iterar sobre los servicios -->
+                            <c:forEach var="servicio" items="${servicios}">
+                                <tr>
+                                    <td>${servicio.nombre}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar servicio -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                            <input type="hidden" name="action" value="eliminarServicio">
+                                            <input type="hidden" name="nombreServicio" value="${servicio.nombre}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </c:if>
+
+                <c:if test="${empty servicios}">
+                    <p>No hay servicios disponibles para eliminar.</p>
+                </c:if>
             </div>
+
         </div>
     </body>
 </html>
+
 
 
