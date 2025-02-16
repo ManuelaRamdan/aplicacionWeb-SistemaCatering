@@ -152,7 +152,7 @@
                         if (platosEntrada == null || platosEntrada.isEmpty()) {
                     %> <!-- se oltiene la lista de platos de la entrada de la solisitud request.getAttribute("platosEntrada")  -->
                     <p>No hay platos disponibles.</p>
-                   <!-- si no hay platos se muestra -->
+                    <!-- si no hay platos se muestra -->
                     <% } else {
                         for (Plato plato : platosEntrada) {
                     %>
@@ -161,7 +161,7 @@
                         <input type="checkbox" name="platoEntrada[]" value="<%= plato.getId()%>"> <%= plato.getNombre()%>
                     </label><br>
                     <%  }
-            } %>
+                        } %>
 
                     <p>Selecciona los Platos Principales:</p>
                     <%
@@ -176,33 +176,37 @@
                         <input type="checkbox" name="platoPrincipal[]" value="<%= plato.getId()%>"> <%= plato.getNombre()%>
                     </label><br>
                     <%  }
-            }%>
+                        }%>
 
                     <input type="submit" value="Registrar Menú">
                 </form>
+                <% String mensajeMenu = (String) request.getAttribute("mensajeMenu"); %>
+                <% if (mensajeMenu != null) {%>
+                <p><%= mensajeMenu%></p>
+                <% }%>
             </div>
-        
 
-        <!-- Formulario Alta Servicio -->
-        <div class="formulario-contenedor">
-            <h2>Alta de Servicio</h2>
-            <form class="formulario" action="procesarAltaServicio.jsp" method="POST">
-                <label>Nombre del Servicio:</label>
-                <input type="text" name="nombreServicio" required>
 
-                <label>Seleccionar Menú:</label>
-                <select name="menu_id">
-                    <option value="">Seleccione un Menú</option>
-                    <option value="1">Menú Ejecutivo</option>
-                    <option value="2">Menú Infantil</option>
-                    <option value="3">Menú Gourmet</option>
-                </select>
+            <!-- Formulario Alta Servicio -->
+            <div class="formulario-contenedor">
+                <h2>Alta de Servicio</h2>
+                <form class="formulario" action="procesarAltaServicio.jsp" method="POST">
+                    <label>Nombre del Servicio:</label>
+                    <input type="text" name="nombreServicio" required>
 
-                <input type="submit" value="Registrar Servicio">
-            </form>
+                    <label>Seleccionar Menú:</label>
+                    <select name="menu_id">
+                        <option value="">Seleccione un Menú</option>
+                        <option value="1">Menú Ejecutivo</option>
+                        <option value="2">Menú Infantil</option>
+                        <option value="3">Menú Gourmet</option>
+                    </select>
+
+                    <input type="submit" value="Registrar Servicio">
+                </form>
+            </div>
+
         </div>
 
-    </div>
-
-</body>
+    </body>
 </html>

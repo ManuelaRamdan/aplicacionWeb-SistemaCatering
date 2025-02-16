@@ -389,4 +389,99 @@ public class Modelo {
         return listaPlatos;
     }
 
+    public boolean registrarMenu(String nombreMenu, List<Integer> platosEntrada, List<Integer> platosPrincipal) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement menu = null;
+        PreparedStatement menuPlato = null;
+        ResultSet idGenerado = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // 1. Insertar en Menu
+            String menuSql = "INSERT INTO Menu (nombreMenu) VALUES (?)"; // Solo el nombre del menú
+            menu = con.prepareStatement(menuSql, Statement.RETURN_GENERATED_KEYS);
+            menu.setString(1, nombreMenu);
+            int menuInserted = menu.executeUpdate();
+
+            if (menuInserted == 0) {
+                throw new SQLException("Error al crear el menú, no se insertaron filas.");
+            }
+
+            idGenerado = menu.getGeneratedKeys();
+            int menuId = 0;
+            if (idGenerado.next()) {
+                menuId = idGenerado.getInt(1);
+            }
+
+            // 2. Asociar platos de entrada
+            String menuPlatoSql = "INSERT INTO Menu_Plato (menu_id, plato_id, tipo) VALUES (?, ?, ?)";
+            menuPlato = con.prepareStatement(menuPlatoSql);
+
+            for (int platoId : platosEntrada) {
+                menuPlato.setInt(1, menuId);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Entrada");
+                menuPlato.addBatch();
+            }
+            menuPlato.executeBatch();
+
+            // 3. Asociar platos principales
+            for (int platoId : platosPrincipal) {
+                menuPlato.setInt(1, menuId);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Principal");
+                menuPlato.addBatch();
+            }
+            menuPlato.executeBatch();
+
+            con.commit();
+            registrado = true;
+
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (idGenerado != null) {
+                    idGenerado.close();
+                }
+                if (menuPlato != null) {
+                    menuPlato.close();
+                }
+                if (menu != null) {
+                    menu.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return registrado;
+    }
+
+    public List<Integer> obtenerIdsSeleccionados(String[] platosId) {
+        if (platosId == null || platosId.length == 0) {
+            return new ArrayList<>();
+        }
+        List<Integer> listaIds = new ArrayList<>();
+        for (String id: platosId) {
+            int idInt = Integer.parseInt(id);
+            listaIds.add(idInt);
+        }
+
+        return listaIds;
+    }
+
 }

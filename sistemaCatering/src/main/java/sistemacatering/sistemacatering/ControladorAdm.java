@@ -141,8 +141,28 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
             dispatcher.forward(request, response);
+        } else if ("registrarMenu".equals(action)) {
+            String nombreMenu = request.getParameter("nombreMenu");
+
+            // Obtener IDs de platos de entrada seleccionados
+            String[] platosEntradaIds = request.getParameterValues("platoEntrada[]");
+            List<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
+
+            // Obtener IDs de platos principales seleccionados
+            String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
+            List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
+
+            boolean registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados);
+
+            if (registrado) {
+                request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
+            } else {
+                request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+            dispatcher.forward(request, response);
         }
 
     }
-
 }

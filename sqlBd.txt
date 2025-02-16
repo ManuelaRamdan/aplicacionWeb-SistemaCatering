@@ -84,6 +84,7 @@ CREATE TABLE Servicio (
 CREATE TABLE Reserva_Servicio (
     reserva_id INT,
     servicio_id INT,
+    tipo VARCHAR(255),
     FOREIGN KEY (reserva_id) REFERENCES Reserva(id),
     FOREIGN KEY (servicio_id) REFERENCES Servicio(id)
 );
