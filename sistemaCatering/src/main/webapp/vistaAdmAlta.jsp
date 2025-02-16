@@ -43,7 +43,7 @@
 
                     <button type="submit">Registrar Coordinador</button>
 
-                    <% String mensaje = (String) request.getAttribute("mensaje"); %> <!--! se le manda al controlador los datos-->
+                    <% String mensaje = (String) request.getAttribute("mensajeCoordinador"); %> <!--! se le manda al controlador los datos-->
                     <% if (mensaje != null) {%> ><!-- verifica que no sea nulo -->
                     <p><%= mensaje%></p><--<!-- si es nulo muestra el mensaje -->
                     <% }%>
@@ -79,7 +79,7 @@
 
                     <button type="submit">Registrar Cliente</button>
 
-                    <% String mensajeCliente = (String) request.getAttribute("mensaje"); %>
+                    <% String mensajeCliente = (String) request.getAttribute("mensajeCliente"); %>
                     <% if (mensajeCliente != null) {%>
                     <p><%= mensajeCliente%></p>
                     <% } %>
@@ -101,7 +101,7 @@
 
                     <button type="submit">Registrar Coordinador</button>
 
-                    <% String mensajeAdm = (String) request.getAttribute("mensaje"); %> <!--! se le manda al controlador los datos-->
+                    <% String mensajeAdm = (String) request.getAttribute("mensajeAdm"); %> <!--! se le manda al controlador los datos-->
                     <% if (mensajeAdm != null) {%> ><!-- verifica que no sea nulo -->
                     <p><%= mensajeAdm%></p><--<!-- si es nulo muestra el mensaje -->
                     <% }%>
@@ -115,12 +115,19 @@
             <!-- Formulario Alta de Platos -->
             <div class="formulario-contenedor">
                 <h2>Alta de Plato</h2>
-                <form class="formulario" action="procesarAltaPlato.jsp" method="POST">
+                <form class="formulario" action="ControladorAdm" method="POST">
+                    <input type="hidden" name="action" value="registrarPlato"> <!-- Acción que se envía al controlador -->
+
                     <label>Nombre del Plato:</label>
                     <input type="text" name="nombrePlato" required>
 
                     <input type="submit" value="Registrar Plato">
                 </form>
+
+                <% String mensajePlato = (String) request.getAttribute("mensajePlato"); %>
+                <% if (mensajePlato != null) {%>
+                <p><%= mensajePlato%></p>
+                <% }%>
             </div>
 
             <hr>

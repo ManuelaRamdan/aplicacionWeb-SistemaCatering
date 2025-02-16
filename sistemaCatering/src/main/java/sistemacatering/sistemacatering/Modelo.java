@@ -333,4 +333,37 @@ public class Modelo {
         return registrado;
     }
 
+    public boolean registrarPlato(String nombrePlato) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement plato = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Insertar en Plato (el ID se genera automáticamente por ser AUTO_INCREMENT)
+            String sqlPlato = "INSERT INTO Plato (nombre) VALUES (?)";
+            plato = con.prepareStatement(sqlPlato);
+            plato.setString(1, nombrePlato);
+
+            int seRegistro = plato.executeUpdate();
+            registrado = (seRegistro > 0);
+
+        } catch (SQLException e) {
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (plato != null) {
+                    plato.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+        return registrado;
+    }
+
 }
