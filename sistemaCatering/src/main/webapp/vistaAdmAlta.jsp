@@ -8,6 +8,9 @@
 <%@page import="sistemacatering.sistemacatering.Plato"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -30,9 +33,6 @@
 
         <div class="contenido-central">
 
-
-
-
             <!-- Formulario Alta Coordinador -->
             <div class="formulario-contenedor">
                 <form action="ControladorAdm" method="post">
@@ -47,13 +47,11 @@
 
                     <input type="submit" value="Registrar Coordinador">
 
-
-                    <% String mensaje = (String) request.getAttribute("mensajeCoordinador"); %> <!--! se le manda al controlador los datos-->
-                    <% if (mensaje != null) {%> ><!-- verifica que no sea nulo -->
-                    <p><%= mensaje%></p><--<!-- si es nulo muestra el mensaje -->
-                    <% }%>
+                    <!-- Usando JSTL para mostrar mensajes -->
+                    <c:if test="${not empty mensajeCoordinador}">
+                        <p>${mensajeCoordinador}</p>
+                    </c:if>
                 </form>
-                <!--! se envia al controlador adm el usuario y contraseña con el campo action = registarCoordinador-->
             </div>
 
             <hr>
@@ -84,11 +82,10 @@
 
                     <input type="submit" value="Registrar Cliente">
 
-
-                    <% String mensajeCliente = (String) request.getAttribute("mensajeCliente"); %>
-                    <% if (mensajeCliente != null) {%>
-                    <p><%= mensajeCliente%></p>
-                    <% } %>
+                    <!-- Usando JSTL para mostrar mensajes -->
+                    <c:if test="${not empty mensajeCliente}">
+                        <p>${mensajeCliente}</p>
+                    </c:if>
                 </form>
             </div>
             <hr>
@@ -107,15 +104,12 @@
 
                     <input type="submit" value="Registrar Administrador">
 
-
-                    <% String mensajeAdm = (String) request.getAttribute("mensajeAdm"); %> <!--! se le manda al controlador los datos-->
-                    <% if (mensajeAdm != null) {%> ><!-- verifica que no sea nulo -->
-                    <p><%= mensajeAdm%></p><--<!-- si es nulo muestra el mensaje -->
-                    <% }%>
+                    <!-- Usando JSTL para mostrar mensajes -->
+                    <c:if test="${not empty mensajeAdm}">
+                        <p>${mensajeAdm}</p>
+                    </c:if>
                 </form>
             </div>
-
-
 
             <hr>
 
@@ -128,12 +122,12 @@
                     <input type="text" name="nombrePlato" required>
 
                     <input type="submit" value="Registrar Plato">
-                </form>
 
-                <% String mensajePlato = (String) request.getAttribute("mensajePlato"); %>
-                <% if (mensajePlato != null) {%>
-                <p><%= mensajePlato%></p>
-                <% }%>
+                    <!-- Usando JSTL para mostrar mensajes -->
+                    <c:if test="${not empty mensajePlato}">
+                        <p>${mensajePlato}</p>
+                    </c:if>
+                </form>
             </div>
 
             <hr>
@@ -148,45 +142,39 @@
                     <input type="text" name="nombreMenu" required>
 
                     <p>Selecciona los Platos de la entrada:</p>
-                    <%
-                        List<Plato> platosEntrada = (List<Plato>) request.getAttribute("platosEntrada");
-                        if (platosEntrada == null || platosEntrada.isEmpty()) {
-                    %> <!-- se oltiene la lista de platos de la entrada de la solisitud request.getAttribute("platosEntrada")  -->
-                    <p>No hay platos disponibles.</p>
-                    <!-- si no hay platos se muestra -->
-                    <% } else {
-                        for (Plato plato : platosEntrada) {
-                    %>
-                    <!-- Pero si hay platos se muestran  -->
-                    <label>
-                        <input type="checkbox" name="platoEntrada[]" value="<%= plato.getId()%>"> <%= plato.getNombre()%>
-                    </label><br>
-                    <%  }
-                        } %>
+                    <c:if test="${not empty platosEntrada}">
+                        <c:forEach var="plato" items="${platosEntrada}">
+                            <label>
+                                <input type="checkbox" name="platoEntrada[]" value="${plato.id}"> ${plato.nombre}
+                            </label><br>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${empty platosEntrada}">
+                        <p>No hay platos disponibles.</p>
+                    </c:if>
 
                     <p>Selecciona los Platos Principales:</p>
-                    <%
-                        List<Plato> platosPrincipal = (List<Plato>) request.getAttribute("platosPrincipal");
-                        if (platosPrincipal == null || platosPrincipal.isEmpty()) {
-                    %>
-                    <p>No hay platos disponibles.</p>
-                    <% } else {
-                        for (Plato plato : platosPrincipal) {
-                    %>
-                    <label>
-                        <input type="checkbox" name="platoPrincipal[]" value="<%= plato.getId()%>"> <%= plato.getNombre()%>
-                    </label><br>
-                    <%  }
-                        }%>
+                    <c:if test="${not empty platosPrincipal}">
+                        <c:forEach var="plato" items="${platosPrincipal}">
+                            <label>
+                                <input type="checkbox" name="platoPrincipal[]" value="${plato.id}"> ${plato.nombre}
+                            </label><br>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${empty platosPrincipal}">
+                        <p>No hay platos disponibles.</p>
+                    </c:if>
 
                     <input type="submit" value="Registrar Menú">
                 </form>
-                <% String mensajeMenu = (String) request.getAttribute("mensajeMenu"); %>
-                <% if (mensajeMenu != null) {%>
-                <p><%= mensajeMenu%></p>
-                <% }%>
+
+                <!-- Usando JSTL para mostrar mensajes -->
+                <c:if test="${not empty mensajeMenu}">
+                    <p>${mensajeMenu}</p>
+                </c:if>
             </div>
 
+            <hr>
 
             <!-- Formulario Alta Servicio -->
             <div class="formulario-contenedor">
@@ -197,33 +185,28 @@
                     <input type="text" name="nombreServicio" required>
 
                     <p>Selecciona los Menus:</p>
-                    <%
-                        List<Menu> menus = (List<Menu>) request.getAttribute("menus");
-                        if (menus == null || menus.isEmpty()) {
-                    %>
-                    <p>No hay Menús disponibles.</p>
-                    <% } else {
-                        for (Menu menu : menus) {
-                    %>
-                    <label>
-                        <input type="checkbox" name="menus[]" value="<%= menu.getId()%>"> <%= menu.getNombreMenu()%>
-                    </label><br>
-                    <%
-                            } 
-                        } 
-                    %>
-
+                    <c:if test="${not empty menus}">
+                        <c:forEach var="menu" items="${menus}">
+                            <label>
+                                <input type="checkbox" name="menus[]" value="${menu.id}"> ${menu.nombreMenu}
+                            </label><br>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${empty menus}">
+                        <p>No hay Menús disponibles.</p>
+                    </c:if>
 
                     <input type="submit" value="Registrar Servicio">
                 </form>
 
-                <% String mensajeServicio = (String) request.getAttribute("mensajeServicio"); %>
-                <% if (mensajeServicio != null) {%>
-                <p><%= mensajeServicio%></p>
-                <% }%>
+                <!-- Usando JSTL para mostrar mensajes -->
+                <c:if test="${not empty mensajeServicio}">
+                    <p>${mensajeServicio}</p>
+                </c:if>
             </div>
 
         </div>
 
     </body>
 </html>
+
