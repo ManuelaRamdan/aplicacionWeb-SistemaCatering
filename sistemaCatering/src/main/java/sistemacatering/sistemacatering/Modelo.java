@@ -642,35 +642,63 @@ public class Modelo {
     }
 
     public boolean eliminarCoordinador(int idCoordinador) {
-        String query = "UPDATE Coordinador SET estado = 0 WHERE id = ?";
+        // Sentencia SQL para actualizar el estado en Coordinador y Persona
+        String sqlCoordinador = "UPDATE Coordinador SET estado = 0 WHERE id = ?";
+        String sqlPersona = "UPDATE Persona SET estado = 0 WHERE id = (SELECT persona_id FROM Coordinador WHERE id = ?)";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement coordinador = null;
+        PreparedStatement persona = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idCoordinador);
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+            // Actualizar el estado del Coordinador
+            coordinador = con.prepareStatement(sqlCoordinador);
+            coordinador.setInt(1, idCoordinador);
+            int filasAfectadasCoordinador = coordinador.executeUpdate();
+
+            // Actualizar el estado de la Persona asociada
+            persona = con.prepareStatement(sqlPersona);
+            persona.setInt(1, idCoordinador);
+            int filasAfectadasPersona = persona.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar transacción
+            if (filasAfectadasCoordinador > 0 && filasAfectadasPersona > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (coordinador != null) {
+                    coordinador.close();
+                }
+                if (persona != null) {
+                    persona.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }
@@ -718,35 +746,63 @@ public class Modelo {
     }
 
     public boolean eliminarAdministrador(int idAdministrador) {
-        String query = "UPDATE Administrador SET estado = 0 WHERE id = ?";
+        // Sentencias SQL para actualizar el estado en Administrador y Persona
+        String sqlAdm = "UPDATE Administrador SET estado = 0 WHERE id = ?";
+        String sqlPersona = "UPDATE Persona SET estado = 0 WHERE id = (SELECT persona_id FROM Administrador WHERE id = ?)";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement stmtAdm = null;
+        PreparedStatement stmtPersona = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idAdministrador); // Establecer el ID en el prepared statement
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, la operación fue exitosa
+            // Actualizar el estado del Administrador
+            stmtAdm = con.prepareStatement(sqlAdm);
+            stmtAdm.setInt(1, idAdministrador);
+            int filasAfectadasAdm = stmtAdm.executeUpdate();
+
+            // Actualizar el estado de la Persona asociada
+            stmtPersona = con.prepareStatement(sqlPersona);
+            stmtPersona.setInt(1, idAdministrador);
+            int filasAfectadasPersona = stmtPersona.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar transacción
+            if (filasAfectadasAdm > 0 && filasAfectadasPersona > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (stmtAdm != null) {
+                    stmtAdm.close();
+                }
+                if (stmtPersona != null) {
+                    stmtPersona.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }
@@ -801,137 +857,258 @@ public class Modelo {
     }
 
     public boolean eliminarCliente(int idCliente) {
-        String query = "UPDATE Cliente SET estado = 0 WHERE id = ?";
+        // Sentencias SQL para actualizar el estado en Cliente y Persona
+        String sqlCliente = "UPDATE Cliente SET estado = 0 WHERE id = ?";
+        String sqlPersona = "UPDATE Persona SET estado = 0 WHERE id = (SELECT persona_id FROM Cliente WHERE id = ?)";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement stmtCliente = null;
+        PreparedStatement stmtPersona = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idCliente); // Establecer el ID en el prepared statement
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+            // Actualizar el estado del Cliente
+            stmtCliente = con.prepareStatement(sqlCliente);
+            stmtCliente.setInt(1, idCliente);
+            int filasAfectadasCliente = stmtCliente.executeUpdate();
+
+            // Actualizar el estado de la Persona asociada
+            stmtPersona = con.prepareStatement(sqlPersona);
+            stmtPersona.setInt(1, idCliente);
+            int filasAfectadasPersona = stmtPersona.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar la transacción
+            if (filasAfectadasCliente > 0 && filasAfectadasPersona > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (stmtCliente != null) {
+                    stmtCliente.close();
+                }
+                if (stmtPersona != null) {
+                    stmtPersona.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }
 
     public boolean eliminarPlato(int idPlato) {
-        String query = "UPDATE Plato SET estado = 0 WHERE id = ?";
+        // Sentencias SQL para actualizar el estado en Plato, Menu_Plato
+        String queryPlato = "UPDATE Plato SET estado = 0 WHERE id = ?";
+        String queryMenuPlato = "UPDATE Menu_Plato SET estado = 0 WHERE plato_id = ?";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement stmtPlato = null;
+        PreparedStatement stmtMenuPlato = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idPlato); // Establecer el ID en el prepared statement
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+            // Actualizar el estado del Plato
+            stmtPlato = con.prepareStatement(queryPlato);
+            stmtPlato.setInt(1, idPlato);
+            int filasAfectadasPlato = stmtPlato.executeUpdate();
+
+            // Actualizar el estado en la tabla Menu_Plato
+            stmtMenuPlato = con.prepareStatement(queryMenuPlato);
+            stmtMenuPlato.setInt(1, idPlato);
+            int filasAfectadasMenuPlato = stmtMenuPlato.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar la transacción
+            if (filasAfectadasPlato > 0 && filasAfectadasMenuPlato > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (stmtPlato != null) {
+                    stmtPlato.close();
+                }
+                if (stmtMenuPlato != null) {
+                    stmtMenuPlato.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }
 
     public boolean eliminarMenu(int idMenu) {
-        String query = "UPDATE Menu SET estado = 0 WHERE id = ?";
+        // Sentencias SQL para actualizar el estado en Menu, Menu_Plato
+        String queryMenu = "UPDATE Menu SET estado = 0 WHERE id = ?";
+        String queryMenuPlato = "UPDATE Menu_Plato SET estado = 0 WHERE menu_id = ?";
+        String queryServicioMenu = "UPDATE Servicio_Menu SET estado = 0 WHERE menu_id = ?";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement stmtMenu = null;
+        PreparedStatement stmtMenuPlato = null;
+        PreparedStatement stmtServicioMenu = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idMenu); // Establecer el ID en el prepared statement
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+            // Actualizar el estado del Menu
+            stmtMenu = con.prepareStatement(queryMenu);
+            stmtMenu.setInt(1, idMenu);
+            int filasAfectadasMenu = stmtMenu.executeUpdate();
+
+            // Actualizar el estado en la tabla Menu_Plato
+            stmtMenuPlato = con.prepareStatement(queryMenuPlato);
+            stmtMenuPlato.setInt(1, idMenu);
+            int filasAfectadasMenuPlato = stmtMenuPlato.executeUpdate();
+
+            stmtServicioMenu = con.prepareStatement(queryServicioMenu);
+            stmtServicioMenu.setInt(1, idMenu);
+            int filasAfectadasServicioMenu = stmtServicioMenu.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar la transacción
+            if (filasAfectadasMenu > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (stmtMenu != null) {
+                    stmtMenu.close();
+                }
+                if (stmtMenuPlato != null) {
+                    stmtMenuPlato.close();
                 }
                 if (con != null) {
                     con.close();
                 }
+                if (stmtServicioMenu != null) {
+                    stmtServicioMenu.close();
+                }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }
 
     public boolean eliminarServicio(int idServicio) {
-        String query = "UPDATE Servicio SET estado = 0 WHERE id = ?";
+        // Sentencias SQL para actualizar el estado en Servicio, Servicio_Menu
+        String queryServicio = "UPDATE Servicio SET estado = 0 WHERE id = ?";
+        String queryServicioMenu = "UPDATE Servicio_Menu SET estado = 0 WHERE servicio_id = ?";
 
         Connection con = null;
-        PreparedStatement stmt = null;
+        PreparedStatement stmtServicio = null;
+        PreparedStatement stmtServicioMenu = null;
 
         try {
-            // Establecemos la conexión
+            // Establecer la conexión
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idServicio); // Establecer el ID en el prepared statement
 
-            // Ejecutamos la actualización
-            int filasAfectadas = stmt.executeUpdate();
+            // Iniciar transacción
+            con.setAutoCommit(false);
 
-            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+            // Actualizar el estado del Servicio
+            stmtServicio = con.prepareStatement(queryServicio);
+            stmtServicio.setInt(1, idServicio);
+            int filasAfectadasServicio = stmtServicio.executeUpdate();
+
+            // Actualizar el estado en la tabla Servicio_Menu
+            stmtServicioMenu = con.prepareStatement(queryServicioMenu);
+            stmtServicioMenu.setInt(1, idServicio);
+            int filasAfectadasServicioMenu = stmtServicioMenu.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar la transacción
+            if (filasAfectadasServicio > 0 && filasAfectadasServicioMenu > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
         } catch (SQLException e) {
-            e.printStackTrace(); // Mostrar errores en la consola
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            // Cerramos los recursos manualmente en el bloque finally
+            // Cerrar los recursos
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (stmtServicio != null) {
+                    stmtServicio.close();
+                }
+                if (stmtServicioMenu != null) {
+                    stmtServicioMenu.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+                e.printStackTrace();
             }
         }
     }

@@ -52,8 +52,9 @@
                                     <td>${coordinador.codCoordinador}</td>
                                     <td>${coordinador.usuario}</td>
                                     <td>
-                                        <!-- Formulario para eliminar coordinador -->
-                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <!-- Formulario para eliminar coordinador con confirmación -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar a ${coordinador.usuario}?');">
                                             <input type="hidden" name="action" value="eliminarCoordinador">
                                             <input type="hidden" name="idCoordinador" value="${coordinador.codCoordinador}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
@@ -64,14 +65,14 @@
                         </tbody>
                     </table>
                 </c:if>
-
-
             </div>
+
 
             <hr>
             <div class="formulario-contenedor">
                 <h2>Eliminar Cliente</h2>
 
+                <!-- Mostrar mensaje de confirmación o error -->
                 <c:if test="${not empty mensajeBajaCliente}">
                     <div class="mensaje">${mensajeBajaCliente}</div>
                 </c:if>
@@ -98,8 +99,9 @@
                                     <td>${cliente.telReferencia}</td>
                                     <td>${cliente.email}</td>
                                     <td>
-                                        <!-- Formulario para eliminar cliente -->
-                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <!-- Formulario para eliminar cliente con confirmación -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar a ${cliente.nombre} ${cliente.apellido}?');">
                                             <input type="hidden" name="action" value="eliminarCliente">
                                             <input type="hidden" name="idCliente" value="${cliente.id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
@@ -109,19 +111,13 @@
                             </c:forEach>
                         </tbody>
                     </table>
-
-
                 </c:if>
 
+                <!-- Mensaje cuando no hay clientes -->
                 <c:if test="${empty clientes}">
                     <p>No se encontraron clientes disponibles.</p>
                 </c:if>
-
             </div>
-
-
-
-
 
 
             <hr>
@@ -145,8 +141,9 @@
                                 <td>${administrador.codAdministrador}</td>
                                 <td>${administrador.usuario}</td>
                                 <td>
-                                    <!-- Formulario para eliminar administrador -->
-                                    <form action="ControladorAdm" method="POST" style="display:inline;">
+                                    <!-- Formulario para eliminar administrador con confirmación -->
+                                    <form action="ControladorAdm" method="POST" style="display:inline;"
+                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar al administrador ${administrador.usuario}?');">
                                         <input type="hidden" name="action" value="eliminarAdministrador">
                                         <input type="hidden" name="idAdministrador" value="${administrador.codAdministrador}">
                                         <input type="submit" value="Eliminar" class="btn-eliminar">
@@ -173,6 +170,7 @@
                     <table border="1">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nombre del Plato</th>
                                 <th>Eliminar</th>
                             </tr>
@@ -181,10 +179,12 @@
                             <!-- Iterar sobre los platos -->
                             <c:forEach var="plato" items="${platos}">
                                 <tr>
+                                    <td>${plato.id}</td>
                                     <td>${plato.nombre}</td>
                                     <td>
-                                        <!-- Formulario para eliminar plato -->
-                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <!-- Formulario para eliminar plato con confirmación -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar el plato ${plato.nombre} con ID ${plato.id}?');">
                                             <input type="hidden" name="action" value="eliminarPlato">
                                             <input type="hidden" name="idPlato" value="${plato.id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
@@ -201,6 +201,7 @@
                 </c:if>
             </div>
 
+
             <hr>
             <!-- Formulario Baja de Menú -->
             <div class="formulario-contenedor">
@@ -211,6 +212,7 @@
                     <table border="1">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nombre del Menú</th>
                                 <th>Eliminar</th>
                             </tr>
@@ -218,10 +220,12 @@
                         <tbody>
                             <c:forEach var="menu" items="${menus}">
                                 <tr>
+                                    <td>${menu.id}</td>
                                     <td>${menu.nombreMenu}</td>
                                     <td>
-                                        <!-- Formulario para eliminar menú -->
-                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <!-- Formulario para eliminar menú con confirmación -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar el menú ${menu.nombreMenu} con ID ${menu.id}?');">
                                             <input type="hidden" name="action" value="eliminarMenu">
                                             <input type="hidden" name="idMenu" value="${menu.id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
@@ -240,6 +244,7 @@
             </div>
 
 
+
             <hr>
             <!-- Formulario Baja Servicio -->
             <div class="formulario-contenedor">
@@ -250,6 +255,7 @@
                     <table border="1">
                         <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Nombre del Servicio</th>
                                 <th>Eliminar</th>
                             </tr>
@@ -258,12 +264,13 @@
                             <!-- Iterar sobre los servicios -->
                             <c:forEach var="servicio" items="${servicios}">
                                 <tr>
+                                    <td>${servicio.id}</td>
                                     <td>${servicio.nombreServicio}</td>
                                     <td>
-                                        <!-- Formulario para eliminar servicio -->
-                                        <form action="ControladorAdm" method="POST" style="display:inline;">
+                                        <!-- Formulario para eliminar servicio con confirmación -->
+                                        <form action="ControladorAdm" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar el servicio ${servicio.nombreServicio} con ID ${servicio.id}?');">
                                             <input type="hidden" name="action" value="eliminarServicio">
-                                            <!-- Pasamos el id del servicio en lugar del nombre -->
                                             <input type="hidden" name="idServicio" value="${servicio.id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
                                         </form>
@@ -277,8 +284,8 @@
                 <c:if test="${empty servicios}">
                     <p>No hay servicios disponibles para eliminar.</p>
                 </c:if>
-            </div>
 
+            </div>
 
         </div>
     </body>
