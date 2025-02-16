@@ -19,7 +19,7 @@
         <div class="menu-lateral">
             <ul>
                 <li>
-                    <a href="vistaAdmAlta.jsp">Alta</a>
+                    <a href="ControladorAdm?accion=mostrarAlta">Alta</a>
                     <!--<ul class="submenu">
                         <li>Alta Servicio</li>
                         <li>Alta Coordinador</li>
@@ -51,7 +51,7 @@
         </div>
 
         <div class="contenido-central">
-            <h1>Bienvenido, <%= request.getAttribute("nombreAdmin")%>!</h1>
+            <h1>Bienvenido</h1>
         </div>
 
     </body>

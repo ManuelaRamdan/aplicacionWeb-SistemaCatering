@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,25 +21,59 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "ControladorAdm", urlPatterns = {"/ControladorAdm"})
 public class ControladorAdm extends HttpServlet {
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) // obtener datos para la vista
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
         String idAdministrador = (String) session.getAttribute("userId");
 
         if (idAdministrador != null) {
-            Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la BD
-            String nombreAdmin = modelo.obtenerNombreAdministrador(idAdministrador);
-            request.setAttribute("nombreAdmin", nombreAdmin);
-        } else {
-            request.setAttribute("nombreAdmin", "Administrador Desconocido");
-        }
+            Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la base de datos
 
-        RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
-        dispatcher.forward(request, response);
+            // Obtener la acción que el administrador desea realizar (en caso de que haya una acción específica)
+            String accion = request.getParameter("accion");
+
+            // Si no hay acción específica, por defecto se carga la vista de menú
+            if (accion == null) {
+                accion = "menu"; // Acción por defecto
+            }
+
+            switch (accion) {
+                case "menu":
+                    // Redirigir a la vista de menú
+                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
+                    dispatcherMenu.forward(request, response);
+                    break;
+
+                case "mostrarAlta":
+                    System.out.println("Acción mostrarAlta ejecutada");
+
+                    List<Plato> platos = modelo.obtenerPlatosBd();
+
+                    System.out.println("Platos obtenidos:");
+                    for (Plato p : platos) {
+                        System.out.println(p.getId() + " - " + p.getNombre());
+                    }
+
+                    request.setAttribute("platosEntrada", platos);
+                    request.setAttribute("platosPrincipal", platos);
+                    request.getRequestDispatcher("vistaAdmAlta.jsp").forward(request, response);
+                    break;
+                default:
+                    // Si la acción no es reconocida, redirige a una página de error
+                    request.setAttribute("mensajeError", "Acción no válida");
+                    request.getRequestDispatcher("vistaError.jsp").forward(request, response);
+                    break;
+            }
+
+        } else {
+            // Si el usuario no está logueado, redirigir al login
+            RequestDispatcher dispatcherLogin = request.getRequestDispatcher("login.jsp");
+            dispatcherLogin.forward(request, response);
+        }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) // enviar datos necesarios
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
@@ -93,7 +128,7 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
             dispatcher.forward(request, response);
-        }else if ("registrarPlato".equals(action)) {
+        } else if ("registrarPlato".equals(action)) {
             String nombrePlato = request.getParameter("nombrePlato");
 
             boolean registrado = modelo.registrarPlato(nombrePlato);

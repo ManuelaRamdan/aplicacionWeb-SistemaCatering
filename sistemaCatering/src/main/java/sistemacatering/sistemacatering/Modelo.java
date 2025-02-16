@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Modelo {
 
@@ -96,26 +97,6 @@ public class Modelo {
 
         return tipo;
 
-    }
-
-    public String obtenerNombreAdministrador(String idAdministrador) {
-        String nombre = "Administrador";
-        try {
-            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            String query = "SELECT nombre FROM Persona WHERE id = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, idAdministrador);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                nombre = rs.getString("nombre");
-            }
-
-            con.close();
-        } catch (SQLException e) {
-            reportException(e.getMessage());
-        }
-        return nombre;
     }
 
     public boolean registrarCoordinador(String usuario, String password) {
@@ -364,6 +345,48 @@ public class Modelo {
             }
         }
         return registrado;
+    }
+
+    public List<Plato> obtenerPlatosBd() {
+        List<Plato> listaPlatos = new ArrayList<>();
+        String query = "SELECT id, nombre FROM Plato";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                listaPlatos.add(new Plato(id, nombre));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaPlatos;
     }
 
 }
