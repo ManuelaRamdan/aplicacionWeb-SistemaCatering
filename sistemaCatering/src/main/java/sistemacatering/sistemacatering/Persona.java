@@ -29,12 +29,6 @@ public abstract class Persona{
         this.usuario = usuario;
     }
 
-    //public abstract boolean proceder(SistemaCatering sistemaCatering);
 
-    public abstract void mostrar();
 
-    boolean coincidenUsrPwd(String datos) {
-        return datos.equals(usuario + ":" + password);
-
-    }
 }

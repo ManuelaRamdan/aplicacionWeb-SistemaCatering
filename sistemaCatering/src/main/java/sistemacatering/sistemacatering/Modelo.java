@@ -599,4 +599,156 @@ public class Modelo {
         return listaMenus;
     }
 
+    public List<Coordinador> obtenerCoordinadoresBd() {
+        List<Coordinador> listaCoordinadores = new ArrayList<>();
+        String query = "SELECT c.id, p.usuario FROM Coordinador c JOIN Persona p ON c.persona_id = p.id WHERE c.estado = 1";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+                listaCoordinadores.add(new Coordinador(id, usuario));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaCoordinadores;
+    }
+
+    public boolean eliminarCoordinador(int idCoordinador) {
+        String query = "UPDATE Coordinador SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idCoordinador);
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, funciono
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
+    public List<Administrador> obtenerAdministradoresBd() {
+        List<Administrador> listaAdministradores = new ArrayList<>();
+        String query = "SELECT a.id, p.usuario FROM Administrador a JOIN Persona p ON a.persona_id = p.id WHERE a.estado = 1"; // Cambié c a a
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+                listaAdministradores.add(new Administrador(id, usuario)); // Crear el objeto Administrador
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaAdministradores;
+    }
+
+    public boolean eliminarAdministrador(int idAdministrador) {
+        String query = "UPDATE Administrador SET estado = 0 WHERE id = ?";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idAdministrador); // Establecer el ID en el prepared statement
+
+            // Ejecutamos la actualización
+            int filasAfectadas = stmt.executeUpdate();
+
+            return filasAfectadas > 0; // Si se actualizaron filas, la operación fue exitosa
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+            return false;
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+    }
+
 }

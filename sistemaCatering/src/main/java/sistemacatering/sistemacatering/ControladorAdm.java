@@ -46,7 +46,6 @@ public class ControladorAdm extends HttpServlet {
                     break;
 
                 case "mostrarAlta":
-                    System.out.println("Acción mostrarAlta ejecutada");
 
                     List<Plato> platos = modelo.obtenerPlatosBd();
                     List<Menu> menus = modelo.obtenerMenusBd();
@@ -55,6 +54,16 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("platosPrincipal", platos);
                     request.setAttribute("menus", menus);
                     request.getRequestDispatcher("vistaAdmAlta.jsp").forward(request, response);
+                    break;
+
+                case "mostrarBaja":
+                    List<Coordinador> coordinadores = modelo.obtenerCoordinadoresBd();
+                    List<Administrador> administradores = modelo.obtenerAdministradoresBd();
+
+                    request.setAttribute("coordinadores", coordinadores);
+                    request.setAttribute("administradores", administradores);
+
+                    request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
                     break;
 
                 default:
@@ -177,7 +186,34 @@ public class ControladorAdm extends HttpServlet {
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
             dispatcher.forward(request, response);
-        }
+        } else if ("eliminarCoordinador".equals(action)) {
+            int idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
 
+            boolean eliminado = modelo.eliminarCoordinador(idCoordinador);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaCoordinador", "Coordinador dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaCoordinador", "Error, no se puso eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
+
+        }else if ("eliminarAdministrador".equals(action)) {
+            int idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
+
+            boolean eliminado = modelo.eliminarAdministrador(idAdministrador);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaAdministrador", "Administrador dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaAdministrador", "Error, no se puso eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+            dispatcher.forward(request, response);
+
+        }
     }
 }

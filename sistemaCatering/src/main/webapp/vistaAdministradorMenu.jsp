@@ -28,7 +28,7 @@
                     </ul>-->
                 </li>
                 <li>
-                    <a href="vistaAdmBaja.jsp">Baja</a>
+                    <a href="ControladorAdm?accion=mostrarBaja">Baja</a>
                     <!--
                     <ul class="submenu">
                         <li>Baja Servicio</li>
