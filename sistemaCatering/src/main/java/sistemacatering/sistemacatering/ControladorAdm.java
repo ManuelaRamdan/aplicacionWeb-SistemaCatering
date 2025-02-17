@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -106,7 +107,7 @@ public class ControladorAdm extends HttpServlet {
                     coordinadores = modelo.obtenerCoordinadoresBd();
                     platos = modelo.obtenerPlatosBd();
                     menus = modelo.obtenerMenusBd();
-                    List<Reserva> reservas = modelo.obtenerReservaBd();
+
                     servicios = modelo.obtenerServiciosBd();
 
                     // Set the data as request attributes
@@ -115,8 +116,15 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("coordinadores", coordinadores);
                     request.setAttribute("platos", platos);
                     request.setAttribute("menus", menus);
-                    request.setAttribute("reservas", reservas);
+
                     request.setAttribute("servicios", servicios);
+
+                    List<Reserva> reservas = modelo.obtenerReservaBd();
+                    for (Reserva r : reservas) {
+                        System.out.println("Reserva en lista: " + r.getCodReserva());
+                    }
+
+                    request.setAttribute("reservas", reservas);
 
                     // Forward to the JSP page
                     request.getRequestDispatcher("vistaAdmMostrar.jsp").forward(request, response);

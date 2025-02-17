@@ -9,12 +9,13 @@ package sistemacatering.sistemacatering;
  * @author Usuario
  */
 class Domicilio {
+
     private int id;
     private String calle;
     private int altura;
     private String barrio;
 
-    public Domicilio(int id,String calle, int altura, String barrio) {
+    public Domicilio(int id, String calle, int altura, String barrio) {
         this.calle = calle;
         this.altura = altura;
         this.barrio = barrio;
@@ -43,8 +44,10 @@ class Domicilio {
     public void setAltura(int altura) {
         this.altura = altura;
     }
-    
 
-    
-    
+    @Override
+    public String toString() {
+        return calle + " " + altura + ", " + barrio;
+    }
+
 }

@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author Usuario
  */
-class Reserva {
+public class Reserva {
 
     private int codReserva;
     private int codCliente;

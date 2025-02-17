@@ -11,7 +11,9 @@
 <%@ taglib prefix="fnt" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
-<<!DOCTYPE html>
+
+
+<!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
@@ -147,34 +149,39 @@
                         <th>Entregado</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <c:forEach var="reserva" items="${reservas}">
-                        <tr>
-                            <td>${reserva.codReserva}</td>
-                            <td>${reserva.codCliente}</td>
-                            <td>
-                                <c:if test="${not empty reserva.fechaInicioEvento}">
-                        <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
-                    </c:if>
-                    </td>
-                    <td>
-                        <c:if test="${not empty reserva.fechaFinEvento}">
-                        <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
-                    </c:if>
-                    </td>
+                <c:if test="${empty reservas}">
+                    <p>No hay reservas disponibles.</p>
+                </c:if>
 
+                <c:if test="${not empty reservas}">
+                    <tbody>
+                        <c:forEach var="reserva" items="${reservas}">
+                            <tr>
+                                <td>${reserva.codReserva}</td>
+                                <td>${reserva.codCliente}</td>
+                                <td>
+                                    <c:if test="${not empty reserva.fechaInicioEvento}">
+                            <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                        </c:if>
+                        </td>
+                        <td>
+                            <c:if test="${not empty reserva.fechaFinEvento}">
+                            <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                        </c:if>
+                        </td>
+                        <td>${reserva.restriccionesDieteticas}</td>
+                        <td>${reserva.preferenciaCliente}</td>
+                        <td>${reserva.tipoServicio}</td>
+                        <td>${reserva.cantidadPersonas}</td>
+                        <td>${reserva.precio}</td>
+                        <td>${reserva.modoDeReserva}</td>
+                        <td>${reserva.direccionDeEntrega}</td>
+                        <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
+                        </tr>
+                    </c:forEach>
+                    </tbody>
+                </c:if>
 
-                    <td>${reserva.restriccionesDieteticas}</td>
-                    <td>${reserva.preferenciaCliente}</td>
-                    <td>${reserva.tipoServicio}</td>
-                    <td>${reserva.cantidadPersonas}</td>
-                    <td>${reserva.precio}</td>
-                    <td>${reserva.modoDeReserva}</td>
-                    <td>${reserva.direccionDeEntrega}</td>
-                    <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
-                    </tr>
-                </c:forEach>
-                </tbody>
             </table>
 
             <h2>Servicios</h2>
