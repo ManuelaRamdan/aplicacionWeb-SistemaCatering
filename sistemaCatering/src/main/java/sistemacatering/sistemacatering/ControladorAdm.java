@@ -79,6 +79,26 @@ public class ControladorAdm extends HttpServlet {
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
                     break;
 
+                case "mostrarModificar":
+                    // Obtener el término de búsqueda ingresado
+                    String busqueda = request.getParameter("busqueda");
+
+                    // Obtener los resultados para cada tipo de entidad
+                    coordinadores = modelo.buscarCoordinador(busqueda);
+                    clientes = modelo.buscarCliente(busqueda);
+                    administradores = modelo.buscarAdministrador(busqueda);
+                    platos = modelo.buscarPlato(busqueda);
+
+                    // Colocar los resultados en el request para la vista
+                    request.setAttribute("coordinadores", coordinadores);
+                    request.setAttribute("clientes", clientes);
+                    request.setAttribute("administradores", administradores);
+                    request.setAttribute("platos", platos);
+
+                    // Redirigir a la vista de modificación
+                    request.getRequestDispatcher("vistaAdmModificar.jsp").forward(request, response);
+                    break;
+
                 default:
                     // Si la acción no es reconocida, redirige a una página de error
                     request.setAttribute("mensajeError", "Acción no válida");
@@ -278,5 +298,5 @@ public class ControladorAdm extends HttpServlet {
             dispatcher.forward(request, response);
         }
 
-        }
     }
+}

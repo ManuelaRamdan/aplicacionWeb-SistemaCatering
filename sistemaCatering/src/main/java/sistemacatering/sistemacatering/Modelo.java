@@ -1155,4 +1155,67 @@ public class Modelo {
         return listaServicios;
     }
 
+    public List<Coordinador> buscarCoordinador(String busqueda) {
+        List<Coordinador> coordinadores = new ArrayList<>();
+
+        String query = "SELECT * FROM Coordinador c "
+                + "INNER JOIN Persona p ON c.persona_id = p.id "
+                + "WHERE p.usuario LIKE ?";  // Buscar solo por usuario en la tabla Persona
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecer el parámetro para la búsqueda
+            stmt.setString(1, "%" + busqueda + "%");
+
+            // Ejecutar la consulta y obtener los resultados
+            rs = stmt.executeQuery();
+
+            // Procesar el resultado
+            while (rs.next()) {
+                int cod = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+                Coordinador coordinador = new Coordinador(cod, usuario);
+                coordinadores.add(coordinador);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Manejo de errores
+        } finally {
+            // Cerrar recursos en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return coordinadores;
+    }
+
+    List<Cliente> buscarCliente(String busqueda) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    List<Administrador> buscarAdministrador(String busqueda) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    List<Plato> buscarPlato(String busqueda) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }
