@@ -18,16 +18,16 @@ import javax.servlet.http.HttpSession;
  *
  * @author Usuario
  */
-@WebServlet(name = "ControladorCliente", urlPatterns = {"/ControladorCliente"})
-public class ControladorCliente extends HttpServlet {
+@WebServlet(name = "ControladorCoordinador", urlPatterns = {"/ControladorCoordinador"})
+public class ControladorCoordinador extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) // obtener datos para la vista
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
-        String idCliente = (String) session.getAttribute("userId");
+        String idCoordinador = (String) session.getAttribute("userId");
 
-        if (idCliente != null) {
+        if (idCoordinador != null) {
             Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la base de datos
 
             // Obtener la acción que el administrador desea realizar (en caso de que haya una acción específica)
@@ -35,37 +35,43 @@ public class ControladorCliente extends HttpServlet {
 
             // Si no hay acción específica, por defecto se carga la vista de menú
             if (accion == null) {
-                accion = "misDatos"; // Acción por defecto
+                accion = "menu"; // Acción por defecto
             }
 
             switch (accion) {
-                case "misDatos":
+                case "menu":
+                    // Redirigir a la vista de menú
+                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("vistaCoordinadorMenu.jsp");
+                    dispatcherMenu.forward(request, response);
+                    break;
 
-                    Cliente cliente = modelo.obtenerClientePorId(idCliente);
-
-                    request.setAttribute("cliente", cliente);
-                    request.getRequestDispatcher("vistaClienteDatos.jsp").forward(request, response);
+                case "mostrarAlta":
 
                     break;
 
-                case "misReservas":
-                    System.out.println("Entrando a misReservas");
+                case "mostrarBaja":
 
-                    List<Reserva> reservas = modelo.obtenerReservasPorCliente(idCliente);
-                    System.out.println("Reservas obtenidas: " + reservas.size());  // Imprimir el tamaño de la lista de reservas
+                    break;
 
+                case "mostrarModificar":
+
+                    break;
+
+                case "mostrarReservas":
+                    List<Reserva> reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
+                    request.getRequestDispatcher("vistaCoordMostrarReserva.jsp").forward(request, response);
 
-                    // Asegurarnos de que se obtuvieron reservas
-                    for (Reserva reserva : reservas) {
-                        System.out.println("Reserva ID: " + reserva.getCodReserva());
-                        System.out.println("Cliente ID: " + reserva.getCodCliente());
-                        // ... otros campos
-                    }
-
-                    request.getRequestDispatcher("vistaClienteReservas.jsp").forward(request, response);
                     break;
+                case "mostrarCliente":
+                    List<Cliente> clientes = modelo.obtenerClientesConReservas(); // Obtener clientes con reservas
+                    request.setAttribute("clientes", clientes);  // Pasar la lista de clientes al JSP
+                    request.getRequestDispatcher("vistaCoordMostrarCliente.jsp").forward(request, response);
 
+                    break;
+                case "consultarCliente":
+
+                    break;
                 default:
                     // Si la acción no es reconocida, redirige a una página de error
                     request.setAttribute("mensajeError", "Acción no válida");
@@ -78,5 +84,10 @@ public class ControladorCliente extends HttpServlet {
             RequestDispatcher dispatcherLogin = request.getRequestDispatcher("login.jsp");
             dispatcherLogin.forward(request, response);
         }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) // enviar datos necesarios
+            throws ServletException, IOException {
+
     }
 }

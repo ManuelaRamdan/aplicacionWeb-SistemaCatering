@@ -92,9 +92,15 @@ tr:hover {
 }
 
 /* Estilos de los encabezados de las secciones */
+/* Estilos para los encabezados */
 h2 {
-    color: rgb(138, 18, 138);
-    margin-bottom: 20px;
-    font-size: 24px;
+    font-size: 28px; /* Aumentamos el tamaño de la fuente */
+    color: rgb(138, 18, 138); /* Color similar al del menú lateral */
+    font-weight: bold; /* Hacemos el título más prominente */
+    text-align: center; /* Centramos el título */
+    margin-top: 30px; /* Espacio encima del título */
+    margin-bottom: 20px; /* Espacio debajo del título */
+    text-transform: uppercase; /* Convertimos el texto a mayúsculas */
+    letter-spacing: 2px; /* Espaciado entre letras */
 }
 

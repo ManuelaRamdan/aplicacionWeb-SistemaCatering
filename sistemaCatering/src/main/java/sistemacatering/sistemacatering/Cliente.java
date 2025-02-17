@@ -4,16 +4,21 @@
  */
 package sistemacatering.sistemacatering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Usuario
  */
 public class Cliente extends Persona {
+
     private int id;
     private String nombre;
     private String apellido;
     private String telReferencia;
     private String email;
+    private List<Reserva> reservas;
 
     // Constructor
     public Cliente(int id, String nombre, String apellido, String telReferencia, String email) {
@@ -22,6 +27,15 @@ public class Cliente extends Persona {
         this.apellido = apellido;
         this.telReferencia = telReferencia;
         this.email = email;
+        reservas = new ArrayList<Reserva>();
+    }
+
+    public List<Reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
     }
 
     // Getters
@@ -64,10 +78,5 @@ public class Cliente extends Persona {
     public void setEmail(String email) {
         this.email = email;
     }
-    
-    
+
 }
-
-
-    
-

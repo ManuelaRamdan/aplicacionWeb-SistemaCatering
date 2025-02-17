@@ -29,6 +29,8 @@
                 <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
                 <li><a href="ControladorAdm?accion=mostrarModificar">Modificación</a></li>
                 <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li>
+
+
             </ul>
         </div>
 

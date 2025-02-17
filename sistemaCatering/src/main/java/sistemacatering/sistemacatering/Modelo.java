@@ -1321,59 +1321,131 @@ public class Modelo {
     }
 
     // Método para obtener las reservas de un cliente
-    public ArrayList<Reserva> obtenerReservasPorCliente(String idCliente) {
-        ArrayList<Reserva> reservas = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(
-                "SELECT r.codReserva, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, "
+    public List<Reserva> obtenerReservasPorCliente(String idCliente) {
+        List<Reserva> reservas = new ArrayList<>();
+        String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, "
                 + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
                 + "r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
                 + "d.calle, d.altura, d.barrio "
                 + "FROM Reserva r "
                 + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
-                + "WHERE r.codCliente = ? and r.estado = 1")) {
+                + "WHERE r.codCliente = (SELECT c.id FROM Cliente c WHERE c.persona_id = ?) "
+                + "  AND r.estado = 1";
+
+        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query)) {
 
             stmt.setString(1, idCliente);  // Establecer el parámetro para buscar por cliente
-            ResultSet rs = stmt.executeQuery();
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // Obtener los valores de la reserva
+                    int codReserva = rs.getInt("id");
+                    int codCliente = rs.getInt("codCliente");
+                    Date fechaInicioEvento = rs.getDate("fechaInicioEvento");
+                    Date fechaFinEvento = rs.getDate("fechaFinEvento");
+                    String restriccionesDieteticas = rs.getString("restriccionesDieteticas");
+                    String preferenciaCliente = rs.getString("preferenciaCliente");
+                    String tipoServicio = rs.getString("tipoServicio");
+                    int cantidadPersonas = rs.getInt("cantidadPersonas");
+                    int precio = rs.getInt("precio");
+                    String modoDeReserva = rs.getString("modoDeReserva");
+                    boolean estaEntregado = rs.getBoolean("estaEntregado");
 
-            while (rs.next()) {
-                // Obtener los valores de la reserva
-                int codReserva = rs.getInt("codReserva");
-                int codCliente = rs.getInt("codCliente");
+                    // Obtener los valores de la dirección de entrega
+                    int direccionDeEntregaId = rs.getInt("direccionDeEntrega_id");
+                    String calle = rs.getString("calle");
+                    int altura = rs.getInt("altura");
+                    String barrio = rs.getString("barrio");
 
-                // Obtener los valores de tipo Timestamp desde la base de datos
-                Date fechaInicioEvento = rs.getDate("fechaInicioEvento");
-                Date fechaFinEvento = rs.getDate("fechaFinEvento");
+                    // Crear el objeto Domicilio con los datos de la dirección
+                    Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
 
-                String restriccionesDieteticas = rs.getString("restriccionesDieteticas");
-                String preferenciaCliente = rs.getString("preferenciaCliente");
-                String tipoServicio = rs.getString("tipoServicio");
-                int cantidadPersonas = rs.getInt("cantidadPersonas");
-                int precio = rs.getInt("precio");
-                String modoDeReserva = rs.getString("modoDeReserva");
-                boolean estaEntregado = rs.getBoolean("estaEntregado");
+                    // Crear y añadir la reserva a la lista
+                    Reserva reserva = new Reserva(
+                            codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
+                            preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
+                            direccionDeEntrega, estaEntregado
+                    );
 
-                // Obtener los valores de la dirección de entrega
-                int direccionDeEntregaId = rs.getInt("direccionDeEntrega_id");
-                String calle = rs.getString("calle");
-                int altura = rs.getInt("altura");
-                String barrio = rs.getString("barrio");
-
-                // Crear el objeto Domicilio con los datos de la dirección
-                Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
-
-                // Crear y añadir la reserva a la lista
-                Reserva reserva = new Reserva(
-                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
-                        preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
-                        direccionDeEntrega, estaEntregado
-                );
-
-                reservas.add(reserva);
+                    reservas.add(reserva);
+                }
             }
+
         } catch (SQLException e) {
             reportException(e.getMessage());
         }
         return reservas;
+    }
+
+    public List<Cliente> obtenerClientesConReservas() {
+        List<Cliente> clientes = new ArrayList<>();
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, "
+                + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
+                + "r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
+                + "d.calle, d.altura, d.barrio "
+                + "FROM Cliente c "
+                + "LEFT JOIN Reserva r ON c.id = r.codCliente "
+                + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
+                + "WHERE c.estado = 1";
+
+        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String telReferencia = rs.getString("telReferencia");
+                String email = rs.getString("email");
+
+                // Buscar si el cliente ya existe en la lista
+                Cliente cliente = null;
+                for (Cliente c : clientes) {
+                    if (c.getId() == id) {
+                        cliente = c;
+                        break;
+                    }
+                }
+
+                // Si el cliente no existe, crear uno nuevo
+                if (cliente == null) {
+                    cliente = new Cliente(id, nombre, apellido, telReferencia, email);
+                    clientes.add(cliente);  // Agregar el nuevo cliente a la lista
+                }
+
+                // Obtener las reservas para el cliente (si existen)
+                int codReserva = rs.getInt("codReserva");
+                if (codReserva != 0) {  // Asegurarse de que haya una reserva
+                    Date fechaInicioEvento = rs.getDate("fechaInicioEvento");
+                    Date fechaFinEvento = rs.getDate("fechaFinEvento");
+                    String restriccionesDieteticas = rs.getString("restriccionesDieteticas");
+                    String preferenciaCliente = rs.getString("preferenciaCliente");
+                    String tipoServicio = rs.getString("tipoServicio");
+                    int cantidadPersonas = rs.getInt("cantidadPersonas");
+                    int precio = rs.getInt("precio");
+                    String modoDeReserva = rs.getString("modoDeReserva");
+                    boolean estaEntregado = rs.getBoolean("estaEntregado");
+
+                    // Obtener los valores de la dirección de entrega
+                    int direccionDeEntregaId = rs.getInt("direccionDeEntrega_id");
+                    String calle = rs.getString("calle");
+                    int altura = rs.getInt("altura");
+                    String barrio = rs.getString("barrio");
+
+                    // Crear el objeto Domicilio con los datos de la dirección
+                    Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
+
+                    // Crear y añadir la reserva al cliente
+                    Reserva reserva = new Reserva(
+                            codReserva, id, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
+                            preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
+                            direccionDeEntrega, estaEntregado
+                    );
+                    cliente.getReservas().add(reserva);  // Añadir la reserva al cliente
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();  // Manejo de errores
+        }
+        return clientes;
     }
 
 }

@@ -1,6 +1,6 @@
 <%-- 
-    Document   : vistaClienteReservas
-    Created on : 17 feb 2025, 10:27:33
+    Document   : vistaCoordMostrarReserva
+    Created on : 17 feb 2025, 14:05:13
     Author     : Usuario
 --%>
 
@@ -12,26 +12,27 @@
 <html lang="es">
     <head>
         <meta charset="UTF-8">
-        <title>Menú Cliente</title>
-        <link rel="stylesheet" type="text/css" href="css/estilos.css">
-        <link rel="stylesheet" type="text/css" href="css/estiloCliente.css">
-
+        <title>Reservas</title>
+        <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css">
     </head>
     <body>
+
+        <!-- Menú Lateral -->
         <div class="menu-lateral">
             <ul>
-                <!-- Botones para cambiar entre las secciones -->
-                <li><a href="ControladorCliente?accion=misDatos">Mis Datos</a></li>
-                <li><a href="ControladorCliente?accion=misReservas">Mis Reservas</a></li>
-
-
+                <li><a href="ControladorCoordinador?accion=mostrarAlta">Alta</a></li>
+                <li><a href="ControladorCoordinador?accion=mostrarBaja">Baja</a></li>
+                <li><a href="ControladorCoordinador?accion=mostrarModificar">Modificación</a></li>
+                <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
+                <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
+                <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>
             </ul>
         </div>
 
+        <!-- Contenido Central -->
         <div class="contenido-central">
-
             <div>
-                <h2>Mis Reservas</h2>
+                <h2>Mis Reservas</h2> <!-- Título con estilo -->
                 <table border="1">
                     <thead>
                         <tr>
@@ -85,6 +86,6 @@
                 </table>
             </div>
         </div>
+
     </body>
 </html>
-
