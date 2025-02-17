@@ -19,16 +19,27 @@ public class Cliente extends Persona {
     private String telReferencia;
     private String email;
     private List<Reserva> reservas;
+    private int persona_id;
 
     // Constructor
-    public Cliente(int id, String nombre, String apellido, String telReferencia, String email) {
+    public Cliente(int id, String nombre, String apellido, String telReferencia, String email, int persona_id) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telReferencia = telReferencia;
         this.email = email;
         reservas = new ArrayList<Reserva>();
+        this.persona_id = persona_id;
     }
+
+    public int getPersona_id() {
+        return persona_id;
+    }
+
+    public void setPersona_id(int persona_id) {
+        this.persona_id = persona_id;
+    }
+
 
     public List<Reserva> getReservas() {
         return reservas;

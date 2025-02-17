@@ -71,6 +71,10 @@ public class ControladorCoordinador extends HttpServlet {
                     break;
                 case "consultarCliente":
 
+                    clientes = modelo.obtenerClientesBd();
+                    request.setAttribute("clientes", clientes);
+                    request.getRequestDispatcher("vistaCoordConsultarCliente.jsp").forward(request, response);
+
                     break;
                 default:
                     // Si la acción no es reconocida, redirige a una página de error
@@ -86,8 +90,20 @@ public class ControladorCoordinador extends HttpServlet {
         }
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) // enviar datos necesarios
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+
+        // Crear la instancia del modelo
+        Modelo modelo = new Modelo("localhost", "catering");
+
+        if ("consultarCliente".equals(action)) {
+            String personaId = request.getParameter("persona_id");  // Obtener persona_id
+            List<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
+            request.setAttribute("reservas", reservas);  // Establecer las reservas en el request
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordConsultarClienteReserva.jsp");
+            dispatcher.forward(request, response);
+        }
 
     }
+
 }

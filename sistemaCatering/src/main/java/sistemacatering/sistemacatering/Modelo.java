@@ -810,7 +810,7 @@ public class Modelo {
 
     public List<Cliente> obtenerClientesBd() {
         List<Cliente> listaClientes = new ArrayList<>();
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email "
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id "
                 + "FROM Cliente c "
                 + "WHERE c.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
 
@@ -831,9 +831,10 @@ public class Modelo {
                 String apellido = rs.getString("apellido");
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
+                int persona_id = rs.getInt("persona_id");
 
                 // Crear el objeto Cliente y agregarlo a la lista
-                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email));
+                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email,persona_id));
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1268,7 +1269,7 @@ public class Modelo {
 
     public Cliente obtenerClientePorId(String idCliente) {
         Cliente cliente = null;
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email "
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id "
                 + "FROM Cliente c "
                 + "WHERE c.estado = 1 and c.persona_id = ?";  // Suponiendo que 'estado = 1' indica que el cliente está activo
 
@@ -1294,9 +1295,10 @@ public class Modelo {
                 String apellido = rs.getString("apellido");
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
+                int persona_id = rs.getInt("persona_id");
 
                 // Crear el objeto Cliente con los datos obtenidos
-                cliente = new Cliente(id, nombre, apellido, telReferencia, email);
+                cliente = new Cliente(id, nombre, apellido, telReferencia, email,persona_id);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1321,7 +1323,7 @@ public class Modelo {
     }
 
     // Método para obtener las reservas de un cliente
-    public List<Reserva> obtenerReservasPorCliente(String idCliente) {
+    public List<Reserva> obtenerReservasPorCliente(String persona_id) {
         List<Reserva> reservas = new ArrayList<>();
         String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, "
                 + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
@@ -1334,7 +1336,7 @@ public class Modelo {
 
         try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query)) {
 
-            stmt.setString(1, idCliente);  // Establecer el parámetro para buscar por cliente
+            stmt.setString(1, persona_id);  // Establecer el parámetro para buscar por cliente
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     // Obtener los valores de la reserva
@@ -1378,11 +1380,11 @@ public class Modelo {
 
     public List<Cliente> obtenerClientesConReservas() {
         List<Cliente> clientes = new ArrayList<>();
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, "
-                + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
-                + "r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
-                + "d.calle, d.altura, d.barrio "
-                + "FROM Cliente c "
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, "
+                + " r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
+                + " r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
+                + " d.calle, d.altura, d.barrio "
+                + " FROM Cliente c "
                 + "LEFT JOIN Reserva r ON c.id = r.codCliente "
                 + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
                 + "WHERE c.estado = 1";
@@ -1395,7 +1397,7 @@ public class Modelo {
                 String apellido = rs.getString("apellido");
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
-
+                int persona_id = rs.getInt("persona_id");
                 // Buscar si el cliente ya existe en la lista
                 Cliente cliente = null;
                 for (Cliente c : clientes) {
@@ -1407,7 +1409,7 @@ public class Modelo {
 
                 // Si el cliente no existe, crear uno nuevo
                 if (cliente == null) {
-                    cliente = new Cliente(id, nombre, apellido, telReferencia, email);
+                    cliente = new Cliente(id, nombre, apellido, telReferencia, email,persona_id);
                     clientes.add(cliente);  // Agregar el nuevo cliente a la lista
                 }
 
