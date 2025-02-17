@@ -85,18 +85,41 @@ public class ControladorAdm extends HttpServlet {
 
                     // Obtener los resultados para cada tipo de entidad
                     coordinadores = modelo.buscarCoordinador(busqueda);
-                    clientes = modelo.buscarCliente(busqueda);
-                    administradores = modelo.buscarAdministrador(busqueda);
-                    platos = modelo.buscarPlato(busqueda);
+                    //clientes = modelo.buscarCliente(busqueda);
+                    //administradores = modelo.buscarAdministrador(busqueda);
+                    //platos = modelo.buscarPlato(busqueda);
 
                     // Colocar los resultados en el request para la vista
                     request.setAttribute("coordinadores", coordinadores);
-                    request.setAttribute("clientes", clientes);
-                    request.setAttribute("administradores", administradores);
-                    request.setAttribute("platos", platos);
+                    //request.setAttribute("clientes", clientes);
+                    //request.setAttribute("administradores", administradores);
+                    //request.setAttribute("platos", platos);
 
                     // Redirigir a la vista de modificación
                     request.getRequestDispatcher("vistaAdmModificar.jsp").forward(request, response);
+                    break;
+
+                case "mostrar":
+                    // Fetch all data
+                    administradores = modelo.obtenerAdministradoresBd();
+                    clientes = modelo.obtenerClientesBd();
+                    coordinadores = modelo.obtenerCoordinadoresBd();
+                    platos = modelo.obtenerPlatosBd();
+                    menus = modelo.obtenerMenusBd();
+                    //List<Reserva> reservas = modelo.obtenerReservaBd();
+                    servicios = modelo.obtenerServiciosBd();
+
+                    // Set the data as request attributes
+                    request.setAttribute("administradores", administradores);
+                    request.setAttribute("clientes", clientes);
+                    request.setAttribute("coordinadores", coordinadores);
+                    request.setAttribute("platos", platos);
+                    request.setAttribute("menus", menus);
+                    //request.setAttribute("reservas", reservas);
+                    request.setAttribute("servicios", servicios);
+
+                    // Forward to the JSP page
+                    request.getRequestDispatcher("vistaAdmMostrar.jsp").forward(request, response);
                     break;
 
                 default:

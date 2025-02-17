@@ -11,6 +11,7 @@ package sistemacatering.sistemacatering;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1206,16 +1207,80 @@ public class Modelo {
         return coordinadores;
     }
 
-    List<Cliente> buscarCliente(String busqueda) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    public List<Reserva> obtenerReservaBd() {
+        List<Reserva> listaReservas = new ArrayList<>();
+        String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restirccionesDieteticas, "
+                + "r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, "
+                + "r.direccionDeEntrega_id, r.estaEntregado,  d.calle, d.altura, d.barrio "
+                + "FROM Reserva r "
+                + "JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
+                + "WHERE r.estado = 1"; // Asegúrate de filtrar por reservas activas
 
-    List<Administrador> buscarAdministrador(String busqueda) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-    List<Plato> buscarPlato(String busqueda) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int codReserva = rs.getInt("id");
+                int codCliente = rs.getInt("codCliente");
+                LocalDateTime fechaInicioEvento = rs.getTimestamp("fechaInicioEvento").toLocalDateTime();
+                LocalDateTime fechaFinEvento = rs.getTimestamp("fechaFinEvento").toLocalDateTime();
+                String restirccionesDieteticas = rs.getString("restirccionesDieteticas");
+                String preferenciaCliente = rs.getString("preferenciaCliente");
+                String tipoServicio = rs.getString("tipoServicio");
+                int cantidadPersonas = rs.getInt("cantidadPersonas");
+                int precio = rs.getInt("precio");
+                String modoDeReserva = rs.getString("modoDeReserva");
+                int direccionDeEntregaId = rs.getInt("direccionDeEntrega_id");
+                boolean estaEntregado = rs.getBoolean("estaEntregado");
+
+                // Crear el objeto Domicilio con los datos de la dirección
+                String calle = rs.getString("calle");
+                int altura = rs.getInt("altura");
+                String barrio = rs.getString("barrio");
+
+                Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
+
+                // Crear y añadir la reserva a la lista
+                Reserva reserva = new Reserva(
+                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restirccionesDieteticas,
+                        preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
+                        direccionDeEntrega, estaEntregado
+                );
+
+                // Imprimir los valores recuperados para verificar
+                System.out.println("Reserva: " + reserva);  // Verifica si todos los campos tienen valores correctos.
+
+                listaReservas.add(reserva);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return listaReservas;
     }
 
 }
