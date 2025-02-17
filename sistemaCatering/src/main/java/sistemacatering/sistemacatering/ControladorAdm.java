@@ -116,14 +116,9 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("coordinadores", coordinadores);
                     request.setAttribute("platos", platos);
                     request.setAttribute("menus", menus);
-
                     request.setAttribute("servicios", servicios);
-
+                    
                     List<Reserva> reservas = modelo.obtenerReservaBd();
-                    for (Reserva r : reservas) {
-                        System.out.println("Reserva en lista: " + r.getCodReserva());
-                    }
-
                     request.setAttribute("reservas", reservas);
 
                     // Forward to the JSP page

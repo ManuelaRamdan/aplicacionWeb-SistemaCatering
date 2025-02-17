@@ -56,7 +56,7 @@ public class Modelo {
         try {
             Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
             Statement stmt = con.createStatement();
-            stmt.execute("SELECT persona.id FROM Persona WHERE persona.usuario ='" + usuario + "' and persona.password ='" + password + "'");
+            stmt.execute("SELECT persona.id FROM Persona WHERE persona.estado = 1 and persona.usuario ='" + usuario + "' and persona.password ='" + password + "'");
             ResultSet rs = stmt.getResultSet();
             while (rs.next()) {
                 id = rs.getString(1);
@@ -1264,6 +1264,116 @@ public class Modelo {
         }
 
         return listaReservas;
+    }
+
+    public Cliente obtenerClientePorId(String idCliente) {
+        Cliente cliente = null;
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email "
+                + "FROM Cliente c "
+                + "WHERE c.estado = 1 and c.persona_id = ?";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
+            stmt.setString(1, idCliente);  // Si 'idCliente' es un String
+            // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
+
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String apellido = rs.getString("apellido");
+                String telReferencia = rs.getString("telReferencia");
+                String email = rs.getString("email");
+
+                // Crear el objeto Cliente con los datos obtenidos
+                cliente = new Cliente(id, nombre, apellido, telReferencia, email);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return cliente;
+    }
+
+    // Método para obtener las reservas de un cliente
+    public ArrayList<Reserva> obtenerReservasPorCliente(String idCliente) {
+        ArrayList<Reserva> reservas = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(
+                "SELECT r.codReserva, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, "
+                + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
+                + "r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
+                + "d.calle, d.altura, d.barrio "
+                + "FROM Reserva r "
+                + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
+                + "WHERE r.codCliente = ? and r.estado = 1")) {
+
+            stmt.setString(1, idCliente);  // Establecer el parámetro para buscar por cliente
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                // Obtener los valores de la reserva
+                int codReserva = rs.getInt("codReserva");
+                int codCliente = rs.getInt("codCliente");
+
+                // Obtener los valores de tipo Timestamp desde la base de datos
+                Date fechaInicioEvento = rs.getDate("fechaInicioEvento");
+                Date fechaFinEvento = rs.getDate("fechaFinEvento");
+
+                String restriccionesDieteticas = rs.getString("restriccionesDieteticas");
+                String preferenciaCliente = rs.getString("preferenciaCliente");
+                String tipoServicio = rs.getString("tipoServicio");
+                int cantidadPersonas = rs.getInt("cantidadPersonas");
+                int precio = rs.getInt("precio");
+                String modoDeReserva = rs.getString("modoDeReserva");
+                boolean estaEntregado = rs.getBoolean("estaEntregado");
+
+                // Obtener los valores de la dirección de entrega
+                int direccionDeEntregaId = rs.getInt("direccionDeEntrega_id");
+                String calle = rs.getString("calle");
+                int altura = rs.getInt("altura");
+                String barrio = rs.getString("barrio");
+
+                // Crear el objeto Domicilio con los datos de la dirección
+                Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
+
+                // Crear y añadir la reserva a la lista
+                Reserva reserva = new Reserva(
+                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
+                        preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
+                        direccionDeEntrega, estaEntregado
+                );
+
+                reservas.add(reserva);
+            }
+        } catch (SQLException e) {
+            reportException(e.getMessage());
+        }
+        return reservas;
     }
 
 }

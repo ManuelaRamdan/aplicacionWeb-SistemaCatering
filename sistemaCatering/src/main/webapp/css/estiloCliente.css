@@ -1,0 +1,122 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 17 feb 2025, 11:08:49
+    Author     : Usuario
+*/
+
+/* Estilo general para la página */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos del menú lateral */
+.menu-lateral {
+    width: 200px;
+    height: 100vh;
+    background-color: rgb(176, 130, 221);
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Asegura que el menú esté encima de todo */
+}
+
+.menu-lateral ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-lateral li {
+    padding: 15px;
+    font-size: 18px;
+    color: rgb(138, 18, 138);
+    cursor: pointer;
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgb(247, 244, 248);
+    margin-bottom: 10px;
+}
+
+.menu-lateral li:hover {
+    background-color: rgb(138, 18, 138);
+    color: rgb(234, 217, 235);
+}
+
+/* Estilo del contenido central */
+.contenido-central {
+    margin-left: 220px; /* Asegura que el contenido no quede tapado por el menú */
+    padding-top: 50px;
+    text-align: center;
+}
+
+/* Estilo para los encabezados */
+h1 {
+    color: rgb(138, 18, 138);
+}
+
+h2 {
+    color: rgb(138, 18, 138);
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Estilos de las tablas */
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: rgb(138, 18, 138);
+}
+
+td {
+    background-color: #fff;
+}
+
+/* Estilo para las filas de la tabla */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilos de los enlaces para la navegación de clientes */
+a {
+    padding: 10px 20px;
+    margin: 20px 10px;
+    text-align: center;
+    background-color: rgb(247, 244, 248);
+    color: rgb(138, 18, 138);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+a:hover {
+    background-color: rgb(138, 18, 138);
+    color: rgb(234, 217, 235);
+}
