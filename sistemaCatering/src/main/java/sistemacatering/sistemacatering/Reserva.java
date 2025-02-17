@@ -5,17 +5,19 @@
 package sistemacatering.sistemacatering;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  *
  * @author Usuario
  */
 class Reserva {
+
     private int codReserva;
     private int codCliente;
-    private LocalDateTime fechaInicioEvento;
-    private LocalDateTime fechaFinEvento;
-    private String restirccionesDieteticas;
+    private Date fechaInicioEvento;
+    private Date fechaFinEvento;
+    private String restriccionesDieteticas;
     private String preferenciaCliente;
     private String tipoServicio;
     private int cantidadPersonas;
@@ -24,12 +26,12 @@ class Reserva {
     private Domicilio direccionDeEntrega;
     private boolean estaEntregado;
 
-    public Reserva(int codReserva, int codCliente, LocalDateTime fechaInicioEvento, LocalDateTime fechaFinEvento, String restirccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, Domicilio direccionDeEntrega, boolean estaEntregado) {
+    public Reserva(int codReserva, int codCliente, Date fechaInicioEvento, Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, Domicilio direccionDeEntrega, boolean estaEntregado) {
         this.codReserva = codReserva;
         this.codCliente = codCliente;
         this.fechaInicioEvento = fechaInicioEvento;
         this.fechaFinEvento = fechaFinEvento;
-        this.restirccionesDieteticas = restirccionesDieteticas;
+        this.restriccionesDieteticas = restriccionesDieteticas;
         this.preferenciaCliente = preferenciaCliente;
         this.tipoServicio = tipoServicio;
         this.cantidadPersonas = cantidadPersonas;
@@ -55,29 +57,23 @@ class Reserva {
         this.codCliente = codCliente;
     }
 
-    public LocalDateTime getFechaInicioEvento() {
+    public Date getFechaInicioEvento() {
         return fechaInicioEvento;
     }
 
-    public void setFechaInicioEvento(LocalDateTime fechaInicioEvento) {
+    public void setFechaInicioEvento(Date fechaInicioEvento) {
         this.fechaInicioEvento = fechaInicioEvento;
     }
 
-    public LocalDateTime getFechaFinEvento() {
+    public Date getFechaFinEvento() {
         return fechaFinEvento;
     }
 
-    public void setFechaFinEvento(LocalDateTime fechaFinEvento) {
+    public void setFechaFinEvento(Date fechaFinEvento) {
         this.fechaFinEvento = fechaFinEvento;
     }
 
-    public String getRestirccionesDieteticas() {
-        return restirccionesDieteticas;
-    }
 
-    public void setRestirccionesDieteticas(String restirccionesDieteticas) {
-        this.restirccionesDieteticas = restirccionesDieteticas;
-    }
 
     public String getPreferenciaCliente() {
         return preferenciaCliente;
@@ -134,6 +130,13 @@ class Reserva {
     public void setEstaEntregado(boolean estaEntregado) {
         this.estaEntregado = estaEntregado;
     }
-    
-    
+
+    public String getRestriccionesDieteticas() {
+        return restriccionesDieteticas;
+    }
+
+    public void setRestriccionesDieteticas(String restriccionesDieteticas) {
+        this.restriccionesDieteticas = restriccionesDieteticas;
+    }
+
 }

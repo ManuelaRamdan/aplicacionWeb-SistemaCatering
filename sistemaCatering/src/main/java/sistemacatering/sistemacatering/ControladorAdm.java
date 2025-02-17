@@ -106,7 +106,7 @@ public class ControladorAdm extends HttpServlet {
                     coordinadores = modelo.obtenerCoordinadoresBd();
                     platos = modelo.obtenerPlatosBd();
                     menus = modelo.obtenerMenusBd();
-                    //List<Reserva> reservas = modelo.obtenerReservaBd();
+                    List<Reserva> reservas = modelo.obtenerReservaBd();
                     servicios = modelo.obtenerServiciosBd();
 
                     // Set the data as request attributes
@@ -115,7 +115,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("coordinadores", coordinadores);
                     request.setAttribute("platos", platos);
                     request.setAttribute("menus", menus);
-                    //request.setAttribute("reservas", reservas);
+                    request.setAttribute("reservas", reservas);
                     request.setAttribute("servicios", servicios);
 
                     // Forward to the JSP page

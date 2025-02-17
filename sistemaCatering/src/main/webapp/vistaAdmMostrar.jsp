@@ -129,7 +129,7 @@
                 </tbody>
             </table>
 
-            <!--<h2>Reservas</h2>
+            <h2>Reservas</h2>
             <table border="1">
                 <thead>
                     <tr>
@@ -148,25 +148,34 @@
                     </tr>
                 </thead>
                 <tbody>
-            <c:forEach var="reserva" items="${reservas}">
-                <tr>
-                    <td>${reserva.codReserva}</td>
-                    <td>${reserva.codCliente}</td>
-            <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
-            <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                    <c:forEach var="reserva" items="${reservas}">
+                        <tr>
+                            <td>${reserva.codReserva}</td>
+                            <td>${reserva.codCliente}</td>
+                            <td>
+                                <c:if test="${not empty reserva.fechaInicioEvento}">
+                        <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                    </c:if>
+                    </td>
+                    <td>
+                        <c:if test="${not empty reserva.fechaFinEvento}">
+                        <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                    </c:if>
+                    </td>
 
-            <td>${reserva.restirccionesDieteticas}</td>
-            <td>${reserva.preferenciaCliente}</td>
-            <td>${reserva.tipoServicio}</td>
-            <td>${reserva.cantidadPersonas}</td>
-            <td>${reserva.precio}</td>
-            <td>${reserva.modoDeReserva}</td>
-            <td>${reserva.direccionDeEntrega}</td>
-            <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
-        </tr>
-            </c:forEach>
-        </tbody>
-    </table>-->
+
+                    <td>${reserva.restriccionesDieteticas}</td>
+                    <td>${reserva.preferenciaCliente}</td>
+                    <td>${reserva.tipoServicio}</td>
+                    <td>${reserva.cantidadPersonas}</td>
+                    <td>${reserva.precio}</td>
+                    <td>${reserva.modoDeReserva}</td>
+                    <td>${reserva.direccionDeEntrega}</td>
+                    <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
 
             <h2>Servicios</h2>
             <table>

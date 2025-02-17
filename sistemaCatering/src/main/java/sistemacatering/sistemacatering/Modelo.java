@@ -1209,30 +1209,29 @@ public class Modelo {
 
     public List<Reserva> obtenerReservaBd() {
         List<Reserva> listaReservas = new ArrayList<>();
-        String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restirccionesDieteticas, "
+        String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, "
                 + "r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, "
-                + "r.direccionDeEntrega_id, r.estaEntregado,  d.calle, d.altura, d.barrio "
+                + "r.direccionDeEntrega_id, r.estaEntregado, d.calle, d.altura, d.barrio "
                 + "FROM Reserva r "
                 + "JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
                 + "WHERE r.estado = 1"; // Asegúrate de filtrar por reservas activas
 
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-            rs = stmt.executeQuery();
+        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             // Procesamos el resultado
             while (rs.next()) {
                 int codReserva = rs.getInt("id");
                 int codCliente = rs.getInt("codCliente");
-                LocalDateTime fechaInicioEvento = rs.getTimestamp("fechaInicioEvento").toLocalDateTime();
-                LocalDateTime fechaFinEvento = rs.getTimestamp("fechaFinEvento").toLocalDateTime();
-                String restirccionesDieteticas = rs.getString("restirccionesDieteticas");
+
+                // Obtener los valores de tipo Timestamp desde la base de datos
+                Timestamp timestampInicio = rs.getTimestamp("fechaInicioEvento");
+                Timestamp timestampFin = rs.getTimestamp("fechaFinEvento");
+
+                // Convertir los Timestamps a java.util.Date
+                Date fechaInicioEvento = new Date(timestampInicio.getTime());
+                Date fechaFinEvento = new Date(timestampFin.getTime());
+
+                String restriccionesDieteticas = rs.getString("restriccionesDieteticas");
                 String preferenciaCliente = rs.getString("preferenciaCliente");
                 String tipoServicio = rs.getString("tipoServicio");
                 int cantidadPersonas = rs.getInt("cantidadPersonas");
@@ -1250,7 +1249,7 @@ public class Modelo {
 
                 // Crear y añadir la reserva a la lista
                 Reserva reserva = new Reserva(
-                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restirccionesDieteticas,
+                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
                         preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
                         direccionDeEntrega, estaEntregado
                 );
@@ -1259,25 +1258,9 @@ public class Modelo {
                 System.out.println("Reserva: " + reserva);  // Verifica si todos los campos tienen valores correctos.
 
                 listaReservas.add(reserva);
-
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
-        } finally {
-            // Cerramos los recursos manualmente en el bloque finally
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace(); // Mostrar errores en el cierre de recursos
-            }
         }
 
         return listaReservas;
