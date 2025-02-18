@@ -50,7 +50,13 @@ public class ControladorCoordinador extends HttpServlet {
                     break;
 
                 case "mostrarBaja":
+                    List<Cliente> clientes = modelo.obtenerClientesBd();
+                    request.setAttribute("clientes", clientes);
 
+                    List<Reserva> reservas = modelo.obtenerReservaBd();
+                    request.setAttribute("reservas", reservas);
+
+                    request.getRequestDispatcher("vistaCoordBaja.jsp").forward(request, response);
                     break;
 
                 case "mostrarModificar":
@@ -58,13 +64,13 @@ public class ControladorCoordinador extends HttpServlet {
                     break;
 
                 case "mostrarReservas":
-                    List<Reserva> reservas = modelo.obtenerReservaBd();
+                    reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
                     request.getRequestDispatcher("vistaCoordMostrarReserva.jsp").forward(request, response);
 
                     break;
                 case "mostrarCliente":
-                    List<Cliente> clientes = modelo.obtenerClientesConReservas(); // Obtener clientes con reservas
+                    clientes = modelo.obtenerClientesConReservas(); // Obtener clientes con reservas
                     request.setAttribute("clientes", clientes);  // Pasar la lista de clientes al JSP
                     request.getRequestDispatcher("vistaCoordMostrarCliente.jsp").forward(request, response);
 
@@ -101,6 +107,32 @@ public class ControladorCoordinador extends HttpServlet {
             List<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
             request.setAttribute("reservas", reservas);  // Establecer las reservas en el request
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordConsultarClienteReserva.jsp");
+            dispatcher.forward(request, response);
+        } else if ("eliminarCliente".equals(action)) {
+            int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+
+            boolean eliminado = modelo.eliminarCliente(idCliente);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
+            dispatcher.forward(request, response);
+        }else if ("eliminarReserva".equals(action)) {
+            int idReserva = Integer.parseInt(request.getParameter("codReserva"));
+
+            boolean eliminado = modelo.eliminarReserva(idReserva);
+
+            if (eliminado) {
+                request.setAttribute("mensajeBajaReserva", "Reserva dado de baja exitosamente.");
+            } else {
+                request.setAttribute("mensajeBajaReserva", "Error, no se puso eliminar");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
             dispatcher.forward(request, response);
         }
 

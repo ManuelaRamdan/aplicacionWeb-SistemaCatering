@@ -834,7 +834,7 @@ public class Modelo {
                 int persona_id = rs.getInt("persona_id");
 
                 // Crear el objeto Cliente y agregarlo a la lista
-                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email,persona_id));
+                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email, persona_id));
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1255,9 +1255,6 @@ public class Modelo {
                         direccionDeEntrega, estaEntregado
                 );
 
-                // Imprimir los valores recuperados para verificar
-                System.out.println("Reserva: " + reserva);  // Verifica si todos los campos tienen valores correctos.
-
                 listaReservas.add(reserva);
             }
         } catch (SQLException e) {
@@ -1298,7 +1295,7 @@ public class Modelo {
                 int persona_id = rs.getInt("persona_id");
 
                 // Crear el objeto Cliente con los datos obtenidos
-                cliente = new Cliente(id, nombre, apellido, telReferencia, email,persona_id);
+                cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1409,7 +1406,7 @@ public class Modelo {
 
                 // Si el cliente no existe, crear uno nuevo
                 if (cliente == null) {
-                    cliente = new Cliente(id, nombre, apellido, telReferencia, email,persona_id);
+                    cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id);
                     clientes.add(cliente);  // Agregar el nuevo cliente a la lista
                 }
 
@@ -1448,6 +1445,68 @@ public class Modelo {
             e.printStackTrace();  // Manejo de errores
         }
         return clientes;
+    }
+
+    public boolean eliminarReserva(int idReserva) {
+        // Sentencias SQL para actualizar el estado en Servicio, Servicio_Menu
+        String queryReserva = "UPDATE Reserva SET estado = 0 WHERE id = ?";
+        String queryReservaServicio = "UPDATE reserva_servicio SET estado = 0 WHERE servicio_id = ?";
+
+        Connection con = null;
+        PreparedStatement stmtReserva = null;
+        PreparedStatement stmtReservaServicio = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Actualizar el estado del Servicio
+            stmtReserva = con.prepareStatement(queryReserva);
+            stmtReserva.setInt(1, idReserva);
+            int filasAfectadasServicio = stmtReserva.executeUpdate();
+
+            // Actualizar el estado en la tabla Servicio_Menu
+            stmtReservaServicio = con.prepareStatement(queryReservaServicio);
+            stmtReservaServicio.setInt(1, idReserva);
+            int filasAfectadasServicioMenu = stmtReservaServicio.executeUpdate();
+
+            // Si ambas actualizaciones fueron exitosas, confirmar la transacción
+            if (filasAfectadasServicio > 0) {
+                con.commit(); // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback(); // Revertir si algo falla
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback(); // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (stmtReserva != null) {
+                    stmtReserva.close();
+                }
+                if (stmtReservaServicio != null) {
+                    stmtReservaServicio.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
