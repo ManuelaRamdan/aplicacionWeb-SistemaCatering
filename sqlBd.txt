@@ -3,125 +3,288 @@ CREATE DATABASE catering;
 USE catering;
 
 -- Tabla Persona (clase base abstracta para Cliente y Coordinador)
-CREATE TABLE Persona (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(255),
-    password VARCHAR(255)
+CREATE TABLE `persona` (
+  `id` int(11) NOT NULL,
+  `usuario` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Administrador
-CREATE TABLE Administrador (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    persona_id INT,
-    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+CREATE TABLE `administrador` (
+  `id` int(11) NOT NULL,
+  `persona_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Cliente
-CREATE TABLE Cliente (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    codCliente INT,
-    nombre VARCHAR(255),
-    apellido VARCHAR(255),
-    telReferencia INT,
-    email VARCHAR(255),
-    persona_id INT,
-    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+CREATE TABLE `cliente` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `apellido` varchar(255) DEFAULT NULL,
+  `telReferencia` int(11) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `persona_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Coordinador
-CREATE TABLE Coordinador (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    persona_id INT,
-    FOREIGN KEY (persona_id) REFERENCES Persona(id)
+CREATE TABLE `coordinador` (
+  `id` int(11) NOT NULL,
+  `persona_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Domicilio
-CREATE TABLE Domicilio (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    calle VARCHAR(255),
-    altura INT,
-    barrio VARCHAR(255)
+CREATE TABLE `domicilio` (
+  `id` int(11) NOT NULL,
+  `calle` varchar(255) DEFAULT NULL,
+  `altura` int(11) DEFAULT NULL,
+  `barrio` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Plato
-CREATE TABLE Plato (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(255)
+CREATE TABLE `plato` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Menu
-CREATE TABLE Menu (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombreMenu VARCHAR(255),
-    precio INT
+CREATE TABLE `menu` (
+  `id` int(11) NOT NULL,
+  `nombreMenu` varchar(255) DEFAULT NULL,
+  `precio` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Reserva
-CREATE TABLE Reserva (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    codCliente INT,
-    fechaInicioEvento DATETIME,
-    fechaFinEvento DATETIME,
-    restirccionesDieteticas TEXT,
-    preferenciaCliente TEXT,
-    tipoServicio VARCHAR(255),
-    cantidadPersonas INT,
-    precio INT,
-    modoDeReserva ENUM('TELEFONO', 'MAIL', 'PRESENCIAL'),
-    direccionDeEntrega_id INT,
-    estaEntregado BOOLEAN,
-    FOREIGN KEY (direccionDeEntrega_id) REFERENCES Domicilio(id),
-    FOREIGN KEY (codCliente) REFERENCES Cliente(id)
+CREATE TABLE `reserva` (
+  `id` int(11) NOT NULL,
+  `codCliente` int(11) DEFAULT NULL,
+  `fechaInicioEvento` datetime DEFAULT NULL,
+  `fechaFinEvento` datetime DEFAULT NULL,
+  `restriccionesDieteticas` varchar(255) DEFAULT NULL,
+  `preferenciaCliente` text DEFAULT NULL,
+  `tipoServicio` varchar(255) DEFAULT NULL,
+  `cantidadPersonas` int(11) DEFAULT NULL,
+  `precio` int(11) DEFAULT NULL,
+  `modoDeReserva` enum('TELEFONO','MAIL','PRESENCIAL') DEFAULT NULL,
+  `direccionDeEntrega_id` int(11) DEFAULT NULL,
+  `estaEntregado` tinyint(1) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
 -- Tabla Servicio
-CREATE TABLE Servicio (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombreServicio VARCHAR(255)
-);
+CREATE TABLE `servicio` (
+  `id` int(11) NOT NULL,
+  `nombreServicio` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
+) ;
 
 -- Relaciones adicionales para arrays (si necesario usar una tabla intermedia)
-CREATE TABLE Reserva_Servicio (
-    reserva_id INT,
-    servicio_id INT,
-    tipo VARCHAR(255),
-    FOREIGN KEY (reserva_id) REFERENCES Reserva(id),
-    FOREIGN KEY (servicio_id) REFERENCES Servicio(id)
+CREATE TABLE `reserva_servicio` (
+  `reserva_id` int(11) DEFAULT NULL,
+  `servicio_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
+) ;
+
+CREATE TABLE `menu_plato` (
+  `menu_id` int(11) DEFAULT NULL,
+  `plato_id` int(11) DEFAULT NULL,
+  `tipo` varchar(255) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
+) ;
+
+CREATE TABLE `servicio_menu` (
+  `servicio_id` int(11) DEFAULT NULL,
+  `menu_id` int(11) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1
 );
 
-CREATE TABLE Menu_Plato (
-    menu_id INT,
-    plato_id INT,
-    FOREIGN KEY (menu_id) REFERENCES Menu(id),
-    FOREIGN KEY (plato_id) REFERENCES Plato(id)
-);
+ALTER TABLE `administrador`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `persona_id` (`persona_id`);
 
-CREATE TABLE Servicio_Menu (
-    servicio_id INT,
-    menu_id INT,
-    FOREIGN KEY (servicio_id) REFERENCES Servicio(id),
-    FOREIGN KEY (menu_id) REFERENCES Menu(id)
-);
+--
+-- Indices de la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `persona_id` (`persona_id`);
 
--- Inserción de personas en la tabla Persona
-INSERT INTO Persona (usuario, password) VALUES ('admin', '123');
-INSERT INTO Persona (usuario, password) VALUES ('coord', '123');
-INSERT INTO Persona (usuario, password) VALUES ('cliente1', '123');
-INSERT INTO Persona (usuario, password) VALUES ('cliente2', '123');
+--
+-- Indices de la tabla `coordinador`
+--
+ALTER TABLE `coordinador`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `persona_id` (`persona_id`);
 
--- Obtenemos los IDs generados automáticamente para las personas
--- Nota: Si tu base de datos no tiene soporte para LAST_INSERT_ID, consulta los IDs manualmente.
+--
+-- Indices de la tabla `domicilio`
+--
+ALTER TABLE `domicilio`
+  ADD PRIMARY KEY (`id`);
 
--- Insertar al administrador en la tabla Administrador
-INSERT INTO Administrador (persona_id) VALUES (1); -- ID de la persona correspondiente al administrador
+--
+-- Indices de la tabla `menu`
+--
+ALTER TABLE `menu`
+  ADD PRIMARY KEY (`id`);
 
--- Insertar al coordinador en la tabla Coordinador
-INSERT INTO Coordinador (persona_id) VALUES (2); -- ID de la persona correspondiente al coordinador
+--
+-- Indices de la tabla `menu_plato`
+--
+ALTER TABLE `menu_plato`
+  ADD KEY `menu_id` (`menu_id`),
+  ADD KEY `plato_id` (`plato_id`);
 
--- Insertar a los clientes en la tabla Cliente
-INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) 
-VALUES (1001, 'Juan', 'Pérez', 123456789, 'juan.perez@example.com', 3); -- Cliente 1
+--
+-- Indices de la tabla `persona`
+--
+ALTER TABLE `persona`
+  ADD PRIMARY KEY (`id`);
 
-INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) 
-VALUES (1002, 'Ana', 'Gómez', 987654321, 'ana.gomez@example.com', 4); -- Cliente 2
+--
+-- Indices de la tabla `plato`
+--
+ALTER TABLE `plato`
+  ADD PRIMARY KEY (`id`);
 
+--
+-- Indices de la tabla `reserva`
+--
+ALTER TABLE `reserva`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `direccionDeEntrega_id` (`direccionDeEntrega_id`),
+  ADD KEY `codCliente` (`codCliente`);
+
+--
+-- Indices de la tabla `reserva_servicio`
+--
+ALTER TABLE `reserva_servicio`
+  ADD KEY `reserva_id` (`reserva_id`),
+  ADD KEY `servicio_id` (`servicio_id`);
+
+--
+-- Indices de la tabla `servicio`
+--
+ALTER TABLE `servicio`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `servicio_menu`
+--
+ALTER TABLE `servicio_menu`
+  ADD KEY `servicio_id` (`servicio_id`),
+  ADD KEY `menu_id` (`menu_id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT de la tabla `coordinador`
+--
+ALTER TABLE `coordinador`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `domicilio`
+--
+ALTER TABLE `domicilio`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `menu`
+--
+ALTER TABLE `menu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `persona`
+--
+ALTER TABLE `persona`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+
+--
+-- AUTO_INCREMENT de la tabla `plato`
+--
+ALTER TABLE `plato`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `reserva`
+--
+ALTER TABLE `reserva`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `servicio`
+--
+ALTER TABLE `servicio`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `administrador`
+--
+ALTER TABLE `administrador`
+  ADD CONSTRAINT `administrador_ibfk_1` FOREIGN KEY (`persona_id`) REFERENCES `persona` (`id`);
+
+--
+-- Filtros para la tabla `cliente`
+--
+ALTER TABLE `cliente`
+  ADD CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`persona_id`) REFERENCES `persona` (`id`);
+
+--
+-- Filtros para la tabla `coordinador`
+--
+ALTER TABLE `coordinador`
+  ADD CONSTRAINT `coordinador_ibfk_1` FOREIGN KEY (`persona_id`) REFERENCES `persona` (`id`);
+
+--
+-- Filtros para la tabla `menu_plato`
+--
+ALTER TABLE `menu_plato`
+  ADD CONSTRAINT `menu_plato_ibfk_1` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`),
+  ADD CONSTRAINT `menu_plato_ibfk_2` FOREIGN KEY (`plato_id`) REFERENCES `plato` (`id`);
+
+--
+-- Filtros para la tabla `reserva`
+--
+ALTER TABLE `reserva`
+  ADD CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`direccionDeEntrega_id`) REFERENCES `domicilio` (`id`),
+  ADD CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`codCliente`) REFERENCES `cliente` (`id`);
+
+--
+-- Filtros para la tabla `reserva_servicio`
+--
+ALTER TABLE `reserva_servicio`
+  ADD CONSTRAINT `reserva_servicio_ibfk_1` FOREIGN KEY (`reserva_id`) REFERENCES `reserva` (`id`),
+  ADD CONSTRAINT `reserva_servicio_ibfk_2` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`);
+
+--
+-- Filtros para la tabla `servicio_menu`
+--
+ALTER TABLE `servicio_menu`
+  ADD CONSTRAINT `servicio_menu_ibfk_1` FOREIGN KEY (`servicio_id`) REFERENCES `servicio` (`id`),
+  ADD CONSTRAINT `servicio_menu_ibfk_2` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`id`);
+COMMIT;

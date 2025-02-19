@@ -263,8 +263,7 @@ public class Modelo {
             if (idGenerado.next()) {
                 personaId = idGenerado.getInt(1);
             }
-
-            String sqlCodCliente = "SELECT MAX(codCliente) FROM Cliente";
+            String sqlCodCliente = "SELECT MAX(id) FROM Cliente";
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(sqlCodCliente);
             int maxCodCliente = 0;
@@ -274,7 +273,7 @@ public class Modelo {
             int codCliente = maxCodCliente + 1; // Incrementar el valor máximo encontrado
 
             // Insertar en Cliente
-            String sqlCliente = "INSERT INTO Cliente (codCliente, nombre, apellido, telReferencia, email, persona_id) VALUES (?, ?, ?, ?, ?, ?)";
+            String sqlCliente = "INSERT INTO Cliente (id, nombre, apellido, telReferencia, email, persona_id,estado) VALUES (?, ?, ?, ?, ?, ?,?)";
             cliente = con.prepareStatement(sqlCliente);
             cliente.setInt(1, codCliente);
             cliente.setString(2, nombre);
@@ -282,6 +281,7 @@ public class Modelo {
             cliente.setString(4, telefono);
             cliente.setString(5, email);
             cliente.setInt(6, personaId);
+            cliente.setInt(7, 1);
             cliente.executeUpdate();
 
             con.commit(); // Confirmar transacción
@@ -1807,6 +1807,62 @@ public class Modelo {
         }
 
         return registrado;
+    }
+
+    public boolean actualizarCliente(int idCliente, String nombre, String apellido, String telefono, String email) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+            
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE cliente SET nombre = ?, apellido = ?, telReferencia = ?, email = ? WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, nombre);
+            ps.setString(2, apellido);
+            ps.setString(3, telefono);
+            ps.setString(4, email);
+            ps.setInt(5, idCliente);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

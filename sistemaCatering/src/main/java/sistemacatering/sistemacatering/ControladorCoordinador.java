@@ -67,7 +67,13 @@ public class ControladorCoordinador extends HttpServlet {
                     break;
 
                 case "mostrarModificar":
+                    clientes = modelo.obtenerClientesBd();
+                    request.setAttribute("clientes", clientes);
 
+                    reservas = modelo.obtenerReservaBd();
+                    request.setAttribute("reservas", reservas);
+
+                    request.getRequestDispatcher("vistaCoordModificar.jsp").forward(request, response);
                     break;
 
                 case "mostrarReservas":
@@ -143,7 +149,6 @@ public class ControladorCoordinador extends HttpServlet {
             dispatcher.forward(request, response);
         } else if ("registrarReserva".equals(action)) {
             try {
-
 // Obtener parámetros del formulario
                 int codCliente = Integer.parseInt(request.getParameter("codCliente"));
                 String fechaInicioUsuario = request.getParameter("fechaInicioEvento");
@@ -303,6 +308,37 @@ public class ControladorCoordinador extends HttpServlet {
             }
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+            dispatcher.forward(request, response);
+        } else if ("modificarCliente".equals(action)) {
+            String personaId = request.getParameter("persona_id");  // Obtener persona_id
+            Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
+            request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordModificar.jsp");
+            dispatcher.forward(request, response);
+        } else if ("actualizarCliente".equals(action)) {
+            
+            
+            try {
+                int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                String nombre = request.getParameter("nombre");
+                String apellido = request.getParameter("apellido");
+                String telefono = request.getParameter("telefono");
+                String email = request.getParameter("email");
+                //System.out.println("controlador cliente con ID: " + idCliente);
+                //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
+                boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+
+                if (actualizado) {
+                    request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                } else {
+                    request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                }
+
+            } catch (NumberFormatException e) {
+                request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
+            }
+
+            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordModificar.jsp");
             dispatcher.forward(request, response);
         }
 
