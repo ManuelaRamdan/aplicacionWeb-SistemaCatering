@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1507,6 +1508,305 @@ public class Modelo {
                 e.printStackTrace();
             }
         }
+    }
+
+    public List<Servicio> obtenerServiciosDisponibles(String fechaInicio, String fechaFin) {
+        List<Servicio> serviciosDisponibles = new ArrayList<>();
+        String query = "SELECT s.id, s.nombreServicio "
+                + "FROM servicio s "
+                + "WHERE NOT EXISTS ( "
+                + "    SELECT 1 "
+                + "    FROM reserva_servicio rs "
+                + "    JOIN reserva r ON rs.reserva_id = r.id "
+                + "    WHERE (r.fechaInicioEvento < ? AND r.fechaFinEvento > ?) "
+                + "    AND rs.servicio_id = s.id and r.estado = 1"
+                + ") and s.estado = 1";
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+
+            // Establecemos los parámetros (fechaFin y fechaInicio)
+            stmt.setString(1, fechaFin);  // Fecha de fin del rango
+            stmt.setString(2, fechaInicio); // Fecha de inicio del rango
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombreServicio = rs.getString("nombreServicio");
+
+                // Creamos el objeto Servicio y lo agregamos a la lista
+                Servicio servicio = new Servicio(id, nombreServicio);
+                serviciosDisponibles.add(servicio);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return serviciosDisponibles;
+    }
+
+    boolean verificarCliente(int codCliente) {
+        String query = "SELECT COUNT(*) FROM Cliente WHERE id = ? AND estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean clienteExiste = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, codCliente); // Usamos setInt ya que codCliente es un número
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    clienteExiste = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return clienteExiste;
+    }
+
+    public Servicio obtenerServicioPorId(int idServicio) {
+        // Consulta SQL para obtener el servicio por su ID
+        String query = "SELECT * FROM Servicio WHERE id = ?";
+
+        // Variables para manejar la conexión y la consulta
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Servicio servicio = null; // Inicializamos la variable de tipo Servicio
+
+        try {
+            // Establecemos la conexión a la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, idServicio); // Establecemos el parámetro idServicio en la consulta
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Verificamos si hay resultados
+            if (rs.next()) {
+                // Recuperamos los valores de la base de datos y los asignamos al objeto Servicio
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombreServicio");
+                // Creamos el objeto Servicio con los valores recuperados
+                servicio = new Servicio(id, nombre);  // Asegúrate de que el constructor exista
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();  // Manejo de errores
+        } finally {
+            // Cerramos los recursos manualmente
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();  // Manejo de errores al cerrar recursos
+            }
+        }
+
+        return servicio;  // Retornamos el objeto Servicio o null si no se encontró
+    }
+
+    boolean registrarReserva(Reserva reserva, Domicilio domicilio) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement reservaStmt = null;
+        PreparedStatement reservaServicioStmt = null;
+        PreparedStatement domicilioStmt = null;
+        ResultSet generatedKeys = null;
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // 1. Insertar domicilio primero
+            String domicilioSql = "INSERT INTO domicilio (calle, altura, barrio, estado) VALUES (?, ?, ?, ?)";
+            domicilioStmt = con.prepareStatement(domicilioSql, Statement.RETURN_GENERATED_KEYS);
+            domicilioStmt.setString(1, domicilio.getCalle());
+            domicilioStmt.setInt(2, domicilio.getAltura());
+            domicilioStmt.setString(3, domicilio.getBarrio());
+            domicilioStmt.setInt(4, 1);
+
+            int filasDomicilio = domicilioStmt.executeUpdate();
+            if (filasDomicilio == 0) {
+                throw new SQLException("Error al crear el domicilio, no se insertaron filas.");
+            }
+
+// Obtener el ID generado para Domicilio
+            generatedKeys = domicilioStmt.getGeneratedKeys();
+            int idDomicilio = 0;
+            if (generatedKeys.next()) {
+                idDomicilio = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("No se pudo obtener el ID del domicilio insertado.");
+            }
+
+            // 1. Insertar en la tabla 'reserva'
+            String reservaSql = "INSERT INTO reserva (codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas, "
+                    + "preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva, direccionDeEntrega_id, estaEntregado, estado) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            reservaStmt = con.prepareStatement(reservaSql, Statement.RETURN_GENERATED_KEYS);// Statement.RETURN_GENERATED_KEYS para recuperar el ID de la reserva recién insertada.
+
+            if (reserva.getCodCliente() == 0) {
+                throw new SQLException("Error: codCliente no puede ser 0 o nulo.");
+            }
+            if (reserva.getFechaInicioEvento() == null || reserva.getFechaFinEvento() == null) {
+                throw new SQLException("Error: Fecha de inicio o fin es nula.");
+            }
+
+            reservaStmt.setInt(1, reserva.getCodCliente());
+// Convertir Date a LocalDateTime
+            LocalDateTime fechaInicioLocalDateTime = reserva.getFechaInicioEvento().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            LocalDateTime fechaFinLocalDateTime = reserva.getFechaFinEvento().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+// Convertir LocalDateTime a Timestamp
+            Timestamp fechaInicioTimestamp = Timestamp.valueOf(fechaInicioLocalDateTime);
+            Timestamp fechaFinTimestamp = Timestamp.valueOf(fechaFinLocalDateTime);
+
+// Establecer en el PreparedStatement
+            reservaStmt.setTimestamp(2, fechaInicioTimestamp);
+            reservaStmt.setTimestamp(3, fechaFinTimestamp);
+
+            reservaStmt.setString(4, reserva.getRestriccionesDieteticas());
+            reservaStmt.setString(5, reserva.getPreferenciaCliente());
+            reservaStmt.setString(6, reserva.getTipoServicio());
+            reservaStmt.setInt(7, reserva.getCantidadPersonas());
+            reservaStmt.setInt(8, reserva.getPrecio());
+            reservaStmt.setString(9, reserva.getModoDeReserva()); // Suponiendo que 'ModoDeReserva' es un enum
+            reservaStmt.setInt(10, idDomicilio);
+            reservaStmt.setInt(11, 0);
+            reservaStmt.setInt(12, 1);
+
+            int filasAfectadas = reservaStmt.executeUpdate();
+            if (filasAfectadas == 0) {
+                throw new SQLException("Error al crear la reserva, no se insertaron filas.");
+            }
+
+            // Obtener el ID generado para la nueva reserva
+            generatedKeys = reservaStmt.getGeneratedKeys();
+            int reservaId = 0;
+            if (generatedKeys.next()) {
+                reservaId = generatedKeys.getInt(1);
+            }
+
+            // 2. Insertar en la tabla 'reserva_servicio' (asociar la reserva con los servicios)
+            String reservaServicioSql = "INSERT INTO reserva_servicio (reserva_id, servicio_id, estado) VALUES (?, ?, ?)";
+            reservaServicioStmt = con.prepareStatement(reservaServicioSql);
+
+            if (reserva.getServicios().isEmpty()) {
+                throw new SQLException("Error: No hay servicios asociados a la reserva.");
+            }
+
+            // Suponiendo que reserva.getServicios() es una lista de ID de servicios
+            for (Servicio servicio : reserva.getServicios()) {
+                // Aquí tienes acceso al objeto 'servicio' completo
+                reservaServicioStmt.setInt(1, reservaId);
+                reservaServicioStmt.setInt(2, servicio.getId()); // Obtener el id del servicio
+                reservaServicioStmt.setInt(3, 1);  // Suponiendo que 'estado' es 1 para activo
+                reservaServicioStmt.addBatch();
+            }
+            reservaServicioStmt.executeBatch();
+
+            // Confirmar la transacción
+            con.commit();
+            registrado = true;
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback();  // En caso de error, revertir los cambios
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            try {
+                if (generatedKeys != null) {
+                    generatedKeys.close();
+                }
+                if (reservaStmt != null) {
+                    reservaStmt.close();
+                }
+                if (reservaServicioStmt != null) {
+                    reservaServicioStmt.close();
+                }
+                if (domicilioStmt != null) {
+                    domicilioStmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return registrado;
     }
 
 }
