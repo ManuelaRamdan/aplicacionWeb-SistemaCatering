@@ -14,7 +14,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Clientes y Reservas</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
+
     </head>
     <body>
 

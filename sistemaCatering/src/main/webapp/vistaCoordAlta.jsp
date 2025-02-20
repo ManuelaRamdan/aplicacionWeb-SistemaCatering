@@ -14,8 +14,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Alta de Reserva</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
-        <link rel="stylesheet" type="text/css" href="css/estiloAlta.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
+
         <style>
             .formulario-contenedor label {
                 display: block;

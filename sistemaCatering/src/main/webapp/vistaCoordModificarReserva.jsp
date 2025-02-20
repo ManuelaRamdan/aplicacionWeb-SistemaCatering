@@ -12,8 +12,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Modificar Cliente y Reserva</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
-        <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
+
     </head>
     <body>
         <!-- Menú Lateral -->
