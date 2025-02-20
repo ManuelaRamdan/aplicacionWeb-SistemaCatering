@@ -19,7 +19,6 @@
         <title>Alta de Datos</title>
         <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
         <link rel="stylesheet" type="text/css" href="css/estiloAlta.css?v=2">
-        <link rel="stylesheet" type="text/css" href="css/estilos.css">
 
 
     </head>
