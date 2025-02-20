@@ -21,7 +21,7 @@
             <ul>
                 <li><a href="ControladorCoordinador?accion=mostrarAlta">Alta</a></li>
                 <li><a href="ControladorCoordinador?accion=mostrarBaja">Baja</a></li>
-                <li><a href="ControladorCoordinador?accion=mostrarModificar">Modificación</a></li>
+                <li><a href="ControladorCoordinador?accion=mostrarModificarCliente">Modificación</a></li>
                 <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
                 <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
                 <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>

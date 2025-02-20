@@ -66,14 +66,21 @@ public class ControladorCoordinador extends HttpServlet {
                     request.getRequestDispatcher("vistaCoordBaja.jsp").forward(request, response);
                     break;
 
-                case "mostrarModificar":
+                case "mostrarModificarCliente":
                     clientes = modelo.obtenerClientesBd();
                     request.setAttribute("clientes", clientes);
 
                     reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
 
-                    request.getRequestDispatcher("vistaCoordModificar.jsp").forward(request, response);
+                    request.getRequestDispatcher("vistaCoordModificarCliente.jsp").forward(request, response);
+                    break;
+                case "mostrarModificarReserva":
+
+                    reservas = modelo.obtenerReservaBd();
+                    request.setAttribute("reservas", reservas);
+
+                    request.getRequestDispatcher("vistaCoordModificarReserva.jsp").forward(request, response);
                     break;
 
                 case "mostrarReservas":
@@ -114,232 +121,251 @@ public class ControladorCoordinador extends HttpServlet {
 
         // Crear la instancia del modelo
         Modelo modelo = new Modelo("localhost", "catering");
+        switch (action) {
+            case "consultarCliente":
+                String personaId = request.getParameter("persona_id");  // Obtener persona_id
+                List<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
+                request.setAttribute("reservas", reservas);  // Establecer las reservas en el request
+                RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordConsultarClienteReserva.jsp");
+                dispatcher.forward(request, response);
+                break;
 
-        if ("consultarCliente".equals(action)) {
-            String personaId = request.getParameter("persona_id");  // Obtener persona_id
-            List<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
-            request.setAttribute("reservas", reservas);  // Establecer las reservas en el request
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordConsultarClienteReserva.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarCliente".equals(action)) {
-            int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+            case "eliminarCliente":
+                int idCliente = Integer.parseInt(request.getParameter("idCliente"));
 
-            boolean eliminado = modelo.eliminarCliente(idCliente);
+                boolean eliminado = modelo.eliminarCliente(idCliente);
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
-            }
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarReserva".equals(action)) {
-            int idReserva = Integer.parseInt(request.getParameter("codReserva"));
+                dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
+                dispatcher.forward(request, response);
+                break;
 
-            boolean eliminado = modelo.eliminarReserva(idReserva);
+            case "eliminarReserva":
+                int idReserva = Integer.parseInt(request.getParameter("codReserva"));
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaReserva", "Reserva dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaReserva", "Error, no se puso eliminar");
-            }
+                eliminado = modelo.eliminarReserva(idReserva);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
-            dispatcher.forward(request, response);
-        } else if ("registrarReserva".equals(action)) {
-            try {
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaReserva", "Reserva dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaReserva", "Error, no se puso eliminar");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "registrarReserva":
+                try {
 // Obtener parámetros del formulario
-                int codCliente = Integer.parseInt(request.getParameter("codCliente"));
+                    int codCliente = Integer.parseInt(request.getParameter("codCliente"));
+                    String fechaInicioUsuario = request.getParameter("fechaInicioEvento");
+                    String fechaFinUsuario = request.getParameter("fechaFinEvento");
+                    String restriccionesDieteticas = request.getParameter("restriccionesDieteticas");
+                    String preferenciaCliente = request.getParameter("preferenciaCliente");
+                    String tipoServicio = request.getParameter("tipoServicio");
+                    int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
+                    int precio = Integer.parseInt(request.getParameter("precio"));
+                    String modoDeReserva = request.getParameter("modoDeReserva");
+                    String calle = request.getParameter("calle");
+                    int altura = Integer.parseInt(request.getParameter("altura"));
+                    String barrio = request.getParameter("barrio");
+                    String[] serviciosSeleccionados = request.getParameterValues("serviciosSeleccionados");
+
+                    // Verificar que el código del cliente es válido
+                    boolean clienteExiste = modelo.verificarCliente(codCliente);
+                    if (!clienteExiste) {
+                        request.setAttribute("error", "El código del cliente no existe.");
+                        dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+
+                    // Formato para parsear la fecha
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+                    Date fechaInicioEvento = inputFormat.parse(fechaInicioUsuario);
+                    Date fechaFinEvento = inputFormat.parse(fechaFinUsuario);
+                    Date fechaReserva = new Date(); // Fecha de reserva actual
+
+                    // Convertir fechas a LocalDateTime para validar que sean futuras
+                    ZoneId zoneId = ZoneId.systemDefault();
+                    LocalDateTime hoy = LocalDateTime.now();
+                    LocalDateTime fechaInicioLocal = fechaInicioEvento.toInstant().atZone(zoneId).toLocalDateTime();
+                    LocalDateTime fechaFinLocal = fechaFinEvento.toInstant().atZone(zoneId).toLocalDateTime();
+
+                    if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
+                        request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
+                        request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
+                        request.setAttribute("fechaFinEvento", fechaFinUsuario);
+                        dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+
+                    // Crear objeto Domicilio
+                    Domicilio domicilio = new Domicilio(0, calle, altura, barrio);
+
+                    // Crear objeto Reserva
+                    Reserva reserva = new Reserva(0, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
+                            preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva, domicilio, false);
+
+                    // Agregar servicios a la reserva si fueron seleccionados
+                    if (serviciosSeleccionados != null) {
+                        for (String idServicio : serviciosSeleccionados) {
+                            Servicio servicio = modelo.obtenerServicioPorId(Integer.parseInt(idServicio));
+                            if (servicio != null) {
+                                reserva.getServicios().add(servicio);
+                            }
+                        }
+                    } else {
+                        System.out.println("No se seleccionaron servicios.");
+                    }
+
+                    // Registrar la reserva en el modelo
+                    boolean registroExitoso = modelo.registrarReserva(reserva, domicilio);
+
+                    if (registroExitoso) {
+                        request.setAttribute("mensajeReserva", "Reserva registrada exitosamente.");
+                    } else {
+                        request.setAttribute("error", "Hubo un problema al registrar la reserva.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("error", "Formato incorrecto en los campos numéricos.");
+                } catch (ParseException e) {
+                    request.setAttribute("error", "Error en el formato de fecha.");
+                }
+
+                // Redirigir a la vista
+                dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
+            case "buscarServiciosDisponibles":
+
+                // Obtener las fechas del request
                 String fechaInicioUsuario = request.getParameter("fechaInicioEvento");
                 String fechaFinUsuario = request.getParameter("fechaFinEvento");
-                String restriccionesDieteticas = request.getParameter("restriccionesDieteticas");
-                String preferenciaCliente = request.getParameter("preferenciaCliente");
-                String tipoServicio = request.getParameter("tipoServicio");
-                int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
-                int precio = Integer.parseInt(request.getParameter("precio"));
-                String modoDeReserva = request.getParameter("modoDeReserva");
-                String calle = request.getParameter("calle");
-                int altura = Integer.parseInt(request.getParameter("altura"));
-                String barrio = request.getParameter("barrio");
-                String[] serviciosSeleccionados = request.getParameterValues("serviciosSeleccionados");
 
-                // Verificar que el código del cliente es válido
-                boolean clienteExiste = modelo.verificarCliente(codCliente);
-                if (!clienteExiste) {
-                    request.setAttribute("error", "El código del cliente no existe.");
-                    RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                // Verificar si las fechas están presentes
+                if (fechaInicioUsuario == null || fechaFinUsuario == null || fechaInicioUsuario.isEmpty() || fechaFinUsuario.isEmpty()) {
+                    request.setAttribute("error", "Las fechas de inicio y fin son obligatorias.");
+                    dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
                     dispatcher.forward(request, response);
                     return;
                 }
 
-                // Formato para parsear la fecha
+                // Formato para parsear las fechas recibidas (con 'T' en el medio)
                 SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-                Date fechaInicioEvento = inputFormat.parse(fechaInicioUsuario);
-                Date fechaFinEvento = inputFormat.parse(fechaFinUsuario);
-                Date fechaReserva = new Date(); // Fecha de reserva actual
 
-                // Convertir fechas a LocalDateTime para validar que sean futuras
-                ZoneId zoneId = ZoneId.systemDefault();
-                LocalDateTime hoy = LocalDateTime.now();
-                LocalDateTime fechaInicioLocal = fechaInicioEvento.toInstant().atZone(zoneId).toLocalDateTime();
-                LocalDateTime fechaFinLocal = fechaFinEvento.toInstant().atZone(zoneId).toLocalDateTime();
+                // Formato de salida para las fechas (sin 'T' y con segundos)
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-                if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
-                    request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
-                    request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
-                    request.setAttribute("fechaFinEvento", fechaFinUsuario);
-                    RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
-                    dispatcher.forward(request, response);
-                    return;
-                }
+                try {
 
-                // Crear objeto Domicilio
-                Domicilio domicilio = new Domicilio(0, calle, altura, barrio);
+                    // Parsear las fechas
+                    Date fechaInicio = inputFormat.parse(fechaInicioUsuario);
+                    Date fechaFin = inputFormat.parse(fechaFinUsuario);
 
-                // Crear objeto Reserva
-                Reserva reserva = new Reserva(0, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
-                        preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva, domicilio, false);
+                    // Formatear las fechas al nuevo formato
+                    String fechaInicioFormatted = outputFormat.format(fechaInicio);
+                    String fechaFinFormatted = outputFormat.format(fechaFin);
+                    // Convertir Date a Instant y luego a LocalDateTime
+                    ZoneId zoneId = ZoneId.systemDefault();
+                    LocalDateTime fechaInicioLocal = fechaInicio.toInstant().atZone(zoneId).toLocalDateTime();
+                    LocalDateTime fechaFinLocal = fechaFin.toInstant().atZone(zoneId).toLocalDateTime();
 
-                // Agregar servicios a la reserva si fueron seleccionados
-                if (serviciosSeleccionados != null) {
-                    for (String idServicio : serviciosSeleccionados) {
-                        Servicio servicio = modelo.obtenerServicioPorId(Integer.parseInt(idServicio));
-                        if (servicio != null) {
-                            reserva.getServicios().add(servicio);
-                        }
+                    // Obtener la fecha y hora actual
+                    LocalDateTime hoy = LocalDateTime.now();
+
+                    if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
+                        request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
+                        request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
+                        request.setAttribute("fechaFinEvento", fechaFinUsuario);
+                        dispatcher = request.getRequestDispatcher("vistaError.jsp");
+                        dispatcher.forward(request, response);
+                        return;
                     }
-                } else {
-                    System.out.println("No se seleccionaron servicios.");
-                }
+                    // Llamar al modelo para obtener los servicios disponibles con las fechas formateadas
+                    List<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
 
-                // Registrar la reserva en el modelo
-                boolean registroExitoso = modelo.registrarReserva(reserva, domicilio);
-
-                if (registroExitoso) {
-                    request.setAttribute("mensajeReserva", "Reserva registrada exitosamente.");
-                } else {
-                    request.setAttribute("error", "Hubo un problema al registrar la reserva.");
-                }
-
-            } catch (NumberFormatException e) {
-                request.setAttribute("error", "Formato incorrecto en los campos numéricos.");
-            } catch (ParseException e) {
-                request.setAttribute("error", "Error en el formato de fecha.");
-            }
-
-            // Redirigir a la vista
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
-            dispatcher.forward(request, response);
-
-        } else if ("buscarServiciosDisponibles".equals(action)) {
-            // Obtener las fechas del request
-            String fechaInicioUsuario = request.getParameter("fechaInicioEvento");
-            String fechaFinUsuario = request.getParameter("fechaFinEvento");
-
-            // Verificar si las fechas están presentes
-            if (fechaInicioUsuario == null || fechaFinUsuario == null || fechaInicioUsuario.isEmpty() || fechaFinUsuario.isEmpty()) {
-                request.setAttribute("error", "Las fechas de inicio y fin son obligatorias.");
-                RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
-                dispatcher.forward(request, response);
-                return;
-            }
-
-            // Formato para parsear las fechas recibidas (con 'T' en el medio)
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-
-            // Formato de salida para las fechas (sin 'T' y con segundos)
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            try {
-
-                // Parsear las fechas
-                Date fechaInicio = inputFormat.parse(fechaInicioUsuario);
-                Date fechaFin = inputFormat.parse(fechaFinUsuario);
-
-                // Formatear las fechas al nuevo formato
-                String fechaInicioFormatted = outputFormat.format(fechaInicio);
-                String fechaFinFormatted = outputFormat.format(fechaFin);
-                // Convertir Date a Instant y luego a LocalDateTime
-                ZoneId zoneId = ZoneId.systemDefault();
-                LocalDateTime fechaInicioLocal = fechaInicio.toInstant().atZone(zoneId).toLocalDateTime();
-                LocalDateTime fechaFinLocal = fechaFin.toInstant().atZone(zoneId).toLocalDateTime();
-
-                // Obtener la fecha y hora actual
-                LocalDateTime hoy = LocalDateTime.now();
-
-                if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
-                    request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
                     request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
                     request.setAttribute("fechaFinEvento", fechaFinUsuario);
-                    RequestDispatcher dispatcher = request.getRequestDispatcher("vistaError.jsp");
-                    dispatcher.forward(request, response);
-                    return;
+                    request.setAttribute("serviciosDisponibles", serviciosDisponibles);
+
+                } catch (ParseException e) {
+                    // Manejo de error si las fechas no se pueden parsear
+                    e.printStackTrace();
+                    request.setAttribute("error", "Las fechas no tienen el formato correcto.");
                 }
-                // Llamar al modelo para obtener los servicios disponibles con las fechas formateadas
-                List<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
 
-                request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
-                request.setAttribute("fechaFinEvento", fechaFinUsuario);
-                request.setAttribute("serviciosDisponibles", serviciosDisponibles);
+                // Redirigir a la vista
+                dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
 
-            } catch (ParseException e) {
-                // Manejo de error si las fechas no se pueden parsear
-                e.printStackTrace();
-                request.setAttribute("error", "Las fechas no tienen el formato correcto.");
-            }
-
-            // Redirigir a la vista
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("registrarCliente".equals(action)) {
-            String usuario = request.getParameter("usuario");
-            String password = request.getParameter("password");
-            String nombre = request.getParameter("nombre");
-            String apellido = request.getParameter("apellido");
-            String telefono = request.getParameter("telefono");
-            String email = request.getParameter("email");
-
-            boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-            if (registrado) {
-                request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
-            }
-
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("modificarCliente".equals(action)) {
-            String personaId = request.getParameter("persona_id");  // Obtener persona_id
-            Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
-            request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordModificar.jsp");
-            dispatcher.forward(request, response);
-        } else if ("actualizarCliente".equals(action)) {
-            
-            
-            try {
-                int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+            case "registrarCliente":
+                String usuario = request.getParameter("usuario");
+                String password = request.getParameter("password");
                 String nombre = request.getParameter("nombre");
                 String apellido = request.getParameter("apellido");
                 String telefono = request.getParameter("telefono");
                 String email = request.getParameter("email");
-                //System.out.println("controlador cliente con ID: " + idCliente);
-                //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
-                boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
 
-                if (actualizado) {
-                    request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                if (registrado) {
+                    request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
                 } else {
-                    request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                    request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
                 }
 
-            } catch (NumberFormatException e) {
-                request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
-            }
+                dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                dispatcher.forward(request, response);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordModificar.jsp");
-            dispatcher.forward(request, response);
+                break;
+            case "modificarCliente":
+                personaId = request.getParameter("persona_id");  // Obtener persona_id
+                Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
+                request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
+                dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+            case "actualizarCliente":
+
+                try {
+                    idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                    nombre = request.getParameter("nombre");
+                    apellido = request.getParameter("apellido");
+                    telefono = request.getParameter("telefono");
+                    email = request.getParameter("email");
+                    //System.out.println("controlador cliente con ID: " + idCliente);
+                    //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
+                    boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+            default:
+                // Si la acción no es reconocida, redirige a una página de error
+                request.setAttribute("mensajeError", "Acción no válida");
+                request.getRequestDispatcher("vistaError.jsp").forward(request, response);
+                break;
         }
 
     }

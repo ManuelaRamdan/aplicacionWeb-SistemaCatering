@@ -1819,7 +1819,7 @@ public class Modelo {
 
             // Iniciar transacción
             con.setAutoCommit(false);
-            
+
             // Consulta SQL para actualizar los datos del cliente
             String sql = "UPDATE cliente SET nombre = ?, apellido = ?, telReferencia = ?, email = ? WHERE id = ?";
             ps = con.prepareStatement(sql);
@@ -1865,4 +1865,333 @@ public class Modelo {
         }
     }
 
+    public Administrador obtenerAdministradorPorId(int idAdm) {
+        /*SELECT administrador.id AS id_administrador, persona.usuario 
+FROM administrador
+JOIN persona ON administrador.persona_id = persona.id
+WHERE administrador.id = 3 and administrador.estado = 1;*/
+
+        Administrador adm = null;
+        String query = "SELECT administrador.id, persona.usuario \n"
+                + "FROM administrador\n"
+                + "JOIN persona ON administrador.persona_id = persona.id\n"
+                + "WHERE administrador.id = ? and administrador.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
+            stmt.setInt(1, idAdm);  // Si 'idCliente' es un String
+            // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
+
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+
+                // Crear el objeto Cliente con los datos obtenidos
+                adm = new Administrador(id, usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return adm;
+    }
+
+    public Coordinador obtenerCoordinadorPorId(int idCoord) {
+        /*SELECT administrador.id AS id_administrador, persona.usuario 
+FROM administrador
+JOIN persona ON administrador.persona_id = persona.id
+WHERE administrador.id = 3 and administrador.estado = 1;*/
+
+        Coordinador coord = null;
+        String query = "SELECT coordinador.id, persona.usuario \n"
+                + "FROM coordinador\n"
+                + "JOIN persona ON coordinador.persona_id = persona.id\n"
+                + "WHERE coordinador.id = ? and coordinador.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
+            stmt.setInt(1, idCoord);  // Si 'idCliente' es un String
+            // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
+
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String usuario = rs.getString("usuario");
+
+                // Crear el objeto Cliente con los datos obtenidos
+                coord = new Coordinador(id, usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return coord;
+    }
+
+    public boolean actualizarAdministrador(int idAdm, String usuario) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE persona \n"
+                    + "SET usuario = ? \n"
+                    + "WHERE id = (SELECT persona_id FROM administrador WHERE id = ?)";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, usuario);
+            ps.setInt(2, idAdm);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean actualizarCoordinador(int idCoord, String usuario) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE persona \n"
+                    + "SET usuario = ? \n"
+                    + "WHERE id = (SELECT persona_id FROM coordinador WHERE id = ?)";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, usuario);
+            ps.setInt(2, idCoord);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public Plato obtenerPlatoPorId(int idPlato) {
+        Plato plato = null;
+        String query = "SELECT plato.id, plato.nombre \n"
+                + "FROM plato\n"
+                + "WHERE plato.id = ? and plato.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
+            stmt.setInt(1, idPlato);  // Si 'idCliente' es un String
+            // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
+
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+
+                // Crear el objeto Cliente con los datos obtenidos
+                plato = new Plato(id, nombre);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return plato;
+    }
+    
+    public boolean actualizarPlato(int idPlato, String nombre) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE plato \n"
+                    + "SET nombre = ? \n"
+                    + "WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, nombre);
+            ps.setInt(2, idPlato);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

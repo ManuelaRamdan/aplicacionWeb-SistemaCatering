@@ -80,26 +80,37 @@ public class ControladorAdm extends HttpServlet {
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
                     break;
 
-                case "mostrarModificar":
-                    // Obtener el término de búsqueda ingresado
-                    String busqueda = request.getParameter("busqueda");
+                case "mostrarModificarAdministrador":
 
-                    // Obtener los resultados para cada tipo de entidad
-                    coordinadores = modelo.buscarCoordinador(busqueda);
-                    //clientes = modelo.buscarCliente(busqueda);
-                    //administradores = modelo.buscarAdministrador(busqueda);
-                    //platos = modelo.buscarPlato(busqueda);
+                    administradores = modelo.obtenerAdministradoresBd();
 
-                    // Colocar los resultados en el request para la vista
-                    request.setAttribute("coordinadores", coordinadores);
-                    //request.setAttribute("clientes", clientes);
-                    //request.setAttribute("administradores", administradores);
-                    //request.setAttribute("platos", platos);
+                    request.setAttribute("administradores", administradores);
 
-                    // Redirigir a la vista de modificación
-                    request.getRequestDispatcher("vistaAdmModificar.jsp").forward(request, response);
+                    request.getRequestDispatcher("vistaAdmModificarAdm.jsp").forward(request, response);
                     break;
 
+                case "mostrarModificarCoordinador":
+                    coordinadores = modelo.obtenerCoordinadoresBd();
+
+                    request.setAttribute("coordinadores", coordinadores);
+                    request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp").forward(request, response);
+                    break;
+                case "mostrarModificarCliente":
+
+                    clientes = modelo.obtenerClientesBd();
+                    request.setAttribute("clientes", clientes);
+
+                    request.getRequestDispatcher("vistaAdmModificarCliente.jsp").forward(request, response);
+                    break;
+
+                case "mostrarModificarPlato":
+
+                    platos = modelo.obtenerPlatosBd();
+
+                    request.setAttribute("platos", platos);
+
+                    request.getRequestDispatcher("vistaAdmModificarPlato.jsp").forward(request, response);
+                    break;
                 case "mostrar":
                     // Fetch all data
                     administradores = modelo.obtenerAdministradoresBd();
@@ -117,7 +128,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("platos", platos);
                     request.setAttribute("menus", menus);
                     request.setAttribute("servicios", servicios);
-                    
+
                     List<Reserva> reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
 
@@ -143,185 +154,341 @@ public class ControladorAdm extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
+
         /* toma lo que le envio el formulario */
         Modelo modelo = new Modelo("localhost", "catering");
 
-        if ("registrarCoordinador".equals(action)) {
-            /* se fija si la accion que recivio es la que necesitamos*/
-            String usuario = request.getParameter("usuario");
-            String password = request.getParameter("password");
+        switch (action) {
+            case "registrarCoordinador":
+                String usuario = request.getParameter("usuario");
+                String password = request.getParameter("password");
 
-            boolean registrado = modelo.registrarCoordinador(usuario, password);
+                boolean registrado = modelo.registrarCoordinador(usuario, password);
 
-            /* dependiendo si se pudo registrar o no , muestra un mensaje */
-            if (registrado) {
-                request.setAttribute("mensajeCoordinador", "Coordinador registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
-            }
+                /* dependiendo si se pudo registrar o no , muestra un mensaje */
+                if (registrado) {
+                    request.setAttribute("mensajeCoordinador", "Coordinador registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
-            dispatcher.forward(request, response);
-        } else if ("registrarAdministrador".equals(action)) {
-            String usuario = request.getParameter("usuario");
-            String password = request.getParameter("password");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
+                dispatcher.forward(request, response);
+                break;
 
-            boolean registrado = modelo.registrarAdministrador(usuario, password);
+            case "registrarAdministrador":
 
-            /* dependiendo si se pudo registrar o no , muestra un mensaje */
-            if (registrado) {
-                request.setAttribute("mensajeAdm", "Administrador registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
-            }
+                usuario = request.getParameter("usuario");
+                password = request.getParameter("password");
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
-            dispatcher.forward(request, response);
-        } else if ("registrarCliente".equals(action)) {
-            String usuario = request.getParameter("usuario");
-            String password = request.getParameter("password");
-            String nombre = request.getParameter("nombre");
-            String apellido = request.getParameter("apellido");
-            String telefono = request.getParameter("telefono");
-            String email = request.getParameter("email");
+                registrado = modelo.registrarAdministrador(usuario, password);
 
-            boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-            if (registrado) {
-                request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
-            }
+                /* dependiendo si se pudo registrar o no , muestra un mensaje */
+                if (registrado) {
+                    request.setAttribute("mensajeAdm", "Administrador registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("registrarPlato".equals(action)) {
-            String nombrePlato = request.getParameter("nombrePlato");
+                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
+                dispatcher.forward(request, response);
+                break;
 
-            boolean registrado = modelo.registrarPlato(nombrePlato);
+            case "registrarCliente":
+                usuario = request.getParameter("usuario");
+                password = request.getParameter("password");
+                String nombre = request.getParameter("nombre");
+                String apellido = request.getParameter("apellido");
+                String telefono = request.getParameter("telefono");
+                String email = request.getParameter("email");
 
-            if (registrado) {
-                request.setAttribute("mensajePlato", "Plato registrado correctamente.");
-            } else {
-                request.setAttribute("mensajePlato", "Error al registrar el plato.");
-            }
+                registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                if (registrado) {
+                    request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("registrarMenu".equals(action)) {
-            String nombreMenu = request.getParameter("nombreMenu");
+                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
 
-            // Obtener IDs de platos de entrada seleccionados
-            String[] platosEntradaIds = request.getParameterValues("platoEntrada[]");
-            List<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
+            case "registrarPlato":
 
-            // Obtener IDs de platos principales seleccionados
-            String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
-            List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
+                String nombrePlato = request.getParameter("nombrePlato");
 
-            boolean registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados);
+                registrado = modelo.registrarPlato(nombrePlato);
 
-            if (registrado) {
-                request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
-            }
+                if (registrado) {
+                    request.setAttribute("mensajePlato", "Plato registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajePlato", "Error al registrar el plato.");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("registrarServicio".equals(action)) {  // Nueva acción para registrar servicio
-            String nombreServicio = request.getParameter("nombreServicio");
+                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
 
-            // Obtener IDs de menús seleccionados
-            String[] menuIds = request.getParameterValues("menus[]");
-            List<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
+            case "registrarMenu":
+                String nombreMenu = request.getParameter("nombreMenu");
 
-            boolean registrado = modelo.registrarServicio(nombreServicio, menusSeleccionados);
+                // Obtener IDs de platos de entrada seleccionados
+                String[] platosEntradaIds = request.getParameterValues("platoEntrada[]");
+                List<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
 
-            if (registrado) {
-                request.setAttribute("mensajeServicio", "Servicio registrado correctamente.");
-            } else {
-                request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
-            }
+                // Obtener IDs de platos principales seleccionados
+                String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
+                List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarCoordinador".equals(action)) {
-            int idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
+                registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados);
 
-            boolean eliminado = modelo.eliminarCoordinador(idCoordinador);
+                if (registrado) {
+                    request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
+                }
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaCoordinador", "Coordinador dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaCoordinador", "Error, no se puso eliminar");
-            }
+                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
+            case "registrarServicio":
+                String nombreServicio = request.getParameter("nombreServicio");
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
+                // Obtener IDs de menús seleccionados
+                String[] menuIds = request.getParameterValues("menus[]");
+                List<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
 
-        } else if ("eliminarAdministrador".equals(action)) {
-            int idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
+                registrado = modelo.registrarServicio(nombreServicio, menusSeleccionados);
 
-            boolean eliminado = modelo.eliminarAdministrador(idAdministrador);
+                if (registrado) {
+                    request.setAttribute("mensajeServicio", "Servicio registrado correctamente.");
+                } else {
+                    request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
+                }
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaAdministrador", "Administrador dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaAdministrador", "Error, no se puso eliminar");
-            }
+                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
+                dispatcher.forward(request, response);
+                break;
+            case "eliminarCoordinador":
+                int idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
+                boolean eliminado = modelo.eliminarCoordinador(idCoordinador);
 
-        } else if ("eliminarCliente".equals(action)) {
-            int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaCoordinador", "Coordinador dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaCoordinador", "Error, no se puso eliminar");
+                }
 
-            boolean eliminado = modelo.eliminarCliente(idCliente);
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
-            }
+                break;
+            case "eliminarAdministrador":
+                int idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarPlato".equals(action)) {
-            int idPlato = Integer.parseInt(request.getParameter("idPlato"));
-            boolean eliminado = modelo.eliminarPlato(idPlato);
+                eliminado = modelo.eliminarAdministrador(idAdministrador);
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaPlato", "Plato dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
-            }
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaAdministrador", "Administrador dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaAdministrador", "Error, no se puso eliminar");
+                }
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarMenu".equals(action)) {
-            int idMenu = Integer.parseInt(request.getParameter("idMenu"));
-            boolean eliminado = modelo.eliminarMenu(idMenu);
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaMenu", "Menú dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaMenu", "Error, no se pudo eliminar");
-            }
+                break;
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
-        } else if ("eliminarServicio".equals(action)) {
-            int idServicio = Integer.parseInt(request.getParameter("idServicio"));
-            boolean eliminado = modelo.eliminarServicio(idServicio);
+            case "eliminarCliente":
+                int idCliente = Integer.parseInt(request.getParameter("idCliente"));
 
-            if (eliminado) {
-                request.setAttribute("mensajeBajaServicio", "Servicio dado de baja exitosamente.");
-            } else {
-                request.setAttribute("mensajeBajaServicio", "Error, no se pudo eliminar");
-            }
+                eliminado = modelo.eliminarCliente(idCliente);
 
-            RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-            dispatcher.forward(request, response);
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+
+            case "eliminarPlato":
+                int idPlato = Integer.parseInt(request.getParameter("idPlato"));
+                eliminado = modelo.eliminarPlato(idPlato);
+
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaPlato", "Plato dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+
+            case "eliminarMenu":
+                int idMenu = Integer.parseInt(request.getParameter("idMenu"));
+                eliminado = modelo.eliminarMenu(idMenu);
+
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaMenu", "Menú dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaMenu", "Error, no se pudo eliminar");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "eliminarServicio":
+                int idServicio = Integer.parseInt(request.getParameter("idServicio"));
+                eliminado = modelo.eliminarServicio(idServicio);
+
+                if (eliminado) {
+                    request.setAttribute("mensajeBajaServicio", "Servicio dado de baja exitosamente.");
+                } else {
+                    request.setAttribute("mensajeBajaServicio", "Error, no se pudo eliminar");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "modificarCliente":
+                String personaId = request.getParameter("persona_id");  // Obtener persona_id
+                Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
+                request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarCliente.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "actualizarCliente":
+
+                try {
+                    idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                    nombre = request.getParameter("nombre");
+                    apellido = request.getParameter("apellido");
+                    telefono = request.getParameter("telefono");
+                    email = request.getParameter("email");
+                    //System.out.println("controlador cliente con ID: " + idCliente);
+                    //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
+                    boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarCliente.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "modificarAdministrador":
+                idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
+                Administrador administrador = modelo.obtenerAdministradorPorId(idAdministrador);  // Obtener reservas usando persona_id
+                request.setAttribute("administrador", administrador);  // Establecer las reservas en el request
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarAdm.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "modificarCoordinador":
+                idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
+
+                Coordinador coordinador = modelo.obtenerCoordinadorPorId(idCoordinador);  // Obtener coordinador usando persona_id
+
+                request.setAttribute("coordinador", coordinador);  // Establecer los datos del coordinador en el request
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "modificarPlato":
+                idPlato = Integer.parseInt(request.getParameter("idPlato"));
+                Plato plato = modelo.obtenerPlatoPorId(idPlato);  // Obtener reservas usando persona_id
+                request.setAttribute("plato", plato);  // Establecer las reservas en el request
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarPlato.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "actualizarAdm":
+
+                try {
+                    idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
+                    usuario = request.getParameter("usuario");
+
+                    System.out.println(idAdministrador);
+                    boolean actualizado = modelo.actualizarAdministrador(idAdministrador, usuario);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarAdministrador", "Administrador actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarAdministrador", "Error, no se pudo actualizar.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarAdministrador", "Error: ID de cliente no válido.");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarAdm.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "actualizarCoordinador":
+                try {
+                    idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
+                    usuario = request.getParameter("usuario");
+
+                    boolean actualizado = modelo.actualizarCoordinador(idCoordinador, usuario);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarCoordinador", "Coordinador actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarCoordinador", "Error, no se pudo actualizar.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarCoordinador", "Error: ID de Coordinador no válido.");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "actualizarPlato":
+
+                try {
+                    idPlato = Integer.parseInt(request.getParameter("idPlato"));
+                    nombre = request.getParameter("nombre");
+
+                    boolean actualizado = modelo.actualizarPlato(idPlato, nombre);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarPlato", "Plato actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarPlato", "Error, no se pudo actualizar.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarPlato", "Error: ID de Plato no válido.");
+                }
+
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarPlato.jsp");
+                dispatcher.forward(request, response);
+                break;
+            default:
+                // Si la acción no es reconocida, redirige a una página de error
+                request.setAttribute("mensajeError", "Acción no válida");
+                request.getRequestDispatcher("vistaError.jsp").forward(request, response);
+                break;
         }
 
     }
