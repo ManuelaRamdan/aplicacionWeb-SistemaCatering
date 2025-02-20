@@ -172,8 +172,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
                 }
 
-                RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
                 break;
 
             case "registrarAdministrador":
@@ -190,8 +189,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");/*Redirige la solicitud a la página */
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+
                 break;
 
             case "registrarCliente":
@@ -209,8 +208,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+
                 break;
 
             case "registrarPlato":
@@ -225,8 +224,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajePlato", "Error al registrar el plato.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+
                 break;
 
             case "registrarMenu":
@@ -248,8 +247,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+
                 break;
             case "registrarServicio":
                 String nombreServicio = request.getParameter("nombreServicio");
@@ -266,8 +265,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmAlta.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+
                 break;
             case "eliminarCoordinador":
                 int idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
@@ -280,8 +279,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaCoordinador", "Error, no se puso eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
 
                 break;
             case "eliminarAdministrador":
@@ -295,8 +294,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaAdministrador", "Error, no se puso eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
 
                 break;
 
@@ -311,8 +310,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+                   response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
 
                 break;
 
@@ -326,8 +325,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
 
                 break;
 
@@ -341,8 +340,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaMenu", "Error, no se pudo eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
                 break;
 
             case "eliminarServicio":
@@ -355,16 +354,16 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaServicio", "Error, no se pudo eliminar");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+
                 break;
 
             case "modificarCliente":
                 String personaId = request.getParameter("persona_id");  // Obtener persona_id
                 Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
                 request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarCliente.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarCliente");
+
                 break;
 
             case "actualizarCliente":
@@ -389,16 +388,16 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarCliente.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarCliente");
+
                 break;
 
             case "modificarAdministrador":
                 idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
                 Administrador administrador = modelo.obtenerAdministradorPorId(idAdministrador);  // Obtener reservas usando persona_id
                 request.setAttribute("administrador", administrador);  // Establecer las reservas en el request
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarAdm.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarAdministrador");
+
                 break;
 
             case "modificarCoordinador":
@@ -407,16 +406,16 @@ public class ControladorAdm extends HttpServlet {
                 Coordinador coordinador = modelo.obtenerCoordinadorPorId(idCoordinador);  // Obtener coordinador usando persona_id
 
                 request.setAttribute("coordinador", coordinador);  // Establecer los datos del coordinador en el request
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarCoordinador");
+
                 break;
 
             case "modificarPlato":
                 idPlato = Integer.parseInt(request.getParameter("idPlato"));
                 Plato plato = modelo.obtenerPlatoPorId(idPlato);  // Obtener reservas usando persona_id
                 request.setAttribute("plato", plato);  // Establecer las reservas en el request
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarPlato.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarPlato");
+
                 break;
 
             case "actualizarAdm":
@@ -438,8 +437,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarAdministrador", "Error: ID de cliente no válido.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarAdm.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarAdministrador");
+
                 break;
 
             case "actualizarCoordinador":
@@ -459,8 +458,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarCoordinador", "Error: ID de Coordinador no válido.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarCoordinador");
+
                 break;
 
             case "actualizarPlato":
@@ -481,8 +480,8 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarPlato", "Error: ID de Plato no válido.");
                 }
 
-                dispatcher = request.getRequestDispatcher("vistaAdmModificarPlato.jsp");
-                dispatcher.forward(request, response);
+               response.sendRedirect("ControladorAdm?accion=mostrarModificarPlato");
+
                 break;
             default:
                 // Si la acción no es reconocida, redirige a una página de error

@@ -87,5 +87,13 @@ a:hover {
     color: rgb(234, 217, 235);
 }
 
+.menu-lateral a {
+    color: inherit; /* Hereda el color del texto del contenedor padre */
+    text-decoration: none; /* Quita el subrayado */
+    font-weight: bold; /* Opcional: para que se vea más resaltado */
+}
 
+.menu-lateral a:hover {
+    color: rgb(138, 18, 138); /* Color al pasar el mouse */
+}
 

@@ -18,7 +18,8 @@
         <meta charset="UTF-8">
         <title>Alta de Datos</title>
         <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
-        <link rel="stylesheet" type="text/css" href="css/estiloAlta.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloAlta.css?v=2">
+
     </head>
     <body>
 
@@ -26,7 +27,7 @@
             <ul>
                 <li><a href="ControladorAdm?accion=mostrarAlta">Alta</a></li>
                 <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
-                <li><a href="ControladorAdm?accion=mostrarModificar">Modificación</a></li>
+                <li><a href="ControladorAdm?accion=mostrarModificarAdministrador">Modificación</a></li>
                 <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li> 
 
             </ul>
@@ -47,6 +48,7 @@
                     <input type="password" id="password" name="password" required>
 
                     <input type="submit" value="Registrar Coordinador">
+
 
                     <!-- Usando JSTL para mostrar mensajes -->
                     <c:if test="${not empty mensajeCoordinador}">
@@ -81,7 +83,8 @@
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
 
-                    <input type="submit" value="Registrar Cliente">
+                    <input type="submit" value="Registrar Cliiente">
+
 
                     <!-- Usando JSTL para mostrar mensajes -->
                     <c:if test="${not empty mensajeCliente}">
@@ -104,6 +107,7 @@
                     <input type="password" id="password" name="password" required>
 
                     <input type="submit" value="Registrar Administrador">
+
 
                     <!-- Usando JSTL para mostrar mensajes -->
                     <c:if test="${not empty mensajeAdm}">
@@ -166,7 +170,8 @@
                         <p>No hay platos disponibles.</p>
                     </c:if>
 
-                    <input type="submit" value="Registrar Menú">
+                    <input type="submit" value="Registrar Menu">
+
                 </form>
 
                 <!-- Usando JSTL para mostrar mensajes -->
@@ -198,6 +203,7 @@
                     </c:if>
 
                     <input type="submit" value="Registrar Servicio">
+
                 </form>
 
                 <!-- Usando JSTL para mostrar mensajes -->
