@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Inicio de sesion</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
+        <link rel="stylesheet" type="text/css" href="css/estilos.css">
     </head>
     <body>
         <h1>Servicio de Catering</h1>

@@ -11,8 +11,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Menú Coordinador</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
-
+        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
     </head>
     <body>
 

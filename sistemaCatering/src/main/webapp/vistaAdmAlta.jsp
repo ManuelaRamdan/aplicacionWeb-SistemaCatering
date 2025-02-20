@@ -17,10 +17,10 @@
     <head>
         <meta charset="UTF-8">
         <title>Alta de Datos</title>
-        <!--<link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
         <link rel="stylesheet" type="text/css" href="css/estiloAlta.css?v=2">
--->
-        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
+
+
 
     </head>
     <body>

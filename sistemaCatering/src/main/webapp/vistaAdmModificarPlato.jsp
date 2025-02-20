@@ -13,8 +13,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Modificar Plato</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloUnificado.css">
-
+        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
     </head>
     <body>
         <div class="menu-lateral">
