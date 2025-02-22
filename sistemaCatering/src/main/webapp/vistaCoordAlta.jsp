@@ -14,7 +14,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Alta de Reserva</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloAlta.css">
         <style>
             .formulario-contenedor label {
@@ -67,7 +67,7 @@
                 </form>
 
                 <!-- Mostrar servicios disponibles 
-                <div id="serviciosDisponibles">
+                                <div id="serviciosDisponibles">
                 <c:if test="${not empty serviciosDisponibles}">
                     <h3>Servicios Disponibles:</h3>
                     <div class="checkbox-container">
@@ -79,12 +79,7 @@
              </div>
                     </c:forEach>
                 </div>
-                </c:if>
-
-                <c:if test="${empty serviciosDisponibles}">
-                    <p>No hay servicios disponibles en ese rango de fechas.</p>
-                </c:if>
-            </div>-->
+                </c:if>-->
 
                 <!-- Formulario para registrar la reserva -->
 
@@ -96,14 +91,19 @@
                     <input type="hidden" name="fechaFinEvento" value="${fechaFinEvento}">
 
                     <!-- Campos para los servicios seleccionados -->
-                    <div class="checkbox-container">
-                        <c:forEach var="servicio" items="${serviciosDisponibles}">
-                            <div>
-                                <input type="checkbox" id="servicio_${servicio.id}" name="serviciosSeleccionados" value="${servicio.id}"
-                                       <c:if test="${not empty serviciosSeleccionados && serviciosSeleccionados.contains(servicio.id)}">checked</c:if>>
-                                <label for="servicio_${servicio.id}">${servicio.nombreServicio}</label>
+                    <div id="serviciosDisponibles">
+                        <c:if test="${not empty serviciosDisponibles}">
+                            <h3>Servicios Disponibles:</h3>
+                            <div class="checkbox-container">
+                                <c:forEach var="servicio" items="${serviciosDisponibles}">
+                                    <div>
+                                        <input type="checkbox" id="servicio_${servicio.id}" name="serviciosSeleccionados" value="${servicio.id}"
+                                               <c:if test="${not empty serviciosSeleccionados && serviciosSeleccionados.contains(servicio.id)}">checked</c:if>>
+                                        <label for="servicio_${servicio.id}">${servicio.nombreServicio}</label>
+                                    </div>
+                                </c:forEach>
                             </div>
-                        </c:forEach>
+                        </c:if>
                     </div>
 
                     <label for="codCliente">Código de Cliente:</label>

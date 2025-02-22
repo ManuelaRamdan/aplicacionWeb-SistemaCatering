@@ -11,7 +11,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Menú Administrador</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
     </head>
     <body>
 

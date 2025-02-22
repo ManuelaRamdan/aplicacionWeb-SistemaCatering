@@ -14,7 +14,9 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Modelo {
 
@@ -473,12 +475,12 @@ public class Modelo {
         return registrado;
     }
 
-    public List<Integer> obtenerIdsSeleccionados(String[] platosId) {
-        if (platosId == null || platosId.length == 0) {
+    public List<Integer> obtenerIdsSeleccionados(String[] ids) {
+        if (ids == null || ids.length == 0) {
             return new ArrayList<>();
         }
         List<Integer> listaIds = new ArrayList<>();
-        for (String id : platosId) {
+        for (String id : ids) {
             int idInt = Integer.parseInt(id);
             listaIds.add(idInt);
         }
@@ -1158,69 +1160,24 @@ public class Modelo {
         return listaServicios;
     }
 
-    public List<Coordinador> buscarCoordinador(String busqueda) {
-        List<Coordinador> coordinadores = new ArrayList<>();
-
-        String query = "SELECT * FROM Coordinador c "
-                + "INNER JOIN Persona p ON c.persona_id = p.id "
-                + "WHERE p.usuario LIKE ?";  // Buscar solo por usuario en la tabla Persona
-
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            stmt = con.prepareStatement(query);
-
-            // Establecer el parámetro para la búsqueda
-            stmt.setString(1, "%" + busqueda + "%");
-
-            // Ejecutar la consulta y obtener los resultados
-            rs = stmt.executeQuery();
-
-            // Procesar el resultado
-            while (rs.next()) {
-                int cod = rs.getInt("id");
-                String usuario = rs.getString("usuario");
-                Coordinador coordinador = new Coordinador(cod, usuario);
-                coordinadores.add(coordinador);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace(); // Manejo de errores
-        } finally {
-            // Cerrar recursos en el bloque finally
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return coordinadores;
-    }
-
     public List<Reserva> obtenerReservaBd() {
         List<Reserva> listaReservas = new ArrayList<>();
         String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, "
                 + "r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, "
-                + "r.direccionDeEntrega_id, r.estaEntregado, d.calle, d.altura, d.barrio "
+                + "r.direccionDeEntrega_id, r.estaEntregado, d.calle, d.altura, d.barrio, "
+                + "s.id AS servicio_id "
                 + "FROM Reserva r "
                 + "JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
-                + "WHERE r.estado = 1"; // Asegúrate de filtrar por reservas activas
+                + "LEFT JOIN reserva_servicio rs ON r.id = rs.reserva_id "
+                + "LEFT JOIN servicio s ON rs.servicio_id = s.id "
+                + "WHERE r.estado = 1"; // Filtrar por reservas activas
 
         try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
-            // Procesamos el resultado
+            // Creamos una lista para almacenar las reservas
+            Reserva reservaActual = null;
+            List<Servicio> servicios = new ArrayList<>();
+
             while (rs.next()) {
                 int codReserva = rs.getInt("id");
                 int codCliente = rs.getInt("codCliente");
@@ -1249,15 +1206,39 @@ public class Modelo {
 
                 Domicilio direccionDeEntrega = new Domicilio(direccionDeEntregaId, calle, altura, barrio);
 
-                // Crear y añadir la reserva a la lista
-                Reserva reserva = new Reserva(
-                        codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
-                        preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
-                        direccionDeEntrega, estaEntregado
-                );
+                // Si estamos en una nueva reserva (con un nuevo codReserva)
+                if (reservaActual == null || reservaActual.getCodReserva() != codReserva) {
+                    // Si ya hemos encontrado una reserva y la hemos procesado, agregamos la reserva y la lista de servicios
+                    if (reservaActual != null) {
+                        reservaActual.setServicios(servicios);
+                        listaReservas.add(reservaActual);
+                    }
 
-                listaReservas.add(reserva);
+                    // Creamos una nueva reserva
+                    reservaActual = new Reserva(
+                            codReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas,
+                            preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva,
+                            direccionDeEntrega, estaEntregado
+                    );
+
+                    // Limpiamos la lista de servicios para esta nueva reserva
+                    servicios = new ArrayList<>();
+                }
+
+                // Cargar servicio si existe
+                int servicioId = rs.getInt("servicio_id");
+                if (servicioId > 0) {
+                    Servicio servicio = obtenerServicioConId(servicioId);
+                    servicios.add(servicio);
+                }
             }
+
+            // Añadir la última reserva procesada
+            if (reservaActual != null) {
+                reservaActual.setServicios(servicios);
+                listaReservas.add(reservaActual);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
         }
@@ -1512,7 +1493,7 @@ public class Modelo {
 
     public List<Servicio> obtenerServiciosDisponibles(String fechaInicio, String fechaFin) {
         List<Servicio> serviciosDisponibles = new ArrayList<>();
-        String query = "SELECT s.id, s.nombreServicio "
+        String query = "SELECT s.id "
                 + "FROM servicio s "
                 + "WHERE NOT EXISTS ( "
                 + "    SELECT 1 "
@@ -1543,10 +1524,9 @@ public class Modelo {
             // Procesamos el resultado
             while (rs.next()) {
                 int id = rs.getInt("id");
-                String nombreServicio = rs.getString("nombreServicio");
 
                 // Creamos el objeto Servicio y lo agregamos a la lista
-                Servicio servicio = new Servicio(id, nombreServicio);
+                Servicio servicio = obtenerServicioConId(id);
                 serviciosDisponibles.add(servicio);
             }
         } catch (SQLException e) {
@@ -1617,58 +1597,6 @@ public class Modelo {
         }
 
         return clienteExiste;
-    }
-
-    public Servicio obtenerServicioPorId(int idServicio) {
-        // Consulta SQL para obtener el servicio por su ID
-        String query = "SELECT * FROM Servicio WHERE id = ?";
-
-        // Variables para manejar la conexión y la consulta
-        Connection con = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Servicio servicio = null; // Inicializamos la variable de tipo Servicio
-
-        try {
-            // Establecemos la conexión a la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
-
-            // Preparamos la consulta
-            stmt = con.prepareStatement(query);
-            stmt.setInt(1, idServicio); // Establecemos el parámetro idServicio en la consulta
-
-            // Ejecutamos la consulta
-            rs = stmt.executeQuery();
-
-            // Verificamos si hay resultados
-            if (rs.next()) {
-                // Recuperamos los valores de la base de datos y los asignamos al objeto Servicio
-                int id = rs.getInt("id");
-                String nombre = rs.getString("nombreServicio");
-                // Creamos el objeto Servicio con los valores recuperados
-                servicio = new Servicio(id, nombre);  // Asegúrate de que el constructor exista
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();  // Manejo de errores
-        } finally {
-            // Cerramos los recursos manualmente
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();  // Manejo de errores al cerrar recursos
-            }
-        }
-
-        return servicio;  // Retornamos el objeto Servicio o null si no se encontró
     }
 
     boolean registrarReserva(Reserva reserva, Domicilio domicilio) {
@@ -2139,7 +2067,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         return plato;
     }
-    
+
     public boolean actualizarPlato(int idPlato, String nombre) {
         Connection con = null;
         PreparedStatement ps = null;
@@ -2194,4 +2122,1099 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             }
         }
     }
+
+    public List<Menu> obtenerMenusConPlatos() {
+        List<Menu> menus = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT m.id AS menu_id, m.nombreMenu, m.precio, mp.tipo, p.id AS plato_id, p.nombre "
+                + "FROM menu m "
+                + "JOIN menu_plato mp ON m.id = mp.menu_id "
+                + "JOIN plato p ON mp.plato_id = p.id "
+                + "WHERE m.estado = 1 AND mp.estado = 1";
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Preparar la consulta
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            Map<Integer, Menu> menuMap = new HashMap<>();
+
+            while (rs.next()) {
+                int menuId = rs.getInt("menu_id");
+                Menu menu = menuMap.get(menuId);
+
+                // Si el menú no ha sido creado aún, crear uno nuevo usando el constructor adecuado
+                if (menu == null) {
+                    menu = new Menu(menuId, rs.getString("nombreMenu"), rs.getInt("precio"));
+                    menuMap.put(menuId, menu);
+                }
+
+                String tipo = rs.getString("tipo");
+                int platoId = rs.getInt("plato_id"); // Ahora con el alias correcto 'plato_id'
+                Plato plato = new Plato(platoId, rs.getString("nombre")); // Crear el plato usando el constructor con id y nombre
+
+                // Según el tipo de plato, agregarlo a la lista correspondiente
+                if ("Entrada".equals(tipo)) {
+                    menu.getPlatosEntrada().add(plato); // Agregar a platosEntrada
+                } else if ("Principal".equals(tipo)) {
+                    menu.getPlatosPrincipal().add(plato); // Agregar a platosPrincipal
+                }
+            }
+
+            // Confirmar la transacción, ya que no hubo errores al procesar los resultados
+            con.commit();
+
+            // Agregar todos los menús al listado
+            menus.addAll(menuMap.values());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Revertir cambios si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return menus;
+    }
+
+    public List<Servicio> obtenerServiciosConMenusYPlatos() {
+        List<Servicio> servicios = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT s.id AS servicio_id, s.nombreServicio AS servicio_nombre, "
+                + "m.id AS menu_id "
+                + "FROM servicio s "
+                + "JOIN servicio_menu sm ON s.id = sm.servicio_id "
+                + "JOIN menu m ON sm.menu_id = m.id "
+                + "WHERE s.estado = 1 AND m.estado = 1";
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Preparar la consulta
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Obtener todos los menús con platos
+            List<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
+
+            // Crear un mapa de menús por ID para facilitar la búsqueda
+            Map<Integer, Menu> menuMap = new HashMap<>();
+            for (Menu menu : menusConPlatos) {
+                menuMap.put(menu.getId(), menu); // Guardar los menús por su ID
+            }
+
+            Map<Integer, Servicio> servicioMap = new HashMap<>();
+
+            while (rs.next()) {
+                int servicioId = rs.getInt("servicio_id");
+                Servicio servicio = servicioMap.get(servicioId);
+
+                // Si el servicio no ha sido creado aún, crear uno nuevo
+                if (servicio == null) {
+                    servicio = new Servicio(servicioId, rs.getString("servicio_nombre"));
+                    servicioMap.put(servicioId, servicio);
+                }
+
+                int menuId = rs.getInt("menu_id");
+
+                // Buscar el menú correspondiente en el mapa de menús
+                Menu menu = menuMap.get(menuId);
+
+                if (menu != null) {
+                    // Asociar el menú al servicio
+                    servicio.getMenus().add(menu);
+                }
+            }
+
+            // Confirmar la transacción
+            con.commit();
+
+            // Agregar todos los servicios al listado
+            servicios.addAll(servicioMap.values());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Revertir cambios si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return servicios;
+    }
+
+    public Menu obtenerMenuConId(int idMenu) {
+        Menu menu = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Consulta SQL ajustada para filtrar por idMenu
+        String sql = "SELECT m.id AS menu_id, m.nombreMenu, m.precio, mp.tipo, p.id AS plato_id, p.nombre "
+                + "FROM menu m "
+                + "JOIN menu_plato mp ON m.id = mp.menu_id "
+                + "JOIN plato p ON mp.plato_id = p.id "
+                + "WHERE m.estado = 1 AND mp.estado = 1 AND m.id = ?";
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparar la consulta con el parámetro idMenu
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idMenu); // Establecemos el valor de idMenu en la consulta
+            rs = ps.executeQuery();
+
+            // Procesar los resultados de la consulta
+            if (rs.next()) {
+                // Si no se ha creado el menú aún, crearlo con los datos de la primera fila
+                menu = new Menu(idMenu, rs.getString("nombreMenu"), rs.getInt("precio"));
+
+                // Recorrer todos los platos relacionados con este menú
+                do {
+                    String tipo = rs.getString("tipo");
+                    int platoId = rs.getInt("plato_id");
+                    Plato plato = new Plato(platoId, rs.getString("nombre"));
+
+                    // Según el tipo de plato, agregarlo a la lista correspondiente
+                    if ("Entrada".equals(tipo)) {
+                        menu.getPlatosEntrada().add(plato); // Agregar a platosEntrada
+                    } else if ("Principal".equals(tipo)) {
+                        menu.getPlatosPrincipal().add(plato); // Agregar a platosPrincipal
+                    }
+                } while (rs.next());  // Continuar recorriendo los resultados si hay más platos
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return menu; // Retornar el único menú encontrado o null si no existe
+    }
+
+    public Servicio obtenerServicioConId(int idServicio) {
+        Servicio servicio = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Consulta SQL ajustada para filtrar por idServicio
+        String sql = "SELECT s.id AS servicio_id, s.nombreServicio AS servicio_nombre, "
+                + "m.id AS menu_id "
+                + "FROM servicio s "
+                + "JOIN servicio_menu sm ON s.id = sm.servicio_id "
+                + "JOIN menu m ON sm.menu_id = m.id "
+                + "WHERE s.estado = 1 AND m.estado = 1 AND s.id = ?"; // Filtramos por idServicio
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparar la consulta con el parámetro idServicio
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idServicio); // Establecemos el valor de idServicio en la consulta
+            rs = ps.executeQuery();
+
+            // Obtener todos los menús con platos
+            List<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
+
+            // Crear un mapa de menús por ID para facilitar la búsqueda
+            Map<Integer, Menu> menuMap = new HashMap<>();
+            for (Menu menu : menusConPlatos) {
+                menuMap.put(menu.getId(), menu); // Guardar los menús por su ID
+            }
+
+            // Procesar el resultado y asociar menús al servicio
+            if (rs.next()) {
+                // Crear el servicio con el id y nombre obtenido
+                servicio = new Servicio(idServicio, rs.getString("servicio_nombre"));
+
+                // Buscar los menús asociados al servicio
+                do {
+                    int menuId = rs.getInt("menu_id");
+
+                    // Buscar el menú correspondiente en el mapa de menús
+                    Menu menu = menuMap.get(menuId);
+
+                    if (menu != null) {
+                        // Asociar el menú al servicio
+                        servicio.getMenus().add(menu);
+                    }
+                } while (rs.next()); // Continuar recorriendo los resultados si hay más menús
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return servicio; // Retornar el servicio encontrado o null si no existe
+    }
+
+    public boolean actualizarMenuNombrePrecio(int idMenu, String nombre, int precio) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE menu \n"
+                    + "SET nombreMenu = ? , precio = ?\n"
+                    + "WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, nombre);
+            ps.setInt(2, precio);
+            ps.setInt(3, idMenu);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean agregarPlatosMenu(int idMenu, List<Integer> platosEntradaSeleccionados, List<Integer> platosPrincipalSeleccionados) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement menuPlato = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // 1. Asociar platos de entrada
+            String menuPlatoSql = "INSERT INTO Menu_Plato (menu_id, plato_id, tipo) VALUES (?, ?, ?)";
+            menuPlato = con.prepareStatement(menuPlatoSql);
+
+            // Insertar los platos de entrada seleccionados
+            for (int platoId : platosEntradaSeleccionados) {
+                menuPlato.setInt(1, idMenu);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Entrada");  // Tipo de plato: Entrada
+                menuPlato.addBatch();
+            }
+
+            // Ejecutar el batch de platos de entrada
+            menuPlato.executeBatch();
+
+            // 2. Asociar platos principales
+            for (int platoId : platosPrincipalSeleccionados) {
+                menuPlato.setInt(1, idMenu);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Principal");  // Tipo de plato: Principal
+                menuPlato.addBatch();
+            }
+
+            // Ejecutar el batch de platos principales
+            menuPlato.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            registrado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacer rollback
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            // Cerrar recursos
+            try {
+                if (menuPlato != null) {
+                    menuPlato.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return registrado;
+    }
+
+    public boolean eliminarPlatosMenu(int idMenu, List<Integer> platosEntradaEliminar, List<Integer> platosPrincipalEliminar) {
+        boolean eliminado = false;
+        Connection con = null;
+        PreparedStatement menuPlato = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // 1. Eliminar los platos de entrada
+            String menuPlatoSql = "DELETE FROM Menu_Plato WHERE menu_id = ? AND plato_id = ? AND tipo = ?";
+            menuPlato = con.prepareStatement(menuPlatoSql);
+
+            // Eliminar los platos de entrada seleccionados
+            for (int platoId : platosEntradaEliminar) {
+                menuPlato.setInt(1, idMenu);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Entrada");  // Tipo de plato: Entrada
+                menuPlato.addBatch();
+            }
+
+            // Ejecutar el batch de eliminación de platos de entrada
+            menuPlato.executeBatch();
+
+            // 2. Eliminar los platos principales
+            for (int platoId : platosPrincipalEliminar) {
+                menuPlato.setInt(1, idMenu);
+                menuPlato.setInt(2, platoId);
+                menuPlato.setString(3, "Principal");  // Tipo de plato: Principal
+                menuPlato.addBatch();
+            }
+
+            // Ejecutar el batch de eliminación de platos principales
+            menuPlato.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            eliminado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacer rollback
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            // Cerrar recursos
+            try {
+                if (menuPlato != null) {
+                    menuPlato.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
+    public List<Plato> obtenerPlatosNoSeleccionados(int idMenu, String tipo) {
+        List<Plato> platos = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Definir la consulta SQL para obtener los platos no asociados
+        String sql = "SELECT p.id, p.nombre "
+                + "FROM plato p "
+                + "LEFT JOIN menu_plato mp ON p.id = mp.plato_id AND mp.menu_id = ? AND mp.tipo = ? "
+                + "WHERE mp.plato_id IS NULL";
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idMenu);  // Establecemos el id del menú
+            ps.setString(2, tipo);  // Establecemos el tipo de plato ('Entrada' o 'Principal')
+            rs = ps.executeQuery();
+
+            // Procesar los resultados de la consulta
+            while (rs.next()) {
+                Plato plato = new Plato(rs.getInt("id"), rs.getString("nombre"));
+                platos.add(plato);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return platos;
+    }
+
+    public List<Menu> obtenerMenuNoSeleccionado(int idServicio) {
+        List<Menu> menus = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Consulta SQL para obtener los menús no seleccionados en el servicio dado
+        String sql = "SELECT m.id "
+                + "FROM menu m "
+                + "LEFT JOIN servicio_menu sm ON m.id = sm.menu_id AND sm.servicio_id = ? "
+                + "WHERE sm.menu_id IS NULL AND m.estado = 1";
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idServicio); // Establecemos el id del servicio
+            rs = ps.executeQuery();
+
+            // Procesar los resultados de la consulta
+            while (rs.next()) {
+                Menu menu = obtenerMenuConId(rs.getInt("id"));
+                menus.add(menu);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return menus;
+    }
+
+    public boolean actualizarServicioMenu(int idServicio, String nombre) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sql = "UPDATE servicio \n"
+                    + "SET nombreServicio = ? \n"
+                    + "WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            ps.setString(1, nombre);
+            ps.setInt(2, idServicio);
+
+            // Ejecutar la actualización
+            int filasAfectadas = ps.executeUpdate();
+
+            // Confirmar o revertir transacción según el resultado
+            if (filasAfectadas > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean agregarMenuServicio(int idServicio, List<Integer> menusSeleccionados) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement servicioMenu = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // SQL para insertar la relación entre los menús y el servicio
+            String servicioMenuSql = "INSERT INTO Servicio_Menu (servicio_id, menu_id) VALUES (?, ?)";
+            servicioMenu = con.prepareStatement(servicioMenuSql);
+
+            // Insertar los menús seleccionados para el servicio
+            for (int menuId : menusSeleccionados) {
+                servicioMenu.setInt(1, idServicio); // idServicio
+                servicioMenu.setInt(2, menuId);     // menu_id
+                servicioMenu.addBatch();
+            }
+
+            // Ejecutar el batch de inserciones
+            servicioMenu.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            registrado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacer rollback
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            // Cerrar recursos
+            try {
+                if (servicioMenu != null) {
+                    servicioMenu.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return registrado;
+    }
+
+    public boolean eliminarMenuServicio(int idServicio, List<Integer> menusSeleccionados) {
+        boolean eliminado = false;
+        Connection con = null;
+        PreparedStatement servicioMenu = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false);
+
+            // SQL para eliminar la relación entre los menús y el servicio
+            String servicioMenuSql = "DELETE FROM servicio_menu WHERE servicio_id = ? AND menu_id = ?";
+            servicioMenu = con.prepareStatement(servicioMenuSql);
+
+            // Eliminar los menús seleccionados para el servicio
+            for (int idMenu : menusSeleccionados) {
+                servicioMenu.setInt(1, idServicio); // idServicio
+                servicioMenu.setInt(2, idMenu);     // menu_id
+                servicioMenu.addBatch();
+            }
+
+            // Ejecutar el batch de eliminaciones
+            servicioMenu.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            eliminado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacer rollback
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            // Cerrar recursos
+            try {
+                if (servicioMenu != null) {
+                    servicioMenu.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
+    public List<Servicio> obtenerServiciosNoSeleccionados(int idReserva, String fechaInicio, String fechaFin) {
+        List<Servicio> servicios = new ArrayList<>();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Consulta SQL para obtener los servicios no seleccionados y disponibles en las fechas
+        String sql = "SELECT s.id "
+                + "FROM servicio s "
+                + "LEFT JOIN reserva_servicio rs ON s.id = rs.servicio_id AND rs.reserva_id = ? "
+                + "WHERE rs.servicio_id IS NULL AND s.estado = 1 "
+                + "AND NOT EXISTS ( "
+                + "    SELECT 1 "
+                + "    FROM reserva_servicio rs2 "
+                + "    JOIN reserva r ON rs2.reserva_id = r.id "
+                + "    WHERE (r.fechaInicioEvento < ? AND r.fechaFinEvento > ?) "
+                + "    AND rs2.servicio_id = s.id and r.estado = 1"
+                + ")";
+
+        try {
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idReserva); // Establecemos el id de la reserva
+            ps.setString(2, fechaFin);  // Fecha de fin
+            ps.setString(3, fechaInicio); // Fecha de inicio
+            rs = ps.executeQuery();
+
+            // Procesar los resultados de la consulta
+            while (rs.next()) {
+                Servicio servicio = obtenerServicioConId(rs.getInt("id"));
+                servicios.add(servicio);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return servicios;
+    }
+
+    public Reserva obtenerReservaConId(int idReserva) {
+        Reserva reserva = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Consulta SQL ajustada para obtener la reserva con servicios y menús, y la dirección
+        String sql = "SELECT r.id AS reserva_id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, "
+                + "r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
+                + "r.estado AS reserva_estado, "
+                + "d.calle, d.altura, d.barrio, "
+                + "s.id AS servicio_id "
+                + "FROM reserva r "
+                + "JOIN domicilio d ON r.direccionDeEntrega_id = d.id "
+                + "LEFT JOIN reserva_servicio rs ON r.id = rs.reserva_id "
+                + "LEFT JOIN servicio s ON rs.servicio_id = s.id "
+                + "WHERE r.id = ? AND r.estado = 1 AND s.estado = 1"; // Filtramos por estado activo de reserva y servicio
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparar la consulta con el parámetro idReserva
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, idReserva); // Establecemos el valor de idReserva en la consulta
+            rs = ps.executeQuery();
+
+            // Inicializar las listas de menús y servicios para la reserva
+            List<Servicio> servicios = new ArrayList<>();
+
+            // Procesar los resultados
+            while (rs.next()) {
+                // Crear o asignar la reserva
+                if (reserva == null) {
+                    // Obtener los valores de la dirección
+                    String calle = rs.getString("calle");
+                    int altura = rs.getInt("altura");
+                    String barrio = rs.getString("barrio");
+                    Domicilio direccionDeEntrega = new Domicilio(rs.getInt("direccionDeEntrega_id"), calle, altura, barrio);
+
+                    // Convertir el valor de estaEntregado de int a boolean
+                    boolean estaEntregado = rs.getInt("estaEntregado") == 1;
+
+                    // Crear la reserva con los datos obtenidos
+                    reserva = new Reserva(
+                            rs.getInt("reserva_id"),
+                            rs.getInt("codCliente"),
+                            rs.getTimestamp("fechaInicioEvento"),
+                            rs.getTimestamp("fechaFinEvento"),
+                            rs.getString("restriccionesDieteticas"),
+                            rs.getString("preferenciaCliente"),
+                            rs.getString("tipoServicio"),
+                            rs.getInt("cantidadPersonas"),
+                            rs.getInt("precio"),
+                            rs.getString("modoDeReserva"),
+                            direccionDeEntrega,
+                            estaEntregado
+                    );
+                }
+
+                // Crear el servicio asociado si existe
+                int servicioId = rs.getInt("servicio_id");
+                if (servicioId > 0) {
+                    Servicio servicio = obtenerServicioConId(servicioId);
+                    servicios.add(servicio);
+                }
+            }
+
+            // Establecer los servicios en la reserva
+            if (reserva != null) {
+                reserva.setServicios(servicios);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return reserva; // Retornar la reserva con los servicios y menús asociados, o null si no existe
+    }
+
+    public boolean actualizarReserva(int idReserva, int codCliente, java.util.Date fechaInicioEvento, java.util.Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, String calle, int altura, String barrio, boolean estaEntregado) {
+
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Actualizar datos de la reserva
+            String sqlReserva = "UPDATE reserva "
+                    + "SET codCliente = ?, fechaInicioEvento = ?, fechaFinEvento = ?, "
+                    + "restriccionesDieteticas = ?, preferenciaCliente = ?, tipoServicio = ?, "
+                    + "cantidadPersonas = ?, precio = ?, modoDeReserva = ?, estaEntregado = ? "
+                    + "WHERE id = ?";
+            ps = con.prepareStatement(sqlReserva);
+            ps.setInt(1, codCliente);
+            ps.setTimestamp(2, new java.sql.Timestamp(fechaInicioEvento.getTime()));
+            ps.setTimestamp(3, new java.sql.Timestamp(fechaFinEvento.getTime()));
+            ps.setString(4, restriccionesDieteticas);
+            ps.setString(5, preferenciaCliente);
+            ps.setString(6, tipoServicio);
+            ps.setInt(7, cantidadPersonas);
+            ps.setInt(8, precio);
+            ps.setString(9, modoDeReserva);
+            ps.setBoolean(10, estaEntregado);
+            ps.setInt(11, idReserva);
+
+            // Ejecutar la actualización de la reserva
+            int filasAfectadasReserva = ps.executeUpdate();
+
+            // Actualizar dirección de entrega (si es necesario)
+            String sqlDireccion = "UPDATE domicilio "
+                    + "SET calle = ?, altura = ?, barrio = ? "
+                    + "WHERE id = (SELECT direccionDeEntrega_id FROM reserva WHERE id = ?)";
+            ps = con.prepareStatement(sqlDireccion);
+            ps.setString(1, calle);
+            ps.setInt(2, altura);
+            ps.setString(3, barrio);
+            ps.setInt(4, idReserva);
+
+            // Ejecutar la actualización de la dirección de entrega
+            int filasAfectadasDireccion = ps.executeUpdate();
+
+            // Confirmar la transacción si se actualizaron las filas correctamente
+            if (filasAfectadasReserva > 0 && filasAfectadasDireccion > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir los cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean agregarServicioReserva(int idReserva, List<Integer> serviciosSeleccionados) {
+        boolean registrado = false;
+        Connection con = null;
+        PreparedStatement reservaServicio = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false); // Desactivar el auto-commit para asegurar la atomicidad
+
+            // SQL para insertar la relación entre la reserva y los servicios
+            String reservaServicioSql = "INSERT INTO reserva_servicio (reserva_id, servicio_id) VALUES (?, ?)";
+            reservaServicio = con.prepareStatement(reservaServicioSql);
+
+            // Insertar los servicios seleccionados para la reserva
+            for (int servicioId : serviciosSeleccionados) {
+                reservaServicio.setInt(1, idReserva);     // reserva_id
+                reservaServicio.setInt(2, servicioId);    // servicio_id
+                reservaServicio.addBatch(); // Añadir al batch
+            }
+
+            // Ejecutar el batch de inserciones
+            reservaServicio.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            registrado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacer rollback
+            if (con != null) {
+                try {
+                    con.rollback(); // Revertir las inserciones en caso de error
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage()); // Manejar el rollback
+                }
+            }
+            reportException(e.getMessage()); // Manejar el error original
+        } finally {
+            // Cerrar recursos
+            try {
+                if (reservaServicio != null) {
+                    reservaServicio.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage()); // Manejar el cierre de recursos
+            }
+        }
+
+        return registrado;
+    }
+
+    public boolean eliminarServicioReserva(int idReserva, List<Integer> serviciosSeleccionados) {
+        boolean eliminado = false;
+        Connection con = null;
+        PreparedStatement stmt = null;
+
+        try {
+            // Establecer conexión con la base de datos
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con.setAutoCommit(false); // Desactivamos el autocommit para hacer el commit manual
+
+            // SQL para eliminar la relación entre la reserva y los servicios seleccionados
+            String sql = "DELETE FROM reserva_servicio WHERE reserva_id = ? AND servicio_id = ?";
+
+            stmt = con.prepareStatement(sql);
+
+            // Eliminar los servicios seleccionados para la reserva
+            for (int idServicio : serviciosSeleccionados) {
+                stmt.setInt(1, idReserva); // Establecemos el id de la reserva
+                stmt.setInt(2, idServicio); // Establecemos el id del servicio
+                stmt.addBatch(); // Añadimos la eliminación al batch
+            }
+
+            // Ejecutar el batch de eliminaciones
+            stmt.executeBatch();
+
+            // Si todo va bien, hacer commit
+            con.commit();
+            eliminado = true;
+
+        } catch (SQLException e) {
+            // Si ocurre una excepción, hacemos rollback
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    reportException(ex.getMessage());
+                }
+            }
+            reportException(e.getMessage());
+        } finally {
+            // Cerrar recursos
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                reportException(e.getMessage());
+            }
+        }
+
+        return eliminado;
+    }
+
 }

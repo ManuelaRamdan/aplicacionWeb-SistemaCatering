@@ -1,0 +1,253 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 22 feb 2025, 11:31:09
+    Author     : Usuario
+*/
+
+/* Contenedor principal que agrupa el menú lateral y el contenido */
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Estilos del menú lateral */
+.menu-lateral {
+    width: 200px;
+    height: 100vh;
+    background-color: rgb(176, 130, 221);
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Asegura que el menú esté encima de todo */
+}
+
+.menu-lateral ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-lateral li {
+    padding: 15px;
+    font-size: 18px;
+    color: rgb(138, 18, 138);
+    cursor: pointer;
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgb(247, 244, 248);
+    margin-bottom: 10px;
+}
+
+.menu-lateral li:hover {
+    background-color: rgb(138, 18, 138);
+    color: rgb(234, 217, 235);
+}
+
+/* Estilo del contenido central */
+.contenido-central {
+    margin-left: 220px; /* Asegura que el contenido no quede tapado por el menú */
+    padding-top: 50px;
+    flex: 1;
+    overflow-x: auto;
+    z-index: 1; /* Asegura que el contenido esté encima del menú */
+}
+
+
+/* Estilos de las tablas */
+table {
+    width: 100%; /* Hace que la tabla ocupe todo el ancho disponible */
+    max-width: 100%; /* Evita que la tabla se desborde */
+    margin: 20px 0;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: rgb(138, 18, 138);
+}
+
+td {
+    background-color: #fff;
+}
+
+/* Estilo para las filas de la tabla */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilos de las secciones */
+h2 {
+    font-size: 28px;
+    color: rgb(138, 18, 138);
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.formulario-contenedor {
+    width: 80%;
+    margin: 20px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+h2 {
+    color: rgb(138, 18, 138);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+label {
+    font-weight: bold;
+    color: rgb(80, 18, 138);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background-color: rgb(138, 18, 138);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+input[type="submit"]:hover {
+    background-color: rgb(100, 12, 100);
+}
+
+/* Separador entre formularios */
+hr {
+    border: none;
+    height: 2px;
+    background-color: #ccc;
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+td {
+    padding: 10px;
+    vertical-align: top;
+}
+
+ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+li {
+    font-size: 14px;
+}
+
+.btn-Modificar {
+    background-color: rgb(138, 18, 138);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-Modificar:hover {
+    background-color: rgb(100, 12, 100);
+}
+
+/* Ocultar el checkbox */
+.menu-checkbox {
+    display: none;
+}
+
+/* Botón del menú */
+.menu-icon {
+    font-size: 24px;
+    background-color: rgb(138, 18, 138);
+    color: white;
+    padding: 10px;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    z-index: 1001;
+}
+
+/* Menú lateral */
+.menu-lateral {
+    width: 200px;
+    height: 100vh;
+    background-color: rgb(176, 130, 221);
+    padding: 20px;
+    position: fixed;
+    left: -220px; /* Oculto por defecto */
+    top: 0;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: left 0.3s ease-in-out;
+}
+
+/* Mostrar menú cuando el checkbox está activado */
+.menu-checkbox:checked + .menu-icon + .menu-lateral {
+    left: 0;
+}
+
+/* Ajuste del contenido cuando el menú está abierto */
+.menu-checkbox:checked + .menu-icon + .menu-lateral + .contenido-central {
+    margin-left: 220px;
+    transition: margin-left 0.3s ease-in-out;
+}
+
+/* Estilos del contenido */
+.contenido-central {
+    margin-left: 20px; /* Se ajustará cuando el menú esté abierto */
+    padding-top: 50px;
+    transition: margin-left 0.3s ease-in-out;
+}

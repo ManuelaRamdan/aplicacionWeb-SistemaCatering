@@ -13,7 +13,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Modificar Coordinador</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
     </head>
     <body>
@@ -34,7 +34,8 @@
                 <a href="ControladorAdm?accion=mostrarModificarCoordinador" class="tab">Modificar Coordinador</a>
                 <a href="ControladorAdm?accion=mostrarModificarCliente" class="tab">Modificar Cliente</a>
                 <a href="ControladorAdm?accion=mostrarModificarPlato" class="tab">Modificar Plato</a>
-
+                <a href="ControladorAdm?accion=mostrarModificarMenu" class="tab">Modificar Menu</a>
+                <a href="ControladorAdm?accion=mostrarModificarServicio" class="tab">Modificar Servicio</a>
 
             </div>
             <h1>Modificar Coordinador</h1>

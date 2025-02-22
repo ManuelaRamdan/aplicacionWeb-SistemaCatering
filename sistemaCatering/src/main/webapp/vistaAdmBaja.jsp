@@ -14,7 +14,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Baja de Datos</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
     </head>
     <body>
@@ -33,8 +33,6 @@
             <!-- Formulario Baja Coordinador -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Coordinador</h2>
-
-                <p>Seleccione el Coordinador que desea eliminar:</p>
 
                 <!-- Verificación de si la lista de coordinadores no está vacía -->
                 <c:if test="${not empty coordinadores}">
@@ -126,8 +124,6 @@
             <div class="formulario-contenedor">
                 <h2>Eliminar Administrador</h2>
 
-                <p>Seleccione el ID del Administrador que desea eliminar:</p>
-
                 <table border="1">
                     <thead>
                         <tr>
@@ -215,6 +211,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre del Menú</th>
+                                <th>Precio</th>
+                                <th>Entradas</th>
+                                <th>Platos Principales</th>
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
@@ -223,6 +222,20 @@
                                 <tr>
                                     <td>${menu.id}</td>
                                     <td>${menu.nombreMenu}</td>
+                                    <td>${menu.precio}</td>
+                                    <!-- Entradas -->
+                                    <td>
+                                        <c:forEach var="plato" items="${menu.platosEntrada}">
+                                            ${plato.nombre}<br>
+                                        </c:forEach>
+                                    </td>
+
+                                    <!-- Platos Principales -->
+                                    <td>
+                                        <c:forEach var="plato" items="${menu.platosPrincipal}">
+                                            ${plato.nombre}<br>
+                                        </c:forEach>
+                                    </td>
                                     <td>
                                         <!-- Formulario para eliminar menú con confirmación -->
                                         <form action="ControladorAdm" method="POST" style="display:inline;"
@@ -258,6 +271,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nombre del Servicio</th>
+                                <th>Menú</th>
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
@@ -267,6 +281,45 @@
                                 <tr>
                                     <td>${servicio.id}</td>
                                     <td>${servicio.nombreServicio}</td>
+                                    <td>
+                                        <!-- Tabla anidada para los menús de este servicio -->
+                                        <c:if test="${not empty servicio.menus}">
+                                            <table border="1">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Menú ID</th>
+                                                        <th>Nombre Menú</th>
+                                                        <th>Precio</th>
+                                                        <th>Entradas</th>
+                                                        <th>Platos Principales</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <c:forEach var="menu" items="${servicio.menus}">
+                                                        <tr>
+                                                            <td>${menu.id}</td>
+                                                            <td>${menu.nombreMenu}</td>
+                                                            <td>${menu.precio}</td>
+
+                                                            <!-- Entradas -->
+                                                            <td>
+                                                                <c:forEach var="plato" items="${menu.platosEntrada}">
+                                                                    ${plato.nombre}<br>
+                                                                </c:forEach>
+                                                            </td>
+
+                                                            <!-- Platos Principales -->
+                                                            <td>
+                                                                <c:forEach var="plato" items="${menu.platosPrincipal}">
+                                                                    ${plato.nombre}<br>
+                                                                </c:forEach>
+                                                            </td>
+                                                        </tr>
+                                                    </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </c:if>
+                                    </td>
                                     <td>
                                         <!-- Formulario para eliminar servicio con confirmación -->
                                         <form action="ControladorAdm" method="POST" style="display:inline;"

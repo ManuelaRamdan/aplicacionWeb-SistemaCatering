@@ -76,12 +76,8 @@ body {
     padding-top: 50px;
 }
 
-/* Eliminar subrayado y cambiar color de los enlaces */
 .menu-lateral a {
     text-decoration: none;  /* Elimina el subrayado */
     color: rgb(138, 18, 138);  /* Puedes cambiar este color según tu preferencia */
-}
 
-.menu-lateral a:hover {
-    color: rgb(234, 217, 235);  /* Cambia el color cuando se pasa el mouse */
 }

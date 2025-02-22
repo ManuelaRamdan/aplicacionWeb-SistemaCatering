@@ -7,6 +7,7 @@ package sistemacatering.sistemacatering;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -26,7 +27,7 @@ public class Reserva {
     private String modoDeReserva;
     private Domicilio direccionDeEntrega;
     private boolean estaEntregado;
-    private ArrayList<Servicio> servicios;
+    private List<Servicio> servicios;
 
     public Reserva(int codReserva, int codCliente, Date fechaInicioEvento, Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, Domicilio direccionDeEntrega, boolean estaEntregado) {
         this.codReserva = codReserva;
@@ -44,15 +45,13 @@ public class Reserva {
         servicios = new ArrayList<Servicio>();
     }
 
-    public ArrayList<Servicio> getServicios() {
+    public List <Servicio> getServicios() {
         return servicios;
     }
 
-    public void setServicios(ArrayList<Servicio> servicios) {
+    public void setServicios(List<Servicio> servicios) {
         this.servicios = servicios;
     }
-    
-    
 
     public int getCodReserva() {
         return codReserva;

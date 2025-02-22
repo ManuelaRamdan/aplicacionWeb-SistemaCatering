@@ -11,7 +11,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Modificar Cliente y Reserva</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
     </head>
     <body>
@@ -22,7 +22,6 @@
                 <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
                 <li><a href="ControladorAdm?accion=mostrarModificarAdministrador">Modificación</a></li>
                 <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li>
-
             </ul>
         </div>
 
@@ -36,11 +35,13 @@
                 <a href="ControladorAdm?accion=mostrarModificarCoordinador" class="tab">Modificar Coordinador</a>
                 <a href="ControladorAdm?accion=mostrarModificarCliente" class="tab">Modificar Cliente</a>
                 <a href="ControladorAdm?accion=mostrarModificarPlato" class="tab">Modificar Plato</a>
+                <a href="ControladorAdm?accion=mostrarModificarMenu" class="tab">Modificar Menu</a>
+                <a href="ControladorAdm?accion=mostrarModificarServicio" class="tab">Modificar Servicio</a>
 
             </div>
 
             <!-- Contenido de las Pestañas -->
-            <div >
+            <div>
                 <h1>Modificar Administrador</h1>
 
                 <c:if test="${not empty mensajeActualizarAdministrador}">
@@ -84,7 +85,7 @@
                         <button type="submit">Guardar</button>
                     </form>
                 </c:if>
-
             </div>
+        </div>
     </body>
 </html>

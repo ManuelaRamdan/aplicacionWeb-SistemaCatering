@@ -13,7 +13,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Consultar Cliente</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloBaja.css">
     </head>
     <body>

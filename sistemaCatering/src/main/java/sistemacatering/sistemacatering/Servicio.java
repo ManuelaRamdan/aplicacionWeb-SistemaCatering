@@ -4,6 +4,8 @@
  */
 package sistemacatering.sistemacatering;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Usuario
@@ -11,10 +13,20 @@ package sistemacatering.sistemacatering;
 public class Servicio {
     private int id;
     private String nombreServicio;
+    private ArrayList<Menu> menus;
 
     public Servicio(int id, String nombreServicio) {
         this.id = id;
         this.nombreServicio = nombreServicio;
+        this.menus = new ArrayList<Menu>();
+    }
+
+    public ArrayList<Menu> getMenus() {
+        return menus;
+    }
+
+    public void setMenus(ArrayList<Menu> menus) {
+        this.menus = menus;
     }
 
     public int getId() {

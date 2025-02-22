@@ -13,7 +13,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Menú Cliente</title>
-        <link rel="stylesheet" type="text/css" href="css/estilos.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloIndex.css">
         <link rel="stylesheet" type="text/css" href="css/estiloCliente.css">
 
     </head>

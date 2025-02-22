@@ -17,10 +17,9 @@
     <head>
         <meta charset="UTF-8">
         <title>Alta de Datos</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloAlta.css?v=2">
-
-
+        <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css?v=2">
 
     </head>
     <body>
@@ -40,7 +39,7 @@
             <!-- Formulario Alta Coordinador -->
             <div class="formulario-contenedor">
                 <form action="ControladorAdm" method="post">
-                    <h2>Registrar Coordinador</h2>
+                    <h2>Alta Coordinador</h2>
                     <input type="hidden" name="action" value="registrarCoordinador">
 
                     <label for="usuario">Usuario:</label>
@@ -99,7 +98,7 @@
             <!-- Formulario Alta Administrador -->
             <div class="formulario-contenedor">
                 <form action="ControladorAdm" method="POST">
-                    <h2>Registrar Administrador</h2>
+                    <h2>Alta Administrador</h2>
                     <input type="hidden" name="action" value="registrarAdministrador">
 
                     <label for="usuario">Usuario:</label>
@@ -157,7 +156,7 @@
                         </c:forEach>
                     </c:if>
                     <c:if test="${empty platosEntrada}">
-                        <p>No hay platos disponibles.</p>
+                        <p>No hay platos de entrada disponibles.</p>
                     </c:if>
 
                     <p>Selecciona los Platos Principales:</p>
@@ -169,11 +168,10 @@
                         </c:forEach>
                     </c:if>
                     <c:if test="${empty platosPrincipal}">
-                        <p>No hay platos disponibles.</p>
+                        <p>No hay platos principales disponibles.</p>
                     </c:if>
 
-                    <input type="submit" value="Registrar Menu">
-
+                    <input type="submit" value="Registrar Menú">
                 </form>
 
                 <!-- Usando JSTL para mostrar mensajes -->
@@ -194,18 +192,59 @@
 
                     <p>Selecciona los Menus:</p>
                     <c:if test="${not empty menus}">
-                        <c:forEach var="menu" items="${menus}">
-                            <label>
-                                <input type="checkbox" name="menus[]" value="${menu.id}"> ${menu.nombreMenu}
-                            </label><br>
-                        </c:forEach>
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>Seleccionar</th>
+                                    <th>Nombre Menú</th>
+                                    <th>Precio</th>
+                                    <th>Entradas</th>
+                                    <th>Platos Principales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="menu" items="${menus}">
+                                    <tr>
+                                        <!-- Checkbox para seleccionar el menú -->
+                                        <td>
+                                            <input type="checkbox" name="menus[]" value="${menu.id}">
+                                        </td>
+                                        <td>${menu.nombreMenu}</td>
+                                        <td>${menu.precio}</td>
+
+                                        <!-- Entradas -->
+                                        <td>
+                                            <c:if test="${not empty menu.platosEntrada}">
+                                                <ul>
+                                                    <c:forEach var="plato" items="${menu.platosEntrada}">
+                                                        <li>${plato.nombre}</li>
+                                                        </c:forEach>
+                                                </ul>
+                                            </c:if>
+                                            <c:if test="${empty menu.platosEntrada}">
+                                                <p>No tiene entradas.</p>
+                                            </c:if>
+                                        </td>
+
+                                        <!-- Platos Principales -->
+                                        <td>
+                                            <ul>
+                                                <c:forEach var="plato" items="${menu.platosPrincipal}">
+                                                    <li>${plato.nombre}</li>
+                                                    </c:forEach>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
                     </c:if>
+
                     <c:if test="${empty menus}">
                         <p>No hay Menús disponibles.</p>
                     </c:if>
 
                     <input type="submit" value="Registrar Servicio">
-
                 </form>
 
                 <!-- Usando JSTL para mostrar mensajes -->

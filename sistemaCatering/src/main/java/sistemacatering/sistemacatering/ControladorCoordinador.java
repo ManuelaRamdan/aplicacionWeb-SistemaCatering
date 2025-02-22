@@ -78,6 +78,7 @@ public class ControladorCoordinador extends HttpServlet {
                 case "mostrarModificarReserva":
 
                     reservas = modelo.obtenerReservaBd();
+
                     request.setAttribute("reservas", reservas);
 
                     request.getRequestDispatcher("vistaCoordModificarReserva.jsp").forward(request, response);
@@ -217,7 +218,7 @@ public class ControladorCoordinador extends HttpServlet {
                     // Agregar servicios a la reserva si fueron seleccionados
                     if (serviciosSeleccionados != null) {
                         for (String idServicio : serviciosSeleccionados) {
-                            Servicio servicio = modelo.obtenerServicioPorId(Integer.parseInt(idServicio));
+                            Servicio servicio = modelo.obtenerServicioConId(Integer.parseInt(idServicio));
                             if (servicio != null) {
                                 reserva.getServicios().add(servicio);
                             }
@@ -292,6 +293,7 @@ public class ControladorCoordinador extends HttpServlet {
                     }
                     // Llamar al modelo para obtener los servicios disponibles con las fechas formateadas
                     List<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
+                    System.out.println("Servicios disponibles: " + serviciosDisponibles);
 
                     request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
                     request.setAttribute("fechaFinEvento", fechaFinUsuario);
@@ -359,6 +361,136 @@ public class ControladorCoordinador extends HttpServlet {
 
                 dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
                 dispatcher.forward(request, response);
+
+                break;
+
+            case "modificarReserva":
+                idReserva = Integer.parseInt(request.getParameter("idReserva"));
+                String fechaInicio = request.getParameter("fechaInicio"); // La fecha de inicio de la reserva
+                String fechaFin = request.getParameter("fechaFin"); // La fecha de fin de la reserva
+
+                // Obtener los servicios no seleccionados y disponibles en esas fechas
+                List<Servicio> servicios = modelo.obtenerServiciosNoSeleccionados(idReserva, fechaInicio, fechaFin);
+                Reserva reserva = modelo.obtenerReservaConId(idReserva);
+
+                request.setAttribute("reserva", reserva);
+                request.setAttribute("servicios", servicios);
+                dispatcher = request.getRequestDispatcher("vistaCoordModificarReserva.jsp");
+                dispatcher.forward(request, response);
+                break;
+
+            case "actualizarReservaDatos":
+                try {
+                    // Obtén los parámetros del formulario
+                    idReserva = Integer.parseInt(request.getParameter("idReserva"));
+                    int codCliente = Integer.parseInt(request.getParameter("codCliente"));
+                    fechaInicioUsuario = request.getParameter("fechaInicioEvento");
+                    fechaFinUsuario = request.getParameter("fechaFinEvento");
+                    String restriccionesDieteticas = request.getParameter("restriccionesDieteticas");
+                    String preferenciaCliente = request.getParameter("preferenciaCliente");
+                    String tipoServicio = request.getParameter("tipoServicio");
+                    int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
+                    int precio = Integer.parseInt(request.getParameter("precio"));
+                    String modoDeReserva = request.getParameter("modoDeReserva");
+                    String calle = request.getParameter("calle");
+                    int altura = Integer.parseInt(request.getParameter("altura"));
+                    String barrio = request.getParameter("barrio");
+
+                    // Captura el valor del checkbox "Está entregado" (se pasa como "on" si está marcado)
+                    boolean estaEntregado = request.getParameter("estaEntregado") != null;
+
+                    // Verificar que el código del cliente es válido
+                    boolean clienteExiste = modelo.verificarCliente(codCliente);
+                    if (!clienteExiste) {
+                        request.setAttribute("error", "El código del cliente no existe.");
+                        dispatcher = request.getRequestDispatcher("vistaCoordModificarReserva.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+
+                    // Formato para parsear la fecha
+                    SimpleDateFormat iF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+                    Date fechaInicioEvento = iF.parse(fechaInicioUsuario);
+                    Date fechaFinEvento = iF.parse(fechaFinUsuario);
+                    Date fechaReserva = new Date(); // Fecha de reserva actual
+
+                    // Convertir fechas a LocalDateTime para validar que sean futuras
+                    ZoneId zoneId = ZoneId.systemDefault();
+                    LocalDateTime fechaInicioLocal = fechaInicioEvento.toInstant().atZone(zoneId).toLocalDateTime();
+                    LocalDateTime fechaFinLocal = fechaFinEvento.toInstant().atZone(zoneId).toLocalDateTime();
+
+                    // Llamada al método de actualización de reserva, que ahora también acepta "estaEntregado"
+                    boolean actualizado = modelo.actualizarReserva(idReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas, preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva, calle, altura, barrio, estaEntregado);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeModificarReserva", "Servicio actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeModificarReserva", "Error, no se pudo actualizar el menú.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeModificarReserva", "Error: ID de Servicio no válido.");
+                } catch (ParseException e) {
+                    request.setAttribute("mensajeModificarReserva", "Error: Formato de fecha no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorCoordinador?accion=mostrarModificarReserva");
+                break;
+
+            case "agregarServicioReserva":
+                try {
+                    // Obtén los parámetros del formulario
+                    idReserva = Integer.parseInt(request.getParameter("idReserva"));
+                    String[] serviciosId = request.getParameterValues("servicios[]");
+                    List<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
+
+                    boolean actualizado = modelo.agregarServicioReserva(idReserva, serviciosSeleccionados);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeModificarReserva", "Servicio actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeModificarReserva", "Error, no se pudo actualizar el servicio.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeModificarReserva", "Error: ID de servicio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorCoordinador?accion=mostrarModificarReserva");
+
+                break;
+            case "eliminarServicioReserva":
+                try {
+                    idReserva = Integer.parseInt(request.getParameter("idReserva"));
+                    String[] serviciosId = request.getParameterValues("serviciosEliminar[]");
+                    List<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
+
+                    reserva = modelo.obtenerReservaConId(idReserva);
+                    if (serviciosSeleccionados != null && serviciosSeleccionados.size() >= reserva.getServicios().size()) {
+                        // Si hay más platos seleccionados para eliminar que los disponibles en el menú
+                        request.setAttribute("mensajeModificarReserva", "No se puede eliminar todos los servicios. Debe haber al menos uno.");
+                        // Redirige para mostrar el resultado
+                        dispatcher = request.getRequestDispatcher("vistaCoordModificarReserva.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+                    // Llama al método del modelo para eliminar los platos seleccionados
+                    eliminado = modelo.eliminarServicioReserva(idReserva, serviciosSeleccionados);
+
+                    if (eliminado) {
+                        request.setAttribute("mensajeModificarReserva", "Menus seleccionados exitosamente");
+                    } else {
+                        request.setAttribute("mensajeModificarReserva", "Error, no se pudo eliminar los menus del serviccio.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeModificarReserva", "Error: ID de servicio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorCoordinador?accion=mostrarModificarReserva");
 
                 break;
             default:

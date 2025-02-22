@@ -10,15 +10,11 @@
 
 <%@ taglib prefix="fnt" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-
-
-
 <!DOCTYPE html>
 <html lang="es">
     <head>
         <meta charset="UTF-8">
         <title>Mostrar Datos</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloAdm.css">
         <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css">
     </head>
     <body>
@@ -120,6 +116,8 @@
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Precio</th>
+                        <th>Entradas</th>
+                        <th>Platos Principales</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,10 +126,26 @@
                             <td>${menu.id}</td>
                             <td>${menu.nombreMenu}</td>
                             <td>${menu.precio}</td>
+
+                            <!-- Entradas -->
+                            <td>
+                                <c:forEach var="plato" items="${menu.platosEntrada}">
+                                    ${plato.nombre}<br>
+                                </c:forEach>
+                            </td>
+
+                            <!-- Platos Principales -->
+                            <td>
+                                <c:forEach var="plato" items="${menu.platosPrincipal}">
+                                    ${plato.nombre}<br>
+                                </c:forEach>
+                            </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
+
+
 
             <h2>Reservas</h2>
             <table border="1">
@@ -187,22 +201,72 @@
             </table>
 
             <h2>Servicios</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="servicio" items="${servicios}">
+
+            <c:if test="${empty servicios}">
+                <p>No hay servicios disponibles.</p>
+            </c:if>
+
+            <c:if test="${not empty servicios}">
+                <table border="1">
+                    <thead>
                         <tr>
-                            <td>${servicio.id}</td>
-                            <td>${servicio.nombreServicio}</td>
+                            <th>Servicio ID</th>
+                            <th>Nombre Servicio</th>
+                            <th>Menú</th> <!-- Nueva columna para los menús -->
                         </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="servicio" items="${servicios}">
+                            <tr>
+                                <td>${servicio.id}</td>
+                                <td>${servicio.nombreServicio}</td>
+                                <td>
+                                    <!-- Tabla anidada para los menús de este servicio -->
+                                    <c:if test="${not empty servicio.menus}">
+                                        <table border="1">
+                                            <thead>
+                                                <tr>
+                                                    <th>Menú ID</th>
+                                                    <th>Nombre Menú</th>
+                                                    <th>Precio</th>
+                                                    <th>Entradas</th>
+                                                    <th>Platos Principales</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach var="menu" items="${servicio.menus}">
+                                                    <tr>
+                                                        <td>${menu.id}</td>
+                                                        <td>${menu.nombreMenu}</td>
+                                                        <td>${menu.precio}</td>
+
+                                                        <!-- Entradas -->
+                                                        <td>
+                                                            <c:forEach var="plato" items="${menu.platosEntrada}">
+                                                                ${plato.nombre}<br>
+                                                            </c:forEach>
+                                                        </td>
+
+                                                        <!-- Platos Principales -->
+                                                        <td>
+                                                            <c:forEach var="plato" items="${menu.platosPrincipal}">
+                                                                ${plato.nombre}<br>
+                                                            </c:forEach>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </c:if>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:if>
+
+
+
         </div>
 
     </body>

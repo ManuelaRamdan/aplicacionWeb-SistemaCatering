@@ -8,7 +8,7 @@ package sistemacatering.sistemacatering;
  *
  * @author Usuario
  */
-class Domicilio {
+public class Domicilio {
 
     private int id;
     private String calle;

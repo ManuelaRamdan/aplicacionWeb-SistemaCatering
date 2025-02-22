@@ -49,7 +49,7 @@ public class ControladorAdm extends HttpServlet {
                 case "mostrarAlta":
 
                     List<Plato> platos = modelo.obtenerPlatosBd();
-                    List<Menu> menus = modelo.obtenerMenusBd();
+                    List<Menu> menus = modelo.obtenerMenusConPlatos();
 
                     request.setAttribute("platosEntrada", platos);
                     request.setAttribute("platosPrincipal", platos);
@@ -68,13 +68,13 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("clientes", clientes);
 
                     platos = modelo.obtenerPlatosBd();
-                    menus = modelo.obtenerMenusBd();
+                    menus = modelo.obtenerMenusConPlatos();
 
                     request.setAttribute("platos", platos);
 
                     request.setAttribute("menus", menus);
 
-                    List<Servicio> servicios = modelo.obtenerServiciosBd();
+                    List<Servicio> servicios = modelo.obtenerServiciosConMenusYPlatos();
                     request.setAttribute("servicios", servicios);
 
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
@@ -111,15 +111,32 @@ public class ControladorAdm extends HttpServlet {
 
                     request.getRequestDispatcher("vistaAdmModificarPlato.jsp").forward(request, response);
                     break;
+
+                case "mostrarModificarMenu":
+
+                    menus = modelo.obtenerMenusConPlatos();
+
+                    request.setAttribute("menus", menus);
+                    request.getRequestDispatcher("vistaAdmModificarMenu.jsp").forward(request, response);
+                    break;
+
+                case "mostrarModificarServicio":
+
+                    servicios = modelo.obtenerServiciosConMenusYPlatos();
+
+                    request.setAttribute("servicios", servicios);
+
+                    request.getRequestDispatcher("vistaAdmModificarServicio.jsp").forward(request, response);
+                    break;
                 case "mostrar":
                     // Fetch all data
                     administradores = modelo.obtenerAdministradoresBd();
                     clientes = modelo.obtenerClientesBd();
                     coordinadores = modelo.obtenerCoordinadoresBd();
                     platos = modelo.obtenerPlatosBd();
-                    menus = modelo.obtenerMenusBd();
+                    menus = modelo.obtenerMenusConPlatos();  // Método que devuelve los menús con sus platos.
 
-                    servicios = modelo.obtenerServiciosBd();
+                    servicios = modelo.obtenerServiciosConMenusYPlatos();
 
                     // Set the data as request attributes
                     request.setAttribute("administradores", administradores);
@@ -172,7 +189,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
                 break;
 
             case "registrarAdministrador":
@@ -189,7 +206,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
 
                 break;
 
@@ -208,7 +225,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
 
                 break;
 
@@ -224,7 +241,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajePlato", "Error al registrar el plato.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
 
                 break;
 
@@ -247,7 +264,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
 
                 break;
             case "registrarServicio":
@@ -265,7 +282,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarAlta");
+                response.sendRedirect("ControladorAdm?accion=mostrarAlta");
 
                 break;
             case "eliminarCoordinador":
@@ -279,8 +296,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaCoordinador", "Error, no se puso eliminar");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
-
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
             case "eliminarAdministrador":
@@ -294,8 +310,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaAdministrador", "Error, no se puso eliminar");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
-
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
 
@@ -310,8 +325,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
                 }
 
-                   response.sendRedirect("ControladorAdm?accion=mostrarBaja");
-
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
 
@@ -325,8 +339,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
-
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
 
@@ -340,7 +353,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaMenu", "Error, no se pudo eliminar");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
 
@@ -354,7 +367,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeBajaServicio", "Error, no se pudo eliminar");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarBaja");
+                response.sendRedirect("ControladorAdm?accion=mostrarBaja");
 
                 break;
 
@@ -362,7 +375,8 @@ public class ControladorAdm extends HttpServlet {
                 String personaId = request.getParameter("persona_id");  // Obtener persona_id
                 Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
                 request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarCliente");
+                RequestDispatcher dispatcher = request.getRequestDispatcher("vistaAdmModificarCliente.jsp");
+                dispatcher.forward(request, response);
 
                 break;
 
@@ -388,7 +402,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarCliente");
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarCliente");
 
                 break;
 
@@ -396,7 +410,8 @@ public class ControladorAdm extends HttpServlet {
                 idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
                 Administrador administrador = modelo.obtenerAdministradorPorId(idAdministrador);  // Obtener reservas usando persona_id
                 request.setAttribute("administrador", administrador);  // Establecer las reservas en el request
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarAdministrador");
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarAdm.jsp");
+                dispatcher.forward(request, response);
 
                 break;
 
@@ -406,7 +421,8 @@ public class ControladorAdm extends HttpServlet {
                 Coordinador coordinador = modelo.obtenerCoordinadorPorId(idCoordinador);  // Obtener coordinador usando persona_id
 
                 request.setAttribute("coordinador", coordinador);  // Establecer los datos del coordinador en el request
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarCoordinador");
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarCoordinador.jsp");
+                dispatcher.forward(request, response);
 
                 break;
 
@@ -414,7 +430,8 @@ public class ControladorAdm extends HttpServlet {
                 idPlato = Integer.parseInt(request.getParameter("idPlato"));
                 Plato plato = modelo.obtenerPlatoPorId(idPlato);  // Obtener reservas usando persona_id
                 request.setAttribute("plato", plato);  // Establecer las reservas en el request
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarPlato");
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarPlato.jsp");
+                dispatcher.forward(request, response);
 
                 break;
 
@@ -437,7 +454,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarAdministrador", "Error: ID de cliente no válido.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarAdministrador");
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarAdministrador");
 
                 break;
 
@@ -458,7 +475,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarCoordinador", "Error: ID de Coordinador no válido.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarCoordinador");
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarCoordinador");
 
                 break;
 
@@ -480,8 +497,203 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("mensajeActualizarPlato", "Error: ID de Plato no válido.");
                 }
 
-               response.sendRedirect("ControladorAdm?accion=mostrarModificarPlato");
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarPlato");
 
+                break;
+
+            case "modificarMenu":
+                idMenu = Integer.parseInt(request.getParameter("idMenu"));
+
+                List<Plato> platosEntrada = modelo.obtenerPlatosNoSeleccionados(idMenu, "Entrada");
+                List<Plato> platosPrincipal = modelo.obtenerPlatosNoSeleccionados(idMenu, "Principal");
+
+                request.setAttribute("platosEntrada", platosEntrada);
+                request.setAttribute("platosPrincipal", platosPrincipal);
+                Menu menu = modelo.obtenerMenuConId(idMenu);  // Obtener reservas usando persona_id
+                request.setAttribute("menu", menu);  // Establecer las reservas en el request
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarMenu.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+
+            case "actualizarMenuNombrePrecio":
+                try {
+                    // Obtén los parámetros del formulario
+                    idMenu = Integer.parseInt(request.getParameter("idMenu"));
+                    nombre = request.getParameter("nombre");
+                    int precio = Integer.parseInt(request.getParameter("precio"));
+
+                    boolean actualizado = modelo.actualizarMenuNombrePrecio(idMenu, nombre, precio);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarMenu", "Menú actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarMenu", "Error, no se pudo actualizar el menú.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarMenu", "Error: ID de menú o precio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarMenu");
+                break;
+            case "agregarPlatosMenu":
+                try {
+                    // Obtén los parámetros del formulario
+                    idMenu = Integer.parseInt(request.getParameter("idMenu"));
+                    platosEntradaIds = request.getParameterValues("platoEntrada[]");
+                    platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
+                    for (Integer platoId : platosEntradaSeleccionados) {
+                        System.out.println("Plato seleccionado ID: " + platoId);
+                    }
+                    // Obtener IDs de platos principales seleccionados
+                    platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
+                    platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
+                    for (Integer platoId : platosPrincipalSeleccionados) {
+                        System.out.println("Plato seleccionado ID: " + platoId);
+                    }
+                    boolean actualizado = modelo.agregarPlatosMenu(idMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarMenu", "Menú actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarMenu", "Error, no se pudo actualizar el menú.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarMenu", "Error: ID de menú o precio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarMenu");
+                break;
+            case "eliminarPlatoMenu":
+                try {
+                    // Obtén los parámetros del formulario
+                    idMenu = Integer.parseInt(request.getParameter("idMenu"));
+
+                    // Obtén los platos de entrada seleccionados para eliminar
+                    String[] platosEntradaEliminarIds = request.getParameterValues("platoEntradaEliminar[]");
+                    List<Integer> platosEntradaEliminar = modelo.obtenerIdsSeleccionados(platosEntradaEliminarIds);
+
+                    // Obtén los platos principales seleccionados para eliminar
+                    String[] platosPrincipalEliminarIds = request.getParameterValues("platoPrincipalEliminar[]");
+                    List<Integer> platosPrincipalEliminar = modelo.obtenerIdsSeleccionados(platosPrincipalEliminarIds);
+                    menu = modelo.obtenerMenuConId(idMenu);
+                    if (platosPrincipalEliminar != null && platosPrincipalEliminar.size() >= menu.getPlatosPrincipal().size()) {
+                        // Si hay más platos seleccionados para eliminar que los disponibles en el menú
+                        request.setAttribute("mensajeActualizarMenu", "No se puede eliminar todos los platos principales. Debe haber al menos uno.");
+                        // Redirige para mostrar el resultado
+                        dispatcher = request.getRequestDispatcher("vistaAdmModificarMenu.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+                    // Llama al método del modelo para eliminar los platos seleccionados
+                    eliminado = modelo.eliminarPlatosMenu(idMenu, platosEntradaEliminar, platosPrincipalEliminar);
+
+                    if (eliminado) {
+                        request.setAttribute("mensajeActualizarMenu", "Platos eliminados exitosamente del menú.");
+                    } else {
+                        request.setAttribute("mensajeActualizarMenu", "Error, no se pudo eliminar los platos del menú.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarMenu", "Error: ID de menú no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarMenu");
+                break;
+
+            case "modificarServicio":
+                idServicio = Integer.parseInt(request.getParameter("idServicio"));
+                List<Menu> menus = modelo.obtenerMenuNoSeleccionado(idServicio);
+                Servicio servicio = modelo.obtenerServicioConId(idServicio);  // Obtener reservas usando persona_id
+                request.setAttribute("servicio", servicio);
+                request.setAttribute("menus", menus);
+                dispatcher = request.getRequestDispatcher("vistaAdmModificarServicio.jsp");
+                dispatcher.forward(request, response);
+
+                break;
+            case "actualizarServicioMenu":
+                try {
+                    // Obtén los parámetros del formulario
+                    idServicio = Integer.parseInt(request.getParameter("idServicio"));
+                    nombre = request.getParameter("nombre");
+
+                    boolean actualizado = modelo.actualizarServicioMenu(idServicio, nombre);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarServicio", "Servicio actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarServicio", "Error, no se pudo actualizar el menú.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarServicio", "Error: ID de Servicio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarServicio");
+                break;
+
+            case "agregarMenuServicio":
+                try {
+                    // Obtén los parámetros del formulario
+                    idServicio = Integer.parseInt(request.getParameter("idServicio"));
+                    menuIds = request.getParameterValues("menus[]");
+                    menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
+
+                    boolean actualizado = modelo.agregarMenuServicio(idServicio, menusSeleccionados);
+
+                    if (actualizado) {
+                        request.setAttribute("mensajeActualizarServicio", "Servicio actualizado exitosamente.");
+                    } else {
+                        request.setAttribute("mensajeActualizarServicio", "Error, no se pudo actualizar el servicio.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarServicio", "Error: ID de servicio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarServicio");
+                break;
+            case "eliminarMenuServicio":
+                try {
+                    // Obtén los parámetros del formulario
+                    idServicio = Integer.parseInt(request.getParameter("idServicio"));
+
+                    // Obtén los platos de entrada seleccionados para eliminar
+                    menuIds = request.getParameterValues("menusEliminar[]");
+                    menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
+
+
+                    servicio = modelo.obtenerServicioConId(idServicio);
+                    if (menusSeleccionados != null && menusSeleccionados.size() >= servicio.getMenus().size()) {
+                        // Si hay más platos seleccionados para eliminar que los disponibles en el menú
+                        request.setAttribute("mensajeActualizarServicio", "No se puede eliminar todos los menus. Debe haber al menos uno.");
+                        // Redirige para mostrar el resultado
+                        dispatcher = request.getRequestDispatcher("vistaAdmModificarServicio.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+                    // Llama al método del modelo para eliminar los platos seleccionados
+                    eliminado = modelo.eliminarMenuServicio(idServicio, menusSeleccionados);
+
+                    if (eliminado) {
+                        request.setAttribute("mensajeActualizarServicio", "Menus seleccionados exitosamente");
+                    } else {
+                        request.setAttribute("mensajeActualizarServicio", "Error, no se pudo eliminar los menus del serviccio.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    request.setAttribute("mensajeActualizarServicio", "Error: ID de servicio no válido.");
+                }
+
+                // Redirige para mostrar el resultado
+                response.sendRedirect("ControladorAdm?accion=mostrarModificarServicio");
                 break;
             default:
                 // Si la acción no es reconocida, redirige a una página de error
