@@ -148,7 +148,10 @@
 
                     <label>Nombre del Menú:</label>
                     <input type="text" name="nombreMenu" required>
-
+                    
+                    <label>Precio:</label>
+                    <input type="text" name="precio" required>
+                    
                     <p>Selecciona los Platos de la entrada:</p>
                     <c:if test="${not empty platosEntrada}">
                         <c:forEach var="plato" items="${platosEntrada}">

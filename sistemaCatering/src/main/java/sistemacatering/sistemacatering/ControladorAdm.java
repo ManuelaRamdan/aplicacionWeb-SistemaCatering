@@ -252,7 +252,7 @@ public class ControladorAdm extends HttpServlet {
 
             case "registrarMenu":
                 String nombreMenu = request.getParameter("nombreMenu");
-
+                int precio = Integer.parseInt(request.getParameter("precio"));
                 // Obtener IDs de platos de entrada seleccionados
                 String[] platosEntradaIds = request.getParameterValues("platoEntrada[]");
                 List<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
@@ -261,7 +261,7 @@ public class ControladorAdm extends HttpServlet {
                 String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
                 List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
 
-                registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados);
+                registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados, precio);
 
                 if (registrado) {
                     request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
@@ -526,7 +526,7 @@ public class ControladorAdm extends HttpServlet {
                     // Obtén los parámetros del formulario
                     idMenu = Integer.parseInt(request.getParameter("idMenu"));
                     nombre = request.getParameter("nombre");
-                    int precio = Integer.parseInt(request.getParameter("precio"));
+                    precio = Integer.parseInt(request.getParameter("precio"));
 
                     boolean actualizado = modelo.actualizarMenuNombrePrecio(idMenu, nombre, precio);
 

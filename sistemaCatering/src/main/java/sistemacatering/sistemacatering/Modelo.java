@@ -393,7 +393,7 @@ public class Modelo {
         return listaPlatos;
     }
 
-    public boolean registrarMenu(String nombreMenu, List<Integer> platosEntrada, List<Integer> platosPrincipal) {
+    public boolean registrarMenu(String nombreMenu, List<Integer> platosEntrada, List<Integer> platosPrincipal, int precio) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement menu = null;
@@ -405,9 +405,10 @@ public class Modelo {
             con.setAutoCommit(false);
 
             // 1. Insertar en Menu
-            String menuSql = "INSERT INTO Menu (nombreMenu) VALUES (?)"; // Solo el nombre del menú
+            String menuSql = "INSERT INTO Menu (nombreMenu , precio) VALUES (? , ?)"; // Solo el nombre del menú
             menu = con.prepareStatement(menuSql, Statement.RETURN_GENERATED_KEYS);
             menu.setString(1, nombreMenu);
+            menu.setInt(2, precio);
             int menuInserted = menu.executeUpdate();
 
             if (menuInserted == 0) {
