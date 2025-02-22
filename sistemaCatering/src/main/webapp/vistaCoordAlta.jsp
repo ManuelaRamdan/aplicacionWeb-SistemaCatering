@@ -123,13 +123,12 @@
                     <label for="cantidadPersonas">Cantidad de Personas:</label>
                     <input type="number" id="cantidadPersonas" name="cantidadPersonas" required>
 
-                    <label for="precio">Precio:</label>
-                    <input type="number" id="precio" name="precio" required>
-
                     <label for="modoDeReserva">Modo de Reserva:</label>
                     <select id="modoDeReserva" name="modoDeReserva" required>
-                        <option value="online">Online</option>
-                        <option value="presencial">Presencial</option>
+                        <option value="MAIL">MAIL</option>
+                        <option value="PRESENCIAL">PRESENCIAL</option>
+                        <option value="TELEFONO">TELEFONO</option>
+
                     </select>
 
                     <h3>Dirección de Entrega</h3>

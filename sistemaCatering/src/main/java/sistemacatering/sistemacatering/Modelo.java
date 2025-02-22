@@ -1608,6 +1608,8 @@ public class Modelo {
         PreparedStatement domicilioStmt = null;
         ResultSet generatedKeys = null;
 
+        int precio = obtenerPrecioReserva(reserva.getServicios(), reserva.getCantidadPersonas());
+
         try {
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
             con.setAutoCommit(false);
@@ -3027,10 +3029,13 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return reserva; // Retornar la reserva con los servicios y menús asociados, o null si no existe
     }
 
-    public boolean actualizarReserva(int idReserva, int codCliente, java.util.Date fechaInicioEvento, java.util.Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, String calle, int altura, String barrio, boolean estaEntregado) {
+    public boolean actualizarReserva(int idReserva, int codCliente, java.util.Date fechaInicioEvento, java.util.Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, String modoDeReserva, String calle, int altura, String barrio, boolean estaEntregado) {
 
         Connection con = null;
         PreparedStatement ps = null;
+
+        Reserva r = obtenerReservaConId(idReserva);
+        int precio = obtenerPrecioReserva(r.getServicios(), cantidadPersonas);
 
         try {
             // Establecer la conexión
@@ -3111,54 +3116,67 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         boolean registrado = false;
         Connection con = null;
         PreparedStatement reservaServicio = null;
+        List<Servicio> servicios = new ArrayList<>();
 
-        try {
-            // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            con.setAutoCommit(false); // Desactivar el auto-commit para asegurar la atomicidad
-
-            // SQL para insertar la relación entre la reserva y los servicios
-            String reservaServicioSql = "INSERT INTO reserva_servicio (reserva_id, servicio_id) VALUES (?, ?)";
-            reservaServicio = con.prepareStatement(reservaServicioSql);
-
-            // Insertar los servicios seleccionados para la reserva
-            for (int servicioId : serviciosSeleccionados) {
-                reservaServicio.setInt(1, idReserva);     // reserva_id
-                reservaServicio.setInt(2, servicioId);    // servicio_id
-                reservaServicio.addBatch(); // Añadir al batch
-            }
-
-            // Ejecutar el batch de inserciones
-            reservaServicio.executeBatch();
-
-            // Si todo va bien, hacer commit
-            con.commit();
-            registrado = true;
-
-        } catch (SQLException e) {
-            // Si ocurre una excepción, hacer rollback
-            if (con != null) {
-                try {
-                    con.rollback(); // Revertir las inserciones en caso de error
-                } catch (SQLException ex) {
-                    reportException(ex.getMessage()); // Manejar el rollback
-                }
-            }
-            reportException(e.getMessage()); // Manejar el error original
-        } finally {
-            // Cerrar recursos
-            try {
-                if (reservaServicio != null) {
-                    reservaServicio.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            } catch (SQLException e) {
-                reportException(e.getMessage()); // Manejar el cierre de recursos
-            }
+        Reserva r = obtenerReservaConId(idReserva);
+        for (Integer id : serviciosSeleccionados) {
+            Servicio s = obtenerServicioConId(id);
+            servicios.add(s);
         }
 
+        int precioNuevosServicios = obtenerPrecioReserva(servicios, r.getCantidadPersonas());
+        int precioTotalActualizado = r.getPrecio() + precioNuevosServicios;
+
+        boolean actualizado = actualizarPrecioReserva(idReserva, precioTotalActualizado);
+        if (actualizado) {
+            try {
+                // Establecer conexión con la base de datos
+                con = DriverManager.getConnection(urlRoot + dbName, "", "");
+                con.setAutoCommit(false); // Desactivar el auto-commit para asegurar la atomicidad
+
+                // SQL para insertar la relación entre la reserva y los servicios
+                String reservaServicioSql = "INSERT INTO reserva_servicio (reserva_id, servicio_id) VALUES (?, ?)";
+                reservaServicio = con.prepareStatement(reservaServicioSql);
+
+                // Insertar los servicios seleccionados para la reserva
+                for (int servicioId : serviciosSeleccionados) {
+                    reservaServicio.setInt(1, idReserva);     // reserva_id
+                    reservaServicio.setInt(2, servicioId);    // servicio_id
+                    reservaServicio.addBatch(); // Añadir al batch
+                }
+
+                // Ejecutar el batch de inserciones
+                reservaServicio.executeBatch();
+
+                // Si todo va bien, hacer commit
+                con.commit();
+                registrado = true;
+
+            } catch (SQLException e) {
+                // Si ocurre una excepción, hacer rollback
+                if (con != null) {
+                    try {
+                        con.rollback(); // Revertir las inserciones en caso de error
+                    } catch (SQLException ex) {
+                        reportException(ex.getMessage()); // Manejar el rollback
+                    }
+                }
+                reportException(e.getMessage()); // Manejar el error original
+            } finally {
+                // Cerrar recursos
+                try {
+                    if (reservaServicio != null) {
+                        reservaServicio.close();
+                    }
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException e) {
+                    reportException(e.getMessage()); // Manejar el cierre de recursos
+                }
+            }
+
+        }
         return registrado;
     }
 
@@ -3166,56 +3184,139 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         boolean eliminado = false;
         Connection con = null;
         PreparedStatement stmt = null;
+        List<Servicio> servicios = new ArrayList<>();
+        Reserva r = obtenerReservaConId(idReserva);
+        for (Integer id : serviciosSeleccionados) {
+            Servicio s = obtenerServicioConId(id);
+            servicios.add(s);
+        }
 
-        try {
-            // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
-            con.setAutoCommit(false); // Desactivamos el autocommit para hacer el commit manual
+        int precioNuevosServicios = obtenerPrecioReserva(servicios, r.getCantidadPersonas());
+        int precioTotalActualizado = r.getPrecio() - precioNuevosServicios;
 
-            // SQL para eliminar la relación entre la reserva y los servicios seleccionados
-            String sql = "DELETE FROM reserva_servicio WHERE reserva_id = ? AND servicio_id = ?";
+        boolean actualizado = actualizarPrecioReserva(idReserva, precioTotalActualizado);
+        if (actualizado) {
+            try {
+                // Establecer conexión con la base de datos
+                con = DriverManager.getConnection(urlRoot + dbName, "", "");
+                con.setAutoCommit(false); // Desactivamos el autocommit para hacer el commit manual
 
-            stmt = con.prepareStatement(sql);
+                // SQL para eliminar la relación entre la reserva y los servicios seleccionados
+                String sql = "DELETE FROM reserva_servicio WHERE reserva_id = ? AND servicio_id = ?";
 
-            // Eliminar los servicios seleccionados para la reserva
-            for (int idServicio : serviciosSeleccionados) {
-                stmt.setInt(1, idReserva); // Establecemos el id de la reserva
-                stmt.setInt(2, idServicio); // Establecemos el id del servicio
-                stmt.addBatch(); // Añadimos la eliminación al batch
-            }
+                stmt = con.prepareStatement(sql);
 
-            // Ejecutar el batch de eliminaciones
-            stmt.executeBatch();
+                // Eliminar los servicios seleccionados para la reserva
+                for (int idServicio : serviciosSeleccionados) {
+                    stmt.setInt(1, idReserva); // Establecemos el id de la reserva
+                    stmt.setInt(2, idServicio); // Establecemos el id del servicio
+                    stmt.addBatch(); // Añadimos la eliminación al batch
+                }
 
-            // Si todo va bien, hacer commit
-            con.commit();
-            eliminado = true;
+                // Ejecutar el batch de eliminaciones
+                stmt.executeBatch();
 
-        } catch (SQLException e) {
-            // Si ocurre una excepción, hacemos rollback
-            if (con != null) {
+                // Si todo va bien, hacer commit
+                con.commit();
+                eliminado = true;
+
+            } catch (SQLException e) {
+                // Si ocurre una excepción, hacemos rollback
+                if (con != null) {
+                    try {
+                        con.rollback();
+                    } catch (SQLException ex) {
+                        reportException(ex.getMessage());
+                    }
+                }
+                reportException(e.getMessage());
+            } finally {
+                // Cerrar recursos
                 try {
-                    con.rollback();
-                } catch (SQLException ex) {
-                    reportException(ex.getMessage());
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException e) {
+                    reportException(e.getMessage());
                 }
             }
-            reportException(e.getMessage());
-        } finally {
-            // Cerrar recursos
+        }
+
+        return eliminado;
+    }
+
+    private int obtenerPrecioReserva(List<Servicio> servicios, int cantPersonas) {
+
+        if (servicios == null || servicios.isEmpty()) {
+            return 0; // No hay servicios, el precio es 0
+        }
+        int montoTotal = 0;
+
+        for (Servicio s : servicios) {
+            for (Menu m : s.getMenus()) {
+                montoTotal += m.getPrecio();
+            }
+        }
+
+        return montoTotal * cantPersonas;
+    }
+
+    private boolean actualizarPrecioReserva(int idReserva, int precioTotalActualizado) {
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            // Establecer la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Iniciar transacción
+            con.setAutoCommit(false);
+
+            // Actualizar datos de la reserva
+            String sqlReserva = "UPDATE reserva "
+                    + "SET  precio = ? "
+                    + "WHERE id = ?";
+            ps = con.prepareStatement(sqlReserva);
+            ps.setInt(1, precioTotalActualizado);
+            ps.setInt(2, idReserva);
+
+            // Ejecutar la actualización de la reserva
+            int filasAfectadasReserva = ps.executeUpdate();
+
+            // Confirmar la transacción si se actualizaron las filas correctamente
+            if (filasAfectadasReserva > 0) {
+                con.commit();  // Confirmar la transacción
+                return true;
+            } else {
+                con.rollback();  // Revertir los cambios si no se actualizó nada
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
             try {
-                if (stmt != null) {
-                    stmt.close();
+                if (con != null) {
+                    con.rollback();  // Hacer rollback si ocurre un error
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            return false;
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (ps != null) {
+                    ps.close();
                 }
                 if (con != null) {
                     con.close();
                 }
             } catch (SQLException e) {
-                reportException(e.getMessage());
+                e.printStackTrace();
             }
         }
-
-        return eliminado;
     }
 
 }

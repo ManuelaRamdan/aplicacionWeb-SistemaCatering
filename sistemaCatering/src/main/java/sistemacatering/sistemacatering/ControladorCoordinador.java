@@ -168,7 +168,7 @@ public class ControladorCoordinador extends HttpServlet {
 
             case "registrarReserva":
                 try {
-// Obtener parámetros del formulario
+
                     int codCliente = Integer.parseInt(request.getParameter("codCliente"));
                     String fechaInicioUsuario = request.getParameter("fechaInicioEvento");
                     String fechaFinUsuario = request.getParameter("fechaFinEvento");
@@ -176,7 +176,8 @@ public class ControladorCoordinador extends HttpServlet {
                     String preferenciaCliente = request.getParameter("preferenciaCliente");
                     String tipoServicio = request.getParameter("tipoServicio");
                     int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
-                    int precio = Integer.parseInt(request.getParameter("precio"));
+                    
+                   int precio = 0;
                     String modoDeReserva = request.getParameter("modoDeReserva");
                     String calle = request.getParameter("calle");
                     int altura = Integer.parseInt(request.getParameter("altura"));
@@ -395,7 +396,6 @@ public class ControladorCoordinador extends HttpServlet {
                     String preferenciaCliente = request.getParameter("preferenciaCliente");
                     String tipoServicio = request.getParameter("tipoServicio");
                     int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
-                    int precio = Integer.parseInt(request.getParameter("precio"));
                     String modoDeReserva = request.getParameter("modoDeReserva");
                     String calle = request.getParameter("calle");
                     int altura = Integer.parseInt(request.getParameter("altura"));
@@ -425,7 +425,7 @@ public class ControladorCoordinador extends HttpServlet {
                     LocalDateTime fechaFinLocal = fechaFinEvento.toInstant().atZone(zoneId).toLocalDateTime();
 
                     // Llamada al método de actualización de reserva, que ahora también acepta "estaEntregado"
-                    boolean actualizado = modelo.actualizarReserva(idReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas, preferenciaCliente, tipoServicio, cantidadPersonas, precio, modoDeReserva, calle, altura, barrio, estaEntregado);
+                    boolean actualizado = modelo.actualizarReserva(idReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas, preferenciaCliente, tipoServicio, cantidadPersonas, modoDeReserva, calle, altura, barrio, estaEntregado);
 
                     if (actualizado) {
                         request.setAttribute("mensajeModificarReserva", "Servicio actualizado exitosamente.");

@@ -66,6 +66,7 @@
                                 <th>Preferencias del Cliente</th>
                                 <th>Tipo de Servicio</th>
                                 <th>Cantidad de Personas</th>
+                                <th>Precio</th>
                                 <th>Modo de Reserva</th>
                                 <th>Dirección de Entrega</th>
                                 <th>Entregado</th>
@@ -83,6 +84,7 @@
                                     <td>${reserva.preferenciaCliente}</td>
                                     <td>${reserva.tipoServicio}</td>
                                     <td>${reserva.cantidadPersonas}</td>
+                                    <td>${reserva.precio}</td>
                                     <td>${reserva.modoDeReserva}</td>
                                     <td>${reserva.direccionDeEntrega}</td>
                                     <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
