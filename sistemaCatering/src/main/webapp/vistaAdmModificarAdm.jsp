@@ -22,6 +22,8 @@
                 <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
                 <li><a href="ControladorAdm?accion=mostrarModificarAdministrador">Modificación</a></li>
                 <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li>
+                <li><a href="ControladorAdm?accion=salir">Salir</a></li>
+
             </ul>
         </div>
 

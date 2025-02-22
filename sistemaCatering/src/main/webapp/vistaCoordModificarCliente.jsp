@@ -25,6 +25,8 @@
                 <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
                 <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
                 <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>
+                <li><a href="ControladorCoordinador?accion=salir">Salir</a></li>
+
             </ul>
         </div>
 

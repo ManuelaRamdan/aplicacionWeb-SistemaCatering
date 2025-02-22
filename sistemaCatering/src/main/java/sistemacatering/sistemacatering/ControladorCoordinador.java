@@ -46,9 +46,14 @@ public class ControladorCoordinador extends HttpServlet {
             }
 
             switch (accion) {
+                case "salir":
+                    // Redirigir a la vista de menú
+                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("index.jsp");
+                    dispatcherMenu.forward(request, response);
+                    break;
                 case "menu":
                     // Redirigir a la vista de menú
-                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("vistaCoordinadorMenu.jsp");
+                    dispatcherMenu = request.getRequestDispatcher("vistaCoordinadorMenu.jsp");
                     dispatcherMenu.forward(request, response);
                     break;
 

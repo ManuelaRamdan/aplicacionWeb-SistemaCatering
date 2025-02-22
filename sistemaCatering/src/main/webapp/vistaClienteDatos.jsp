@@ -20,6 +20,8 @@
                 <!-- Botones para cambiar entre las secciones -->
                 <li><a href="ControladorCliente?accion=misDatos">Mis Datos</a></li>
                 <li><a href="ControladorCliente?accion=misReservas">Mis Reservas</a></li>
+                <li><a href="ControladorCliente?accion=salir">Salir</a></li>
+
 
             </ul>
         </div>

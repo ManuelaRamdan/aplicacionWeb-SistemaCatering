@@ -26,6 +26,8 @@
                 <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
                 <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
                 <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>
+                <li><a href="ControladorCoordinador?accion=salir">Salir</a></li>
+
             </ul>
         </div>
 
@@ -112,33 +114,33 @@
                                     <td>${reserva.codCliente}</td>
                                     <td>
                                         <c:if test="${not empty reserva.fechaInicioEvento}">
-                                <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
-                            </c:if>
-                            </td>
-                            <td>
-                                <c:if test="${not empty reserva.fechaFinEvento}">
-                                <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
-                            </c:if>
-                            </td>
-                            <td>${reserva.restriccionesDieteticas}</td>
-                            <td>${reserva.preferenciaCliente}</td>
-                            <td>${reserva.tipoServicio}</td>
-                            <td>${reserva.cantidadPersonas}</td>
-                            <td>${reserva.precio}</td>
-                            <td>${reserva.modoDeReserva}</td>
-                            <td>${reserva.direccionDeEntrega}</td>
-                            <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
-                            <td>
-                                <!-- Formulario para eliminar reserva con confirmación -->
-                                <form action="ControladorCoordinador" method="POST" style="display:inline;"
-                                      onsubmit="return confirm('¿Estás seguro de que deseas eliminar la reserva ${reserva.codReserva}?');">
-                                    <input type="hidden" name="action" value="eliminarReserva">
-                                    <input type="hidden" name="codReserva" value="${reserva.codReserva}">
-                                    <input type="submit" value="Eliminar" class="btn-eliminar">
-                                </form>
-                            </td>
-                            </tr>
-                        </c:forEach>
+                                            <fmt:formatDate value="${reserva.fechaInicioEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                                        </c:if>
+                                    </td>
+                                    <td>
+                                        <c:if test="${not empty reserva.fechaFinEvento}">
+                                            <fmt:formatDate value="${reserva.fechaFinEvento}" pattern="yyyy-MM-dd HH:mm"/>
+                                        </c:if>
+                                    </td>
+                                    <td>${reserva.restriccionesDieteticas}</td>
+                                    <td>${reserva.preferenciaCliente}</td>
+                                    <td>${reserva.tipoServicio}</td>
+                                    <td>${reserva.cantidadPersonas}</td>
+                                    <td>${reserva.precio}</td>
+                                    <td>${reserva.modoDeReserva}</td>
+                                    <td>${reserva.direccionDeEntrega}</td>
+                                    <td>${reserva.estaEntregado ? 'Sí' : 'No'}</td>
+                                    <td>
+                                        <!-- Formulario para eliminar reserva con confirmación -->
+                                        <form action="ControladorCoordinador" method="POST" style="display:inline;"
+                                              onsubmit="return confirm('¿Estás seguro de que deseas eliminar la reserva ${reserva.codReserva}?');">
+                                            <input type="hidden" name="action" value="eliminarReserva">
+                                            <input type="hidden" name="codReserva" value="${reserva.codReserva}">
+                                            <input type="submit" value="Eliminar" class="btn-eliminar">
+                                        </form>
+                                    </td>
+                                </tr>
+                            </c:forEach>
                         </tbody>
                     </table>
                 </c:if>

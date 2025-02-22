@@ -39,6 +39,11 @@ public class ControladorCliente extends HttpServlet {
             }
 
             switch (accion) {
+                case "salir":
+                    // Redirigir a la vista de menú
+                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("index.jsp");
+                    dispatcherMenu.forward(request, response);
+                    break;
                 case "misDatos":
 
                     Cliente cliente = modelo.obtenerClientePorId(idCliente);

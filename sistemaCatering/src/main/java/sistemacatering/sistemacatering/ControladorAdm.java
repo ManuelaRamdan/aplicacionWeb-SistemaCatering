@@ -40,9 +40,14 @@ public class ControladorAdm extends HttpServlet {
             }
 
             switch (accion) {
+                case "salir":
+                    // Redirigir a la vista de menú
+                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("index.jsp");
+                    dispatcherMenu.forward(request, response);
+                    break;
                 case "menu":
                     // Redirigir a la vista de menú
-                    RequestDispatcher dispatcherMenu = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
+                    dispatcherMenu = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
                     dispatcherMenu.forward(request, response);
                     break;
 
@@ -668,7 +673,6 @@ public class ControladorAdm extends HttpServlet {
                     // Obtén los platos de entrada seleccionados para eliminar
                     menuIds = request.getParameterValues("menusEliminar[]");
                     menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
-
 
                     servicio = modelo.obtenerServicioConId(idServicio);
                     if (menusSeleccionados != null && menusSeleccionados.size() >= servicio.getMenus().size()) {
