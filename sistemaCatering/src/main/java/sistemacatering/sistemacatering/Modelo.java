@@ -1552,7 +1552,7 @@ public class Modelo {
         return serviciosDisponibles;
     }
 
-    boolean verificarCliente(int codCliente) {
+    public boolean verificarCliente(int codCliente) {
         String query = "SELECT COUNT(*) FROM Cliente WHERE id = ? AND estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -3317,6 +3317,55 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean verificarPersona(String usuario, String password) {
+        String query = "SELECT COUNT(*) FROM Persona WHERE usuario = ? and  AND password = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean personaExiste = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, usuario);
+            stmt.setString(2, password);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    personaExiste = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return personaExiste;
     }
 
 }

@@ -184,14 +184,20 @@ public class ControladorAdm extends HttpServlet {
             case "registrarCoordinador":
                 String usuario = request.getParameter("usuario");
                 String password = request.getParameter("password");
+                boolean registrado = false;
+                boolean personaRepetida = modelo.verificarPersona(usuario, password);
+                if (personaRepetida) {
+                    registrado = modelo.registrarCoordinador(usuario, password);
 
-                boolean registrado = modelo.registrarCoordinador(usuario, password);
-
-                /* dependiendo si se pudo registrar o no , muestra un mensaje */
-                if (registrado) {
-                    request.setAttribute("mensajeCoordinador", "Coordinador registrado correctamente.");
+                    /* dependiendo si se pudo registrar o no , muestra un mensaje */
+                    if (registrado) {
+                        request.setAttribute("mensajeCoordinador", "Coordinador registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
+                    }
                 } else {
-                    request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador.");
+                    request.setAttribute("mensajeCoordinador", "Error al registrar el coordinador, el usuario y contraseña ya existe.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -201,14 +207,19 @@ public class ControladorAdm extends HttpServlet {
 
                 usuario = request.getParameter("usuario");
                 password = request.getParameter("password");
+                personaRepetida = modelo.verificarPersona(usuario, password);
+                if (personaRepetida) {
+                    registrado = modelo.registrarAdministrador(usuario, password);
 
-                registrado = modelo.registrarAdministrador(usuario, password);
+                    if (registrado) {
+                        request.setAttribute("mensajeAdm", "Administrador registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
+                    }
 
-                /* dependiendo si se pudo registrar o no , muestra un mensaje */
-                if (registrado) {
-                    request.setAttribute("mensajeAdm", "Administrador registrado correctamente.");
                 } else {
-                    request.setAttribute("mensajeAdm", "Error al registrar el Administrador.");
+                    request.setAttribute("mensajeAdm", "Error al registrar el administrador, el usuario y contraseña ya existe.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -218,16 +229,25 @@ public class ControladorAdm extends HttpServlet {
             case "registrarCliente":
                 usuario = request.getParameter("usuario");
                 password = request.getParameter("password");
-                String nombre = request.getParameter("nombre");
-                String apellido = request.getParameter("apellido");
-                String telefono = request.getParameter("telefono");
-                String email = request.getParameter("email");
 
-                registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-                if (registrado) {
-                    request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                personaRepetida = modelo.verificarPersona(usuario, password);
+                if (personaRepetida) {
+
+                    String nombre = request.getParameter("nombre");
+                    String apellido = request.getParameter("apellido");
+                    String telefono = request.getParameter("telefono");
+                    String email = request.getParameter("email");
+
+                    registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                    if (registrado) {
+                        request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                    }
+
                 } else {
-                    request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                    request.setAttribute("mensajeCliente", "Error al registrar el cliente, el usuario y contraseña ya existe.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -389,10 +409,10 @@ public class ControladorAdm extends HttpServlet {
 
                 try {
                     idCliente = Integer.parseInt(request.getParameter("idCliente"));
-                    nombre = request.getParameter("nombre");
-                    apellido = request.getParameter("apellido");
-                    telefono = request.getParameter("telefono");
-                    email = request.getParameter("email");
+                    String nombre = request.getParameter("nombre");
+                    String apellido = request.getParameter("apellido");
+                    String telefono = request.getParameter("telefono");
+                    String email = request.getParameter("email");
                     //System.out.println("controlador cliente con ID: " + idCliente);
                     //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
                     boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
@@ -488,7 +508,7 @@ public class ControladorAdm extends HttpServlet {
 
                 try {
                     idPlato = Integer.parseInt(request.getParameter("idPlato"));
-                    nombre = request.getParameter("nombre");
+                    String nombre = request.getParameter("nombre");
 
                     boolean actualizado = modelo.actualizarPlato(idPlato, nombre);
 
@@ -525,7 +545,7 @@ public class ControladorAdm extends HttpServlet {
                 try {
                     // Obtén los parámetros del formulario
                     idMenu = Integer.parseInt(request.getParameter("idMenu"));
-                    nombre = request.getParameter("nombre");
+                    String nombre = request.getParameter("nombre");
                     precio = Integer.parseInt(request.getParameter("precio"));
 
                     boolean actualizado = modelo.actualizarMenuNombrePrecio(idMenu, nombre, precio);
@@ -625,7 +645,7 @@ public class ControladorAdm extends HttpServlet {
                 try {
                     // Obtén los parámetros del formulario
                     idServicio = Integer.parseInt(request.getParameter("idServicio"));
-                    nombre = request.getParameter("nombre");
+                    String nombre = request.getParameter("nombre");
 
                     boolean actualizado = modelo.actualizarServicioMenu(idServicio, nombre);
 

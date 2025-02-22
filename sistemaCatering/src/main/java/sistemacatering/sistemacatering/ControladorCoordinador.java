@@ -176,8 +176,8 @@ public class ControladorCoordinador extends HttpServlet {
                     String preferenciaCliente = request.getParameter("preferenciaCliente");
                     String tipoServicio = request.getParameter("tipoServicio");
                     int cantidadPersonas = Integer.parseInt(request.getParameter("cantidadPersonas"));
-                    
-                   int precio = 0;
+
+                    int precio = 0;
                     String modoDeReserva = request.getParameter("modoDeReserva");
                     String calle = request.getParameter("calle");
                     int altura = Integer.parseInt(request.getParameter("altura"));
@@ -319,16 +319,25 @@ public class ControladorCoordinador extends HttpServlet {
             case "registrarCliente":
                 String usuario = request.getParameter("usuario");
                 String password = request.getParameter("password");
-                String nombre = request.getParameter("nombre");
-                String apellido = request.getParameter("apellido");
-                String telefono = request.getParameter("telefono");
-                String email = request.getParameter("email");
 
-                boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-                if (registrado) {
-                    request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                boolean personaRepetida = modelo.verificarPersona(usuario, password);
+                if (personaRepetida) {
+
+                    String nombre = request.getParameter("nombre");
+                    String apellido = request.getParameter("apellido");
+                    String telefono = request.getParameter("telefono");
+                    String email = request.getParameter("email");
+
+                    boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                    if (registrado) {
+                        request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                    }
+
                 } else {
-                    request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                    request.setAttribute("mensajeCliente", "Error al registrar el cliente, el usuario y contraseña ya existe.");
+
                 }
 
                 dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
@@ -347,10 +356,10 @@ public class ControladorCoordinador extends HttpServlet {
 
                 try {
                     idCliente = Integer.parseInt(request.getParameter("idCliente"));
-                    nombre = request.getParameter("nombre");
-                    apellido = request.getParameter("apellido");
-                    telefono = request.getParameter("telefono");
-                    email = request.getParameter("email");
+                    String nombre = request.getParameter("nombre");
+                    String apellido = request.getParameter("apellido");
+                    String telefono = request.getParameter("telefono");
+                    String email = request.getParameter("email");
                     //System.out.println("controlador cliente con ID: " + idCliente);
                     //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
                     boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
