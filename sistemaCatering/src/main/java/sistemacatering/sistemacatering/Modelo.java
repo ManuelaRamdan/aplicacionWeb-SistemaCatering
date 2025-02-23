@@ -710,7 +710,7 @@ public class Modelo {
 
     public List<Administrador> obtenerAdministradoresBd() {
         List<Administrador> listaAdministradores = new ArrayList<>();
-        String query = "SELECT a.id, p.usuario FROM Administrador a JOIN Persona p ON a.persona_id = p.id WHERE a.estado = 1"; // Cambié c a a
+        String query = "SELECT a.id, p.usuario, p.password FROM Administrador a JOIN Persona p ON a.persona_id = p.id WHERE a.estado = 1"; // Cambié c a a
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -726,7 +726,8 @@ public class Modelo {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
-                listaAdministradores.add(new Administrador(id, usuario)); // Crear el objeto Administrador
+                String password = rs.getString("password");
+                listaAdministradores.add(new Administrador(id, usuario,password)); // Crear el objeto Administrador
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1803,7 +1804,7 @@ JOIN persona ON administrador.persona_id = persona.id
 WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         Administrador adm = null;
-        String query = "SELECT administrador.id, persona.usuario \n"
+        String query = "SELECT administrador.id, persona.usuario , persona.password \n"
                 + "FROM administrador\n"
                 + "JOIN persona ON administrador.persona_id = persona.id\n"
                 + "WHERE administrador.id = ? and administrador.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
@@ -1827,9 +1828,9 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             if (rs.next()) {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
-
+                String password = rs.getString("password");
                 // Crear el objeto Cliente con los datos obtenidos
-                adm = new Administrador(id, usuario);
+                adm = new Administrador(id, usuario,password);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1910,7 +1911,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return coord;
     }
 
-    public boolean actualizarAdministrador(int idAdm, String usuario) {
+    public boolean actualizarAdministrador(int idAdm, String usuario, String password) {
         Connection con = null;
         PreparedStatement ps = null;
 
@@ -1923,11 +1924,12 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
             // Consulta SQL para actualizar los datos del cliente
             String sql = "UPDATE persona \n"
-                    + "SET usuario = ? \n"
+                    + "SET usuario = ? , password = ?\n"
                     + "WHERE id = (SELECT persona_id FROM administrador WHERE id = ?)";
             ps = con.prepareStatement(sql);
             ps.setString(1, usuario);
-            ps.setInt(2, idAdm);
+            ps.setString(2, password);
+            ps.setInt(3, idAdm);
 
             // Ejecutar la actualización
             int filasAfectadas = ps.executeUpdate();
@@ -3320,7 +3322,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarPersona(String usuario, String password) {
-        String query = "SELECT COUNT(*) FROM Persona WHERE usuario = ? and  AND password = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM Persona WHERE usuario = ? AND password = ? AND estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3366,6 +3368,246 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
 
         return personaExiste;
+    }
+
+    public boolean verificarPlato(String nombrePlato) {
+        String query = "SELECT COUNT(*) FROM plato WHERE nombre = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean platoExiste = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, nombrePlato);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    platoExiste = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return platoExiste;
+    }
+
+    public boolean verificarMenu(String nombre) {
+        String query = "SELECT COUNT(*) FROM menu WHERE nombreMenu = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean existe = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, nombre);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    existe = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return existe;
+    }
+
+    public boolean verificarServicio(String nombre) {
+        String query = "SELECT COUNT(*) FROM servicio WHERE nombreServicio = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean existe = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, nombre);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    existe = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return existe;
+    }
+
+    public boolean verificarTelefono(String nombre) {
+        String query = "SELECT COUNT(*) FROM cliente WHERE telReferencia = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean existe = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, nombre);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    existe = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return existe;
+    }
+
+    public boolean verificarEmail(String nombre) {
+        String query = "SELECT COUNT(*) FROM cliente WHERE email = ? estado = 1";
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        boolean existe = false; // Valor por defecto
+
+        try {
+            // Establecemos la conexión
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+
+            // Preparamos la consulta
+            stmt = con.prepareStatement(query);
+            stmt.setString(1, nombre);
+
+            // Ejecutamos la consulta
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                if (count > 0) {
+                    existe = true; // Cliente encontrado con estado 1
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return existe;
     }
 
 }

@@ -327,12 +327,19 @@ public class ControladorCoordinador extends HttpServlet {
                     String apellido = request.getParameter("apellido");
                     String telefono = request.getParameter("telefono");
                     String email = request.getParameter("email");
+                    boolean telefonoRepetido = modelo.verificarTelefono(telefono);
+                    boolean emailRepetido = modelo.verificarEmail(email);
 
-                    boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-                    if (registrado) {
-                        request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                    if (emailRepetido || telefonoRepetido) {
+                        boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                        if (registrado) {
+                            request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                        } else {
+                            request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                        }
                     } else {
-                        request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                        request.setAttribute("mensajeCliente", "Error al registrar el cliente ya que existe un cliente con ese telefono o email.");
+
                     }
 
                 } else {
@@ -360,14 +367,20 @@ public class ControladorCoordinador extends HttpServlet {
                     String apellido = request.getParameter("apellido");
                     String telefono = request.getParameter("telefono");
                     String email = request.getParameter("email");
-                    //System.out.println("controlador cliente con ID: " + idCliente);
-                    //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
-                    boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+                    boolean telefonoRepetido = modelo.verificarTelefono(telefono);
+                    boolean emailRepetido = modelo.verificarEmail(email);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                    if (emailRepetido || telefonoRepetido) {
+                        boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese telefono o email.");
+
                     }
 
                 } catch (NumberFormatException e) {

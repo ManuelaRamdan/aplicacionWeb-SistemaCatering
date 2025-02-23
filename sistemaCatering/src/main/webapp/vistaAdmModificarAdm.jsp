@@ -56,6 +56,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Usuario</th>
+                                <th>Contraseña</th>
                                 <th>Consultar</th>
                             </tr>
                         </thead>
@@ -64,6 +65,7 @@
                                 <tr>
                                     <td>${administrador.codAdministrador}</td>
                                     <td>${administrador.usuario}</td>
+                                    <td>${administrador.password}</td>
                                     <td>
                                         <form action="ControladorAdm" method="POST">
                                             <input type="hidden" name="action" value="modificarAdministrador">
@@ -83,7 +85,9 @@
                         <input type="hidden" name="action" value="actualizarAdm">
                         <input type="hidden" name="idAdministrador" value="${administrador.codAdministrador}">
                         <label>Usuario:</label>
-                        <input type="text" name="usuario" value="${administrador.usuario}">
+                        <input type="text" name="usuario" value="${administrador.usuario}" required>
+                        <label for="password">Contraseña:</label>
+                        <input type="password" name="password" value="${administrador.password}" required>
                         <button type="submit">Guardar</button>
                     </form>
                 </c:if>

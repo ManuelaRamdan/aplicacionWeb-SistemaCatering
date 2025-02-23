@@ -238,11 +238,19 @@ public class ControladorAdm extends HttpServlet {
                     String telefono = request.getParameter("telefono");
                     String email = request.getParameter("email");
 
-                    registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
-                    if (registrado) {
-                        request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                    boolean telefonoRepetido = modelo.verificarTelefono(telefono);
+                    boolean emailRepetido = modelo.verificarEmail(email);
+
+                    if (emailRepetido || telefonoRepetido) {
+                        registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
+                        if (registrado) {
+                            request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
+                        } else {
+                            request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                        }
                     } else {
-                        request.setAttribute("mensajeCliente", "Error al registrar el cliente.");
+                        request.setAttribute("mensajeCliente", "Error al registrar el cliente ya que existe un cliente con ese telefono o email.");
+
                     }
 
                 } else {
@@ -257,13 +265,20 @@ public class ControladorAdm extends HttpServlet {
             case "registrarPlato":
 
                 String nombrePlato = request.getParameter("nombrePlato");
+                boolean platoRepetido = modelo.verificarPlato(nombrePlato);
 
-                registrado = modelo.registrarPlato(nombrePlato);
+                if (platoRepetido) {
+                    registrado = modelo.registrarPlato(nombrePlato);
 
-                if (registrado) {
-                    request.setAttribute("mensajePlato", "Plato registrado correctamente.");
+                    if (registrado) {
+                        request.setAttribute("mensajePlato", "Plato registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajePlato", "Error al registrar el plato.");
+                    }
+
                 } else {
-                    request.setAttribute("mensajePlato", "Error al registrar el plato.");
+                    request.setAttribute("mensajePlato", "Error al registrar el plato ya que existe un plato con ese nombre.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -280,13 +295,19 @@ public class ControladorAdm extends HttpServlet {
                 // Obtener IDs de platos principales seleccionados
                 String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
                 List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
+                boolean menuRepetido = modelo.verificarMenu(nombreMenu);
 
-                registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados, precio);
+                if (menuRepetido) {
+                    registrado = modelo.registrarMenu(nombreMenu, platosEntradaSeleccionados, platosPrincipalSeleccionados, precio);
 
-                if (registrado) {
-                    request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
+                    if (registrado) {
+                        request.setAttribute("mensajeMenu", "Menu registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
+                    }
                 } else {
-                    request.setAttribute("mensajeMenu", "Error al registrar el Menu.");
+                    request.setAttribute("mensajeMenu", "Error al registrar el Menu ya que existe un menu con ese nombre.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -299,12 +320,19 @@ public class ControladorAdm extends HttpServlet {
                 String[] menuIds = request.getParameterValues("menus[]");
                 List<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
 
-                registrado = modelo.registrarServicio(nombreServicio, menusSeleccionados);
+                boolean servicioRepetido = modelo.verificarServicio(nombreServicio);
 
-                if (registrado) {
-                    request.setAttribute("mensajeServicio", "Servicio registrado correctamente.");
+                if (servicioRepetido) {
+                    registrado = modelo.registrarServicio(nombreServicio, menusSeleccionados);
+
+                    if (registrado) {
+                        request.setAttribute("mensajeServicio", "Servicio registrado correctamente.");
+                    } else {
+                        request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
+                    }
                 } else {
-                    request.setAttribute("mensajeServicio", "Error al registrar el Servicio.");
+                    request.setAttribute("mensajeServicio", "Error al registrar el Servicio ya que existe un servicio con ese nombre.");
+
                 }
 
                 response.sendRedirect("ControladorAdm?accion=mostrarAlta");
@@ -413,14 +441,21 @@ public class ControladorAdm extends HttpServlet {
                     String apellido = request.getParameter("apellido");
                     String telefono = request.getParameter("telefono");
                     String email = request.getParameter("email");
-                    //System.out.println("controlador cliente con ID: " + idCliente);
-                    //System.out.println("Nuevos valores - Nombre: " + nombre + ", Apellido: " + apellido + ", Teléfono: " + telefono + ", Email: " + email);
-                    boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                    boolean telefonoRepetido = modelo.verificarTelefono(telefono);
+                    boolean emailRepetido = modelo.verificarEmail(email);
+
+                    if (emailRepetido || telefonoRepetido) {
+                        boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese telefono o email.");
+
                     }
 
                 } catch (NumberFormatException e) {
@@ -465,14 +500,22 @@ public class ControladorAdm extends HttpServlet {
                 try {
                     idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
                     usuario = request.getParameter("usuario");
+                    password = request.getParameter("password");
 
-                    System.out.println(idAdministrador);
-                    boolean actualizado = modelo.actualizarAdministrador(idAdministrador, usuario);
+                    Administrador adm = modelo.obtenerAdministradorPorId(idAdministrador);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarAdministrador", "Administrador actualizado exitosamente.");
+                    personaRepetida = modelo.verificarPersona(usuario, adm.getPassword());
+                    if (personaRepetida) {
+                        boolean actualizado = modelo.actualizarAdministrador(idAdministrador, usuario, password);
+
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarAdministrador", "Administrador actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarAdministrador", "Error, no se pudo actualizar.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarAdministrador", "Error, no se pudo actualizar.");
+                        request.setAttribute("mensajeActualizarAdministrador", "Error, no se pudo actualizar ya que el nombre de usuario ya existe.");
+
                     }
 
                 } catch (NumberFormatException e) {
@@ -488,12 +531,21 @@ public class ControladorAdm extends HttpServlet {
                     idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
                     usuario = request.getParameter("usuario");
 
-                    boolean actualizado = modelo.actualizarCoordinador(idCoordinador, usuario);
+                    Coordinador coord = modelo.obtenerCoordinadorPorId(idCoordinador);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarCoordinador", "Coordinador actualizado exitosamente.");
+                    personaRepetida = modelo.verificarPersona(usuario, coord.getPassword());
+
+                    if (personaRepetida) {
+                        boolean actualizado = modelo.actualizarCoordinador(idCoordinador, usuario);
+
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarCoordinador", "Coordinador actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarCoordinador", "Error, no se pudo actualizar.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarCoordinador", "Error, no se pudo actualizar.");
+                        request.setAttribute("mensajeActualizarCoordinador", "Error, no se pudo actualizar ya que ya existe un usuario con ese nombre.");
+
                     }
 
                 } catch (NumberFormatException e) {
@@ -510,12 +562,18 @@ public class ControladorAdm extends HttpServlet {
                     idPlato = Integer.parseInt(request.getParameter("idPlato"));
                     String nombre = request.getParameter("nombre");
 
-                    boolean actualizado = modelo.actualizarPlato(idPlato, nombre);
+                    platoRepetido = modelo.verificarPlato(nombre);
+                    if (platoRepetido) {
+                        boolean actualizado = modelo.actualizarPlato(idPlato, nombre);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarPlato", "Plato actualizado exitosamente.");
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarPlato", "Plato actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarPlato", "Error, no se pudo actualizar.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarPlato", "Error, no se pudo actualizar.");
+                        request.setAttribute("mensajeActualizarPlato", "Error, no se pudo actualizar ya que existe un plato con ese nombre.");
+
                     }
 
                 } catch (NumberFormatException e) {
@@ -548,12 +606,18 @@ public class ControladorAdm extends HttpServlet {
                     String nombre = request.getParameter("nombre");
                     precio = Integer.parseInt(request.getParameter("precio"));
 
-                    boolean actualizado = modelo.actualizarMenuNombrePrecio(idMenu, nombre, precio);
+                    menuRepetido = modelo.verificarMenu(nombre);
+                    if (menuRepetido) {
+                        boolean actualizado = modelo.actualizarMenuNombrePrecio(idMenu, nombre, precio);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarMenu", "Menú actualizado exitosamente.");
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarMenu", "Menú actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarMenu", "Error, no se pudo actualizar el menú.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarMenu", "Error, no se pudo actualizar el menú.");
+                        request.setAttribute("mensajeActualizarMenu", "Error, no se pudo actualizar el menú ya que existe un menú con ese nombre.");
+
                     }
 
                 } catch (NumberFormatException e) {
@@ -647,12 +711,18 @@ public class ControladorAdm extends HttpServlet {
                     idServicio = Integer.parseInt(request.getParameter("idServicio"));
                     String nombre = request.getParameter("nombre");
 
-                    boolean actualizado = modelo.actualizarServicioMenu(idServicio, nombre);
+                    servicioRepetido = modelo.verificarServicio(nombre);
+                    if (servicioRepetido) {
+                        boolean actualizado = modelo.actualizarServicioMenu(idServicio, nombre);
 
-                    if (actualizado) {
-                        request.setAttribute("mensajeActualizarServicio", "Servicio actualizado exitosamente.");
+                        if (actualizado) {
+                            request.setAttribute("mensajeActualizarServicio", "Servicio actualizado exitosamente.");
+                        } else {
+                            request.setAttribute("mensajeActualizarServicio", "Error, no se pudo actualizar el servicio.");
+                        }
                     } else {
-                        request.setAttribute("mensajeActualizarServicio", "Error, no se pudo actualizar el menú.");
+                        request.setAttribute("mensajeActualizarServicio", "Error, no se pudo actualizar el servicio ya que existe un servicio con ese nombre.");
+
                     }
 
                 } catch (NumberFormatException e) {

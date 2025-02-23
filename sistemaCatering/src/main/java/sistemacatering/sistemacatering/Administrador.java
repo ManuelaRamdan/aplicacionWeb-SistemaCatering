@@ -12,8 +12,9 @@ public class Administrador extends Persona {
 
     private int codAdministrador;
 
-    public Administrador(int codAdministrador, String u) {
+    public Administrador(int codAdministrador, String u, String p) {
         setUsuario(u);
+        setPassword(p);
         this.codAdministrador = codAdministrador;
     }
     public int getcodAdministrador() {
