@@ -112,6 +112,7 @@
                                               onsubmit="return confirm('¿Estás seguro de que deseas eliminar a ${cliente.nombre} ${cliente.apellido}?');">
                                             <input type="hidden" name="action" value="eliminarCliente">
                                             <input type="hidden" name="idCliente" value="${cliente.id}">
+                                            <input type="hidden" name="persona_id" value="${cliente.persona_id}">
                                             <input type="submit" value="Eliminar" class="btn-eliminar">
                                         </form>
                                     </td>

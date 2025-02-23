@@ -870,7 +870,7 @@ public class Modelo {
         // Sentencias SQL para actualizar el estado en Cliente y Persona
         String sqlCliente = "UPDATE Cliente SET estado = 0 WHERE id = ?";
         String sqlPersona = "UPDATE Persona SET estado = 0 WHERE id = (SELECT persona_id FROM Cliente WHERE id = ?)";
-
+        
         Connection con = null;
         PreparedStatement stmtCliente = null;
         PreparedStatement stmtPersona = null;
@@ -1251,7 +1251,8 @@ public class Modelo {
         return listaReservas;
     }
 
-    public Cliente obtenerClientePorId(String idCliente) {
+    public Cliente obtenerClientePorId(String idPersona) {
+        // lo hice por persona pq cuando se ingrese un cliente por el loging necesitas el id de esa persona para poner buscar el cliente que esta asociado a esa persona
         Cliente cliente = null;
         String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password "
                 + "FROM Cliente c "
@@ -1268,7 +1269,7 @@ public class Modelo {
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
-            stmt.setString(1, idCliente);  // Si 'idCliente' es un String
+            stmt.setString(1, idPersona);  // Si 'idCliente' es un String
             // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
 
             rs = stmt.executeQuery();

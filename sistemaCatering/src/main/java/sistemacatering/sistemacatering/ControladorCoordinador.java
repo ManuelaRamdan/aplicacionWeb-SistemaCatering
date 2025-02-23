@@ -138,8 +138,20 @@ public class ControladorCoordinador extends HttpServlet {
 
             case "eliminarCliente":
                 int idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                String persona_id = request.getParameter("persona_id");
 
                 boolean eliminado = modelo.eliminarCliente(idCliente);
+                
+                Cliente cliente = modelo.obtenerClientePorId(persona_id);
+
+                reservas = modelo.obtenerReservasPorCliente(persona_id);
+                boolean eliminarReserva = false;
+                for (Reserva r : reservas) {
+                    eliminarReserva = modelo.eliminarReserva(r.getCodReserva());
+                    if (!eliminarReserva) {
+                        request.setAttribute("mensajeBajaCliente", "Error. no se pudo eliminar la reserva correctamente");
+                    } 
+                }
 
                 if (eliminado) {
                     request.setAttribute("mensajeBajaCliente", "Cliente dado de baja exitosamente.");
@@ -353,7 +365,7 @@ public class ControladorCoordinador extends HttpServlet {
                 break;
             case "modificarCliente":
                 personaId = request.getParameter("persona_id");  // Obtener persona_id
-                Cliente cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
+                cliente = modelo.obtenerClientePorId(personaId);  // Obtener reservas usando persona_id
                 request.setAttribute("cliente", cliente);  // Establecer las reservas en el request
                 dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
                 dispatcher.forward(request, response);
