@@ -351,8 +351,8 @@ public class Modelo {
         return registrado;
     }
 
-    public List<Plato> obtenerPlatosBd() {
-        List<Plato> listaPlatos = new ArrayList<>();
+    public ArrayList<Plato> obtenerPlatosBd() {
+        ArrayList<Plato> listaPlatos = new ArrayList<>();
         String query = "SELECT id, nombre FROM Plato WHERE plato.estado = 1";
 
         Connection con = null;
@@ -393,7 +393,7 @@ public class Modelo {
         return listaPlatos;
     }
 
-    public boolean registrarMenu(String nombreMenu, List<Integer> platosEntrada, List<Integer> platosPrincipal, int precio) {
+    public boolean registrarMenu(String nombreMenu, ArrayList<Integer> platosEntrada, ArrayList<Integer> platosPrincipal, int precio) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement menu = null;
@@ -476,11 +476,11 @@ public class Modelo {
         return registrado;
     }
 
-    public List<Integer> obtenerIdsSeleccionados(String[] ids) {
+    public ArrayList<Integer> obtenerIdsSeleccionados(String[] ids) {
         if (ids == null || ids.length == 0) {
             return new ArrayList<>();
         }
-        List<Integer> listaIds = new ArrayList<>();
+        ArrayList<Integer> listaIds = new ArrayList<>();
         for (String id : ids) {
             int idInt = Integer.parseInt(id);
             listaIds.add(idInt);
@@ -489,7 +489,7 @@ public class Modelo {
         return listaIds;
     }
 
-    public boolean registrarServicio(String nombreServicio, List<Integer> menus) {
+    public boolean registrarServicio(String nombreServicio, ArrayList<Integer> menus) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement servicio = null;
@@ -561,8 +561,8 @@ public class Modelo {
         return registrado;
     }
 
-    public List<Menu> obtenerMenusBd() {
-        List<Menu> listaMenus = new ArrayList<>();
+    public ArrayList<Menu> obtenerMenusBd() {
+        ArrayList<Menu> listaMenus = new ArrayList<>();
         String query = "SELECT id, nombreMenu, precio FROM Menu WHERE menu.estado = 1";
 
         Connection con = null;
@@ -604,8 +604,8 @@ public class Modelo {
         return listaMenus;
     }
 
-    public List<Coordinador> obtenerCoordinadoresBd() {
-        List<Coordinador> listaCoordinadores = new ArrayList<>();
+    public ArrayList<Coordinador> obtenerCoordinadoresBd() {
+        ArrayList<Coordinador> listaCoordinadores = new ArrayList<>();
         String query = "SELECT c.id, p.usuario , p.password FROM Coordinador c JOIN Persona p ON c.persona_id = p.id WHERE c.estado = 1";
 
         Connection con = null;
@@ -709,8 +709,8 @@ public class Modelo {
         }
     }
 
-    public List<Administrador> obtenerAdministradoresBd() {
-        List<Administrador> listaAdministradores = new ArrayList<>();
+    public ArrayList<Administrador> obtenerAdministradoresBd() {
+        ArrayList<Administrador> listaAdministradores = new ArrayList<>();
         String query = "SELECT a.id, p.usuario, p.password FROM Administrador a JOIN Persona p ON a.persona_id = p.id WHERE a.estado = 1"; // Cambié c a a
 
         Connection con = null;
@@ -814,8 +814,8 @@ public class Modelo {
         }
     }
 
-    public List<Cliente> obtenerClientesBd() {
-        List<Cliente> listaClientes = new ArrayList<>();
+    public ArrayList<Cliente> obtenerClientesBd() {
+        ArrayList<Cliente> listaClientes = new ArrayList<>();
         String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password\n"
                 + "FROM Cliente c \n"
                 + "JOIN persona on c.persona_id= persona.id\n"
@@ -1123,8 +1123,8 @@ public class Modelo {
         }
     }
 
-    public List<Servicio> obtenerServiciosBd() {
-        List<Servicio> listaServicios = new ArrayList<>();
+    public ArrayList<Servicio> obtenerServiciosBd() {
+        ArrayList<Servicio> listaServicios = new ArrayList<>();
         String query = "SELECT id, nombreServicio FROM Servicio WHERE servicio.estado = 1";
 
         Connection con = null;
@@ -1165,8 +1165,8 @@ public class Modelo {
         return listaServicios;
     }
 
-    public List<Reserva> obtenerReservaBd() {
-        List<Reserva> listaReservas = new ArrayList<>();
+    public ArrayList<Reserva> obtenerReservaBd() {
+        ArrayList<Reserva> listaReservas = new ArrayList<>();
         String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, "
                 + "r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, "
                 + "r.direccionDeEntrega_id, r.estaEntregado, d.calle, d.altura, d.barrio, "
@@ -1181,7 +1181,7 @@ public class Modelo {
 
             // Creamos una lista para almacenar las reservas
             Reserva reservaActual = null;
-            List<Servicio> servicios = new ArrayList<>();
+            ArrayList<Servicio> servicios = new ArrayList<>();
 
             while (rs.next()) {
                 int codReserva = rs.getInt("id");
@@ -1311,8 +1311,8 @@ public class Modelo {
     }
 
     // Método para obtener las reservas de un cliente
-    public List<Reserva> obtenerReservasPorCliente(String persona_id) {
-        List<Reserva> reservas = new ArrayList<>();
+    public ArrayList<Reserva> obtenerReservasPorCliente(String persona_id) {
+        ArrayList<Reserva> reservas = new ArrayList<>();
         String query = "SELECT r.id, r.codCliente, r.fechaInicioEvento, r.fechaFinEvento, "
                 + "r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
                 + "r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
@@ -1366,8 +1366,8 @@ public class Modelo {
         return reservas;
     }
 
-    public List<Cliente> obtenerClientesConReservas() {
-        List<Cliente> clientes = new ArrayList<>();
+    public ArrayList<Cliente> obtenerClientesConReservas() {
+        ArrayList<Cliente> clientes = new ArrayList<>();
         String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password, "
                 + "r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, r.preferenciaCliente, "
                 + "r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
@@ -1504,8 +1504,8 @@ public class Modelo {
         }
     }
 
-    public List<Servicio> obtenerServiciosDisponibles(String fechaInicio, String fechaFin) {
-        List<Servicio> serviciosDisponibles = new ArrayList<>();
+    public ArrayList<Servicio> obtenerServiciosDisponibles(String fechaInicio, String fechaFin) {
+        ArrayList<Servicio> serviciosDisponibles = new ArrayList<>();
         String query = "SELECT s.id "
                 + "FROM servicio s "
                 + "WHERE NOT EXISTS ( "
@@ -2171,8 +2171,8 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
     }
 
-    public List<Menu> obtenerMenusConPlatos() {
-        List<Menu> menus = new ArrayList<>();
+    public ArrayList<Menu> obtenerMenusConPlatos() {
+        ArrayList<Menu> menus = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2252,8 +2252,8 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return menus;
     }
 
-    public List<Servicio> obtenerServiciosConMenusYPlatos() {
-        List<Servicio> servicios = new ArrayList<>();
+    public ArrayList<Servicio> obtenerServiciosConMenusYPlatos() {
+        ArrayList<Servicio> servicios = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2276,7 +2276,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             rs = ps.executeQuery();
 
             // Obtener todos los menús con platos
-            List<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
+            ArrayList<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
 
             // Crear un mapa de menús por ID para facilitar la búsqueda
             Map<Integer, Menu> menuMap = new HashMap<>();
@@ -2430,7 +2430,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             rs = ps.executeQuery();
 
             // Obtener todos los menús con platos
-            List<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
+            ArrayList<Menu> menusConPlatos = obtenerMenusConPlatos(); // Llamamos al método obtenerMenusConPlatos()
 
             // Crear un mapa de menús por ID para facilitar la búsqueda
             Map<Integer, Menu> menuMap = new HashMap<>();
@@ -2535,7 +2535,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
     }
 
-    public boolean agregarPlatosMenu(int idMenu, List<Integer> platosEntradaSeleccionados, List<Integer> platosPrincipalSeleccionados) {
+    public boolean agregarPlatosMenu(int idMenu, ArrayList<Integer> platosEntradaSeleccionados, ArrayList<Integer> platosPrincipalSeleccionados) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement menuPlato = null;
@@ -2602,7 +2602,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return registrado;
     }
 
-    public boolean eliminarPlatosMenu(int idMenu, List<Integer> platosEntradaEliminar, List<Integer> platosPrincipalEliminar) {
+    public boolean eliminarPlatosMenu(int idMenu, ArrayList<Integer> platosEntradaEliminar, ArrayList<Integer> platosPrincipalEliminar) {
         boolean eliminado = false;
         Connection con = null;
         PreparedStatement menuPlato = null;
@@ -2669,8 +2669,8 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return eliminado;
     }
 
-    public List<Plato> obtenerPlatosNoSeleccionados(int idMenu, String tipo) {
-        List<Plato> platos = new ArrayList<>();
+    public ArrayList<Plato> obtenerPlatosNoSeleccionados(int idMenu, String tipo) {
+        ArrayList<Plato> platos = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2715,8 +2715,8 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return platos;
     }
 
-    public List<Menu> obtenerMenuNoSeleccionado(int idServicio) {
-        List<Menu> menus = new ArrayList<>();
+    public ArrayList<Menu> obtenerMenuNoSeleccionado(int idServicio) {
+        ArrayList<Menu> menus = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2815,7 +2815,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
     }
 
-    public boolean agregarMenuServicio(int idServicio, List<Integer> menusSeleccionados) {
+    public boolean agregarMenuServicio(int idServicio, ArrayList<Integer> menusSeleccionados) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement servicioMenu = null;
@@ -2870,7 +2870,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return registrado;
     }
 
-    public boolean eliminarMenuServicio(int idServicio, List<Integer> menusSeleccionados) {
+    public boolean eliminarMenuServicio(int idServicio, ArrayList<Integer> menusSeleccionados) {
         boolean eliminado = false;
         Connection con = null;
         PreparedStatement servicioMenu = null;
@@ -2925,8 +2925,8 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return eliminado;
     }
 
-    public List<Servicio> obtenerServiciosNoSeleccionados(int idReserva, String fechaInicio, String fechaFin) {
-        List<Servicio> servicios = new ArrayList<>();
+    public ArrayList<Servicio> obtenerServiciosNoSeleccionados(int idReserva, String fechaInicio, String fechaFin) {
+        ArrayList<Servicio> servicios = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -3007,7 +3007,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             rs = ps.executeQuery();
 
             // Inicializar las listas de menús y servicios para la reserva
-            List<Servicio> servicios = new ArrayList<>();
+            ArrayList<Servicio> servicios = new ArrayList<>();
 
             // Procesar los resultados
             while (rs.next()) {
@@ -3157,11 +3157,11 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
     }
 
-    public boolean agregarServicioReserva(int idReserva, List<Integer> serviciosSeleccionados) {
+    public boolean agregarServicioReserva(int idReserva, ArrayList<Integer> serviciosSeleccionados) {
         boolean registrado = false;
         Connection con = null;
         PreparedStatement reservaServicio = null;
-        List<Servicio> servicios = new ArrayList<>();
+        ArrayList<Servicio> servicios = new ArrayList<>();
 
         Reserva r = obtenerReservaConId(idReserva);
         for (Integer id : serviciosSeleccionados) {
@@ -3225,11 +3225,11 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return registrado;
     }
 
-    public boolean eliminarServicioReserva(int idReserva, List<Integer> serviciosSeleccionados) {
+    public boolean eliminarServicioReserva(int idReserva, ArrayList<Integer> serviciosSeleccionados) {
         boolean eliminado = false;
         Connection con = null;
         PreparedStatement stmt = null;
-        List<Servicio> servicios = new ArrayList<>();
+        ArrayList<Servicio> servicios = new ArrayList<>();
         Reserva r = obtenerReservaConId(idReserva);
         for (Integer id : serviciosSeleccionados) {
             Servicio s = obtenerServicioConId(id);
@@ -3293,7 +3293,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         return eliminado;
     }
 
-    private int obtenerPrecioReserva(List<Servicio> servicios, int cantPersonas) {
+    private int obtenerPrecioReserva(ArrayList<Servicio> servicios, int cantPersonas) {
 
         if (servicios == null || servicios.isEmpty()) {
             return 0; // No hay servicios, el precio es 0

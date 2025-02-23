@@ -53,8 +53,8 @@ public class ControladorAdm extends HttpServlet {
 
                 case "mostrarAlta":
 
-                    List<Plato> platos = modelo.obtenerPlatosBd();
-                    List<Menu> menus = modelo.obtenerMenusConPlatos();
+                    ArrayList<Plato> platos = modelo.obtenerPlatosBd();
+                    ArrayList<Menu> menus = modelo.obtenerMenusConPlatos();
 
                     request.setAttribute("platosEntrada", platos);
                     request.setAttribute("platosPrincipal", platos);
@@ -63,13 +63,13 @@ public class ControladorAdm extends HttpServlet {
                     break;
 
                 case "mostrarBaja":
-                    List<Coordinador> coordinadores = modelo.obtenerCoordinadoresBd();
-                    List<Administrador> administradores = modelo.obtenerAdministradoresBd();
+                    ArrayList<Coordinador> coordinadores = modelo.obtenerCoordinadoresBd();
+                    ArrayList<Administrador> administradores = modelo.obtenerAdministradoresBd();
 
                     request.setAttribute("coordinadores", coordinadores);
                     request.setAttribute("administradores", administradores);
 
-                    List<Cliente> clientes = modelo.obtenerClientesBd();
+                    ArrayList<Cliente> clientes = modelo.obtenerClientesBd();
                     request.setAttribute("clientes", clientes);
 
                     platos = modelo.obtenerPlatosBd();
@@ -79,7 +79,7 @@ public class ControladorAdm extends HttpServlet {
 
                     request.setAttribute("menus", menus);
 
-                    List<Servicio> servicios = modelo.obtenerServiciosConMenusYPlatos();
+                    ArrayList<Servicio> servicios = modelo.obtenerServiciosConMenusYPlatos();
                     request.setAttribute("servicios", servicios);
 
                     request.getRequestDispatcher("vistaAdmBaja.jsp").forward(request, response);
@@ -151,7 +151,7 @@ public class ControladorAdm extends HttpServlet {
                     request.setAttribute("menus", menus);
                     request.setAttribute("servicios", servicios);
 
-                    List<Reserva> reservas = modelo.obtenerReservaBd();
+                    ArrayList<Reserva> reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
 
                     // Forward to the JSP page
@@ -290,11 +290,11 @@ public class ControladorAdm extends HttpServlet {
                 int precio = Integer.parseInt(request.getParameter("precio"));
                 // Obtener IDs de platos de entrada seleccionados
                 String[] platosEntradaIds = request.getParameterValues("platoEntrada[]");
-                List<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
+                ArrayList<Integer> platosEntradaSeleccionados = modelo.obtenerIdsSeleccionados(platosEntradaIds);
 
                 // Obtener IDs de platos principales seleccionados
                 String[] platosPrincipalIds = request.getParameterValues("platoPrincipal[]");
-                List<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
+                ArrayList<Integer> platosPrincipalSeleccionados = modelo.obtenerIdsSeleccionados(platosPrincipalIds);
                 boolean menuRepetido = modelo.verificarMenu(nombreMenu);
 
                 if (menuRepetido) {
@@ -318,7 +318,7 @@ public class ControladorAdm extends HttpServlet {
 
                 // Obtener IDs de menús seleccionados
                 String[] menuIds = request.getParameterValues("menus[]");
-                List<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
+                ArrayList<Integer> menusSeleccionados = modelo.obtenerIdsSeleccionados(menuIds);
 
                 boolean servicioRepetido = modelo.verificarServicio(nombreServicio);
 
@@ -374,7 +374,7 @@ public class ControladorAdm extends HttpServlet {
 
                 Cliente cliente = modelo.obtenerClientePorId(persona_id);
 
-                List<Reserva> reservas = modelo.obtenerReservasPorCliente(persona_id);
+                ArrayList<Reserva> reservas = modelo.obtenerReservasPorCliente(persona_id);
                 boolean eliminarReserva = false;
                 for (Reserva r : reservas) {
                     eliminarReserva = modelo.eliminarReserva(r.getCodReserva());
@@ -604,8 +604,8 @@ public class ControladorAdm extends HttpServlet {
             case "modificarMenu":
                 idMenu = Integer.parseInt(request.getParameter("idMenu"));
 
-                List<Plato> platosEntrada = modelo.obtenerPlatosNoSeleccionados(idMenu, "Entrada");
-                List<Plato> platosPrincipal = modelo.obtenerPlatosNoSeleccionados(idMenu, "Principal");
+                ArrayList<Plato> platosEntrada = modelo.obtenerPlatosNoSeleccionados(idMenu, "Entrada");
+                ArrayList<Plato> platosPrincipal = modelo.obtenerPlatosNoSeleccionados(idMenu, "Principal");
 
                 request.setAttribute("platosEntrada", platosEntrada);
                 request.setAttribute("platosPrincipal", platosPrincipal);
@@ -681,11 +681,11 @@ public class ControladorAdm extends HttpServlet {
 
                     // Obtén los platos de entrada seleccionados para eliminar
                     String[] platosEntradaEliminarIds = request.getParameterValues("platoEntradaEliminar[]");
-                    List<Integer> platosEntradaEliminar = modelo.obtenerIdsSeleccionados(platosEntradaEliminarIds);
+                    ArrayList<Integer> platosEntradaEliminar = modelo.obtenerIdsSeleccionados(platosEntradaEliminarIds);
 
                     // Obtén los platos principales seleccionados para eliminar
                     String[] platosPrincipalEliminarIds = request.getParameterValues("platoPrincipalEliminar[]");
-                    List<Integer> platosPrincipalEliminar = modelo.obtenerIdsSeleccionados(platosPrincipalEliminarIds);
+                    ArrayList<Integer> platosPrincipalEliminar = modelo.obtenerIdsSeleccionados(platosPrincipalEliminarIds);
                     menu = modelo.obtenerMenuConId(idMenu);
                     if (platosPrincipalEliminar != null && platosPrincipalEliminar.size() >= menu.getPlatosPrincipal().size()) {
                         // Si hay más platos seleccionados para eliminar que los disponibles en el menú
@@ -714,7 +714,7 @@ public class ControladorAdm extends HttpServlet {
 
             case "modificarServicio":
                 idServicio = Integer.parseInt(request.getParameter("idServicio"));
-                List<Menu> menus = modelo.obtenerMenuNoSeleccionado(idServicio);
+                ArrayList<Menu> menus = modelo.obtenerMenuNoSeleccionado(idServicio);
                 Servicio servicio = modelo.obtenerServicioConId(idServicio);  // Obtener reservas usando persona_id
                 request.setAttribute("servicio", servicio);
                 request.setAttribute("menus", menus);

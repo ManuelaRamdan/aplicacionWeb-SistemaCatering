@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -62,10 +63,10 @@ public class ControladorCoordinador extends HttpServlet {
                     break;
 
                 case "mostrarBaja":
-                    List<Cliente> clientes = modelo.obtenerClientesBd();
+                    ArrayList<Cliente> clientes = modelo.obtenerClientesBd();
                     request.setAttribute("clientes", clientes);
 
-                    List<Reserva> reservas = modelo.obtenerReservaBd();
+                    ArrayList<Reserva> reservas = modelo.obtenerReservaBd();
                     request.setAttribute("reservas", reservas);
 
                     request.getRequestDispatcher("vistaCoordBaja.jsp").forward(request, response);
@@ -130,7 +131,7 @@ public class ControladorCoordinador extends HttpServlet {
         switch (action) {
             case "consultarCliente":
                 String personaId = request.getParameter("persona_id");  // Obtener persona_id
-                List<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
+                ArrayList<Reserva> reservas = modelo.obtenerReservasPorCliente(personaId);  // Obtener reservas usando persona_id
                 request.setAttribute("reservas", reservas);  // Establecer las reservas en el request
                 RequestDispatcher dispatcher = request.getRequestDispatcher("vistaCoordConsultarClienteReserva.jsp");
                 dispatcher.forward(request, response);
@@ -310,7 +311,7 @@ public class ControladorCoordinador extends HttpServlet {
                         return;
                     }
                     // Llamar al modelo para obtener los servicios disponibles con las fechas formateadas
-                    List<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
+                    ArrayList<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
                     System.out.println("Servicios disponibles: " + serviciosDisponibles);
 
                     request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
@@ -419,7 +420,7 @@ public class ControladorCoordinador extends HttpServlet {
                 String fechaFin = request.getParameter("fechaFin"); // La fecha de fin de la reserva
 
                 // Obtener los servicios no seleccionados y disponibles en esas fechas
-                List<Servicio> servicios = modelo.obtenerServiciosNoSeleccionados(idReserva, fechaInicio, fechaFin);
+                ArrayList<Servicio> servicios = modelo.obtenerServiciosNoSeleccionados(idReserva, fechaInicio, fechaFin);
                 Reserva reserva = modelo.obtenerReservaConId(idReserva);
 
                 request.setAttribute("reserva", reserva);
@@ -491,7 +492,7 @@ public class ControladorCoordinador extends HttpServlet {
                     // Obtén los parámetros del formulario
                     idReserva = Integer.parseInt(request.getParameter("idReserva"));
                     String[] serviciosId = request.getParameterValues("servicios[]");
-                    List<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
+                    ArrayList<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
 
                     boolean actualizado = modelo.agregarServicioReserva(idReserva, serviciosSeleccionados);
 
@@ -513,7 +514,7 @@ public class ControladorCoordinador extends HttpServlet {
                 try {
                     idReserva = Integer.parseInt(request.getParameter("idReserva"));
                     String[] serviciosId = request.getParameterValues("serviciosEliminar[]");
-                    List<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
+                    ArrayList<Integer> serviciosSeleccionados = modelo.obtenerIdsSeleccionados(serviciosId);
 
                     reserva = modelo.obtenerReservaConId(idReserva);
                     if (serviciosSeleccionados != null && serviciosSeleccionados.size() >= reserva.getServicios().size()) {

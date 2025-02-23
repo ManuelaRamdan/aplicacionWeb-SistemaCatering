@@ -27,7 +27,7 @@ public class Reserva {
     private String modoDeReserva;
     private Domicilio direccionDeEntrega;
     private boolean estaEntregado;
-    private List<Servicio> servicios;
+    private ArrayList<Servicio> servicios;
 
     public Reserva(int codReserva, int codCliente, Date fechaInicioEvento, Date fechaFinEvento, String restriccionesDieteticas, String preferenciaCliente, String tipoServicio, int cantidadPersonas, int precio, String modoDeReserva, Domicilio direccionDeEntrega, boolean estaEntregado) {
         this.codReserva = codReserva;
@@ -45,11 +45,11 @@ public class Reserva {
         servicios = new ArrayList<Servicio>();
     }
 
-    public List <Servicio> getServicios() {
+    public ArrayList <Servicio> getServicios() {
         return servicios;
     }
 
-    public void setServicios(List<Servicio> servicios) {
+    public void setServicios(ArrayList<Servicio> servicios) {
         this.servicios = servicios;
     }
 

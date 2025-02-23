@@ -5,6 +5,7 @@
 package sistemacatering.sistemacatering;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -56,7 +57,7 @@ public class ControladorCliente extends HttpServlet {
                 case "misReservas":
                     System.out.println("Entrando a misReservas");
 
-                    List<Reserva> reservas = modelo.obtenerReservasPorCliente(idCliente);
+                    ArrayList<Reserva> reservas = modelo.obtenerReservasPorCliente(idCliente);
                     System.out.println("Reservas obtenidas: " + reservas.size());  // Imprimir el tamaño de la lista de reservas
 
                     request.setAttribute("reservas", reservas);

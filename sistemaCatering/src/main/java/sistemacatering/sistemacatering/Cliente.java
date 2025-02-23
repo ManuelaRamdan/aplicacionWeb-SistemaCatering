@@ -18,7 +18,7 @@ public class Cliente extends Persona {
     private String apellido;
     private String telReferencia;
     private String email;
-    private List<Reserva> reservas;
+    private ArrayList<Reserva> reservas;
     private int persona_id;
 
     // Constructor
@@ -42,11 +42,11 @@ public class Cliente extends Persona {
         this.persona_id = persona_id;
     }
 
-    public List<Reserva> getReservas() {
+    public ArrayList<Reserva> getReservas() {
         return reservas;
     }
 
-    public void setReservas(List<Reserva> reservas) {
+    public void setReservas(ArrayList<Reserva> reservas) {
         this.reservas = reservas;
     }
 
