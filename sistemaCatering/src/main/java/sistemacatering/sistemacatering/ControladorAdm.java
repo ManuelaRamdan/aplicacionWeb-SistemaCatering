@@ -47,6 +47,9 @@ public class ControladorAdm extends HttpServlet {
                     break;
                 case "menu":
                     // Redirigir a la vista de menú
+                    String usuario = modelo.obtenerUsuarioPersonaConId(idAdministrador);
+                    request.setAttribute("usuario", usuario);
+
                     dispatcherMenu = request.getRequestDispatcher("vistaAdministradorMenu.jsp");
                     dispatcherMenu.forward(request, response);
                     break;
@@ -380,7 +383,7 @@ public class ControladorAdm extends HttpServlet {
                     eliminarReserva = modelo.eliminarReserva(r.getCodReserva());
                     if (!eliminarReserva) {
                         request.setAttribute("mensajeBajaCliente", "Error. no se pudo eliminar la reserva correctamente");
-                    } 
+                    }
                 }
 
                 if (eliminado) {

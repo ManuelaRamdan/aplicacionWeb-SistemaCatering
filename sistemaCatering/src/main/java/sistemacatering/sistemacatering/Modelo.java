@@ -870,7 +870,7 @@ public class Modelo {
         // Sentencias SQL para actualizar el estado en Cliente y Persona
         String sqlCliente = "UPDATE Cliente SET estado = 0 WHERE id = ?";
         String sqlPersona = "UPDATE Persona SET estado = 0 WHERE id = (SELECT persona_id FROM Cliente WHERE id = ?)";
-        
+
         Connection con = null;
         PreparedStatement stmtCliente = null;
         PreparedStatement stmtPersona = null;
@@ -1903,7 +1903,7 @@ JOIN persona ON administrador.persona_id = persona.id
 WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         Coordinador coord = null;
-        String query = "SELECT coordinador.id, persona.usuario, persona.password\n"
+        String query = "SELECT coordinador.id, persona.usuario, persona.password \n"
                 + "FROM coordinador\n"
                 + "JOIN persona ON coordinador.persona_id = persona.id\n"
                 + "WHERE coordinador.id = ? and coordinador.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
@@ -3651,6 +3651,54 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
 
         return existe;
+    }
+
+    public String obtenerUsuarioPersonaConId(String idPersona) {
+        String usuario = null;
+        String query = "SELECT persona.usuario \n"
+                + "FROM persona \n"
+                + "WHERE persona.id = ? and persona.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            // Establecemos la conexión y la consulta
+            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            stmt = con.prepareStatement(query);
+
+            // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
+            stmt.setString(1, idPersona);  // Si 'idCliente' es un String
+            // O si 'idCliente' es un número, usa stmt.setInt(1, Integer.parseInt(idCliente));
+
+            rs = stmt.executeQuery();
+
+            // Procesamos el resultado
+            if (rs.next()) {
+                usuario = rs.getString("usuario");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Mostrar errores en la consola
+        } finally {
+            // Cerramos los recursos manualmente en el bloque finally
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Mostrar errores en el cierre de recursos
+            }
+        }
+
+        return usuario;
     }
 
 }

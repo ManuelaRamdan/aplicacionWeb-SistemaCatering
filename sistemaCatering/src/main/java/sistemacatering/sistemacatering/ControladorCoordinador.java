@@ -53,7 +53,8 @@ public class ControladorCoordinador extends HttpServlet {
                     dispatcherMenu.forward(request, response);
                     break;
                 case "menu":
-                    // Redirigir a la vista de menú
+                    String usuario = modelo.obtenerUsuarioPersonaConId(idCoordinador);
+                    request.setAttribute("usuario", usuario);
                     dispatcherMenu = request.getRequestDispatcher("vistaCoordinadorMenu.jsp");
                     dispatcherMenu.forward(request, response);
                     break;
@@ -142,7 +143,7 @@ public class ControladorCoordinador extends HttpServlet {
                 String persona_id = request.getParameter("persona_id");
 
                 boolean eliminado = modelo.eliminarCliente(idCliente);
-                
+
                 Cliente cliente = modelo.obtenerClientePorId(persona_id);
 
                 reservas = modelo.obtenerReservasPorCliente(persona_id);
@@ -151,7 +152,7 @@ public class ControladorCoordinador extends HttpServlet {
                     eliminarReserva = modelo.eliminarReserva(r.getCodReserva());
                     if (!eliminarReserva) {
                         request.setAttribute("mensajeBajaCliente", "Error. no se pudo eliminar la reserva correctamente");
-                    } 
+                    }
                 }
 
                 if (eliminado) {
