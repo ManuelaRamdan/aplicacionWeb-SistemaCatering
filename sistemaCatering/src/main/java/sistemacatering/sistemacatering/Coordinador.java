@@ -13,8 +13,9 @@ public class Coordinador extends Persona {
 
     private int codCoordinador;
 
-    public Coordinador(int codCoordinador, String u) {
+    public Coordinador(int codCoordinador, String u, String p) {
         setUsuario(u);
+        setPassword(p);
         this.codCoordinador = codCoordinador;
     }
     public int getCodCoordinador() {

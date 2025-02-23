@@ -52,6 +52,8 @@
                         <tr>
                             <th>ID</th>
                             <th>Usuario</th>
+                            <th>Password</th>
+
                             <th>Consultar</th>
                         </tr>
                     </thead>
@@ -60,6 +62,7 @@
                             <tr>
                                 <td>${coordinador.codCoordinador}</td>
                                 <td>${coordinador.usuario}</td>
+                                <td>${coordinador.password}</td>
                                 <td>
                                     <form action="ControladorAdm" method="POST">
                                         <input type="hidden" name="action" value="modificarCoordinador">
@@ -79,7 +82,9 @@
                     <input type="hidden" name="action" value="actualizarCoordinador">
                     <input type="hidden" name="idCoordinador" value="${coordinador.codCoordinador}">
                     <label>Usuario:</label>
-                    <input type="text" name="usuario" value="${coordinador.usuario}">
+                    <input type="text" name="usuario" value="${coordinador.usuario}" required>
+                    <label for="password">Contraseña:</label>
+                    <input type="password" name="password" value="${coordinador.password}" required>
                     <button type="submit">Guardar</button>
                 </form>
             </c:if>

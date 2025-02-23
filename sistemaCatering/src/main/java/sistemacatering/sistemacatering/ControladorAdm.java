@@ -502,9 +502,8 @@ public class ControladorAdm extends HttpServlet {
                     usuario = request.getParameter("usuario");
                     password = request.getParameter("password");
 
-                    Administrador adm = modelo.obtenerAdministradorPorId(idAdministrador);
 
-                    personaRepetida = modelo.verificarPersona(usuario, adm.getPassword());
+                    personaRepetida = modelo.verificarPersona(usuario, password);
                     if (personaRepetida) {
                         boolean actualizado = modelo.actualizarAdministrador(idAdministrador, usuario, password);
 
@@ -530,13 +529,12 @@ public class ControladorAdm extends HttpServlet {
                 try {
                     idCoordinador = Integer.parseInt(request.getParameter("idCoordinador"));
                     usuario = request.getParameter("usuario");
+                    password = request.getParameter("password");
 
-                    Coordinador coord = modelo.obtenerCoordinadorPorId(idCoordinador);
-
-                    personaRepetida = modelo.verificarPersona(usuario, coord.getPassword());
+                    personaRepetida = modelo.verificarPersona(usuario, password);
 
                     if (personaRepetida) {
-                        boolean actualizado = modelo.actualizarCoordinador(idCoordinador, usuario);
+                        boolean actualizado = modelo.actualizarCoordinador(idCoordinador, usuario, password);
 
                         if (actualizado) {
                             request.setAttribute("mensajeActualizarCoordinador", "Coordinador actualizado exitosamente.");

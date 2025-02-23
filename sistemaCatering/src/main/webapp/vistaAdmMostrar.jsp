@@ -38,7 +38,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Persona ID</th>
+                        <th>Usuario</th>
+                        <th>Password</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +48,8 @@
                         <tr>
                             <td>${admin.codAdministrador}</td>
                             <td>${admin.usuario}</td>
+                            <td>${admin.password}</td>
+
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -80,7 +84,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Persona ID</th>
+                        <th>Usuario</th>
+                        <th>Password</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -88,6 +94,8 @@
                         <tr>
                             <td>${coordinador.codCoordinador}</td>
                             <td>${coordinador.usuario}</td>
+                            <td>${coordinador.password}</td>
+
                         </tr>
                     </c:forEach>
                 </tbody>

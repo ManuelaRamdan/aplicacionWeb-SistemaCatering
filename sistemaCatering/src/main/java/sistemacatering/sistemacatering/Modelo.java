@@ -606,7 +606,7 @@ public class Modelo {
 
     public List<Coordinador> obtenerCoordinadoresBd() {
         List<Coordinador> listaCoordinadores = new ArrayList<>();
-        String query = "SELECT c.id, p.usuario FROM Coordinador c JOIN Persona p ON c.persona_id = p.id WHERE c.estado = 1";
+        String query = "SELECT c.id, p.usuario , p.password FROM Coordinador c JOIN Persona p ON c.persona_id = p.id WHERE c.estado = 1";
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -622,7 +622,8 @@ public class Modelo {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
-                listaCoordinadores.add(new Coordinador(id, usuario));
+                String password = rs.getString("password");
+                listaCoordinadores.add(new Coordinador(id, usuario,password));
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1861,7 +1862,7 @@ JOIN persona ON administrador.persona_id = persona.id
 WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         Coordinador coord = null;
-        String query = "SELECT coordinador.id, persona.usuario \n"
+        String query = "SELECT coordinador.id, persona.usuario, persona.password\n"
                 + "FROM coordinador\n"
                 + "JOIN persona ON coordinador.persona_id = persona.id\n"
                 + "WHERE coordinador.id = ? and coordinador.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
@@ -1885,9 +1886,9 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             if (rs.next()) {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
+                String password = rs.getString("password");
 
-                // Crear el objeto Cliente con los datos obtenidos
-                coord = new Coordinador(id, usuario);
+                coord = new Coordinador(id, usuario, password);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1967,7 +1968,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         }
     }
 
-    public boolean actualizarCoordinador(int idCoord, String usuario) {
+    public boolean actualizarCoordinador(int idCoord, String usuario, String password) {
         Connection con = null;
         PreparedStatement ps = null;
 
@@ -1980,11 +1981,12 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
             // Consulta SQL para actualizar los datos del cliente
             String sql = "UPDATE persona \n"
-                    + "SET usuario = ? \n"
+                    + "SET usuario = ? , password = ?\n"
                     + "WHERE id = (SELECT persona_id FROM coordinador WHERE id = ?)";
             ps = con.prepareStatement(sql);
             ps.setString(1, usuario);
-            ps.setInt(2, idCoord);
+            ps.setString(2, password);
+            ps.setInt(3, idCoord);
 
             // Ejecutar la actualización
             int filasAfectadas = ps.executeUpdate();
