@@ -437,24 +437,33 @@ public class ControladorAdm extends HttpServlet {
 
                 try {
                     idCliente = Integer.parseInt(request.getParameter("idCliente"));
-                    String nombre = request.getParameter("nombre");
-                    String apellido = request.getParameter("apellido");
-                    String telefono = request.getParameter("telefono");
-                    String email = request.getParameter("email");
+                    usuario = request.getParameter("usuario");
+                    password = request.getParameter("password");
 
-                    boolean telefonoRepetido = modelo.verificarTelefono(telefono);
-                    boolean emailRepetido = modelo.verificarEmail(email);
+                    personaRepetida = modelo.verificarPersona(usuario, password);
+                    if (personaRepetida) {
+                        String nombre = request.getParameter("nombre");
+                        String apellido = request.getParameter("apellido");
+                        String telefono = request.getParameter("telefono");
+                        String email = request.getParameter("email");
 
-                    if (emailRepetido || telefonoRepetido) {
-                        boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email);
+                        boolean telefonoRepetido = modelo.verificarTelefono(telefono);
+                        boolean emailRepetido = modelo.verificarEmail(email);
 
-                        if (actualizado) {
-                            request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                        if (emailRepetido || telefonoRepetido) {
+                            boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email, usuario, password);
+
+                            if (actualizado) {
+                                request.setAttribute("mensajeActualizarCliente", "Cliente actualizado exitosamente.");
+                            } else {
+                                request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                            }
                         } else {
-                            request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar.");
+                            request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese telefono o email.");
+
                         }
                     } else {
-                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese telefono o email.");
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese usuario y contraseña.");
 
                     }
 
@@ -501,7 +510,6 @@ public class ControladorAdm extends HttpServlet {
                     idAdministrador = Integer.parseInt(request.getParameter("idAdministrador"));
                     usuario = request.getParameter("usuario");
                     password = request.getParameter("password");
-
 
                     personaRepetida = modelo.verificarPersona(usuario, password);
                     if (personaRepetida) {

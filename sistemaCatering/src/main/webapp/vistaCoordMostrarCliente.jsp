@@ -45,6 +45,8 @@
                     <thead>
                         <tr>
                             <th>Cliente ID</th>
+                            <th>Usuario</th>
+                            <th>Password</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Reservas</th>
@@ -54,6 +56,8 @@
                         <c:forEach var="cliente" items="${clientes}">
                             <tr>
                                 <td>${cliente.id}</td>
+                                <td>${cliente.usuario}</td>
+                                <td>${cliente.password}</td>
                                 <td>${cliente.nombre}</td>
                                 <td>${cliente.apellido}</td>
                                 <td>

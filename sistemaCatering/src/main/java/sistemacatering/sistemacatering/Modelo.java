@@ -623,7 +623,7 @@ public class Modelo {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
                 String password = rs.getString("password");
-                listaCoordinadores.add(new Coordinador(id, usuario,password));
+                listaCoordinadores.add(new Coordinador(id, usuario, password));
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -728,7 +728,7 @@ public class Modelo {
                 int id = rs.getInt("id");
                 String usuario = rs.getString("usuario");
                 String password = rs.getString("password");
-                listaAdministradores.add(new Administrador(id, usuario,password)); // Crear el objeto Administrador
+                listaAdministradores.add(new Administrador(id, usuario, password)); // Crear el objeto Administrador
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -816,10 +816,10 @@ public class Modelo {
 
     public List<Cliente> obtenerClientesBd() {
         List<Cliente> listaClientes = new ArrayList<>();
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id "
-                + "FROM Cliente c "
-                + "WHERE c.estado = 1";  // Suponiendo que 'estado = 1' indica que el cliente está activo
-
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password\n"
+                + "FROM Cliente c \n"
+                + "JOIN persona on c.persona_id= persona.id\n"
+                + "WHERE c.estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -838,9 +838,11 @@ public class Modelo {
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
                 int persona_id = rs.getInt("persona_id");
+                String usuario = rs.getString("usuario");
+                String password = rs.getString("password");
 
                 // Crear el objeto Cliente y agregarlo a la lista
-                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email, persona_id));
+                listaClientes.add(new Cliente(id, nombre, apellido, telReferencia, email, persona_id, usuario, password));
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1251,9 +1253,10 @@ public class Modelo {
 
     public Cliente obtenerClientePorId(String idCliente) {
         Cliente cliente = null;
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id "
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password "
                 + "FROM Cliente c "
-                + "WHERE c.estado = 1 and c.persona_id = ?";  // Suponiendo que 'estado = 1' indica que el cliente está activo
+                + "JOIN persona ON c.persona_id = persona.id "
+                + "WHERE c.estado = 1 AND c.persona_id = ?";
 
         Connection con = null;
         PreparedStatement stmt = null;
@@ -1278,9 +1281,11 @@ public class Modelo {
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
                 int persona_id = rs.getInt("persona_id");
+                String usuario = rs.getString("usuario");
+                String password = rs.getString("password");
 
                 // Crear el objeto Cliente con los datos obtenidos
-                cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id);
+                cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id, usuario, password);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola
@@ -1362,11 +1367,12 @@ public class Modelo {
 
     public List<Cliente> obtenerClientesConReservas() {
         List<Cliente> clientes = new ArrayList<>();
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, "
-                + " r.restriccionesDieteticas, r.preferenciaCliente, r.tipoServicio, r.cantidadPersonas, "
-                + " r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
-                + " d.calle, d.altura, d.barrio "
-                + " FROM Cliente c "
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password, "
+                + "r.id AS codReserva, r.fechaInicioEvento, r.fechaFinEvento, r.restriccionesDieteticas, r.preferenciaCliente, "
+                + "r.tipoServicio, r.cantidadPersonas, r.precio, r.modoDeReserva, r.direccionDeEntrega_id, r.estaEntregado, "
+                + "d.calle, d.altura, d.barrio "
+                + "FROM Cliente c "
+                + "JOIN persona ON c.persona_id = persona.id "
                 + "LEFT JOIN Reserva r ON c.id = r.codCliente "
                 + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
                 + "WHERE c.estado = 1";
@@ -1380,6 +1386,9 @@ public class Modelo {
                 String telReferencia = rs.getString("telReferencia");
                 String email = rs.getString("email");
                 int persona_id = rs.getInt("persona_id");
+                String usuario = rs.getString("usuario");
+                String password = rs.getString("password");
+
                 // Buscar si el cliente ya existe en la lista
                 Cliente cliente = null;
                 for (Cliente c : clientes) {
@@ -1391,7 +1400,7 @@ public class Modelo {
 
                 // Si el cliente no existe, crear uno nuevo
                 if (cliente == null) {
-                    cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id);
+                    cliente = new Cliente(id, nombre, apellido, telReferencia, email, persona_id, usuario, password);
                     clientes.add(cliente);  // Agregar el nuevo cliente a la lista
                 }
 
@@ -1742,9 +1751,11 @@ public class Modelo {
         return registrado;
     }
 
-    public boolean actualizarCliente(int idCliente, String nombre, String apellido, String telefono, String email) {
+    public boolean actualizarCliente(int idCliente, String nombre, String apellido, String telefono, String email, String usuario, String password) {
         Connection con = null;
-        PreparedStatement ps = null;
+        PreparedStatement psCliente = null;
+        PreparedStatement psPersona = null;
+        ResultSet rs = null;
 
         try {
             // Establecer la conexión
@@ -1753,24 +1764,46 @@ public class Modelo {
             // Iniciar transacción
             con.setAutoCommit(false);
 
-            // Consulta SQL para actualizar los datos del cliente
-            String sql = "UPDATE cliente SET nombre = ?, apellido = ?, telReferencia = ?, email = ? WHERE id = ?";
-            ps = con.prepareStatement(sql);
-            ps.setString(1, nombre);
-            ps.setString(2, apellido);
-            ps.setString(3, telefono);
-            ps.setString(4, email);
-            ps.setInt(5, idCliente);
+            // Obtener el persona_id del cliente
+            String sqlPersonaId = "SELECT persona_id FROM Cliente WHERE id = ?";
+            psCliente = con.prepareStatement(sqlPersonaId);
+            psCliente.setInt(1, idCliente);
+            rs = psCliente.executeQuery();
 
-            // Ejecutar la actualización
-            int filasAfectadas = ps.executeUpdate();
+            int personaId = -1;
+            if (rs.next()) {
+                personaId = rs.getInt("persona_id");
+            } else {
+                con.rollback(); // No se encontró el cliente, hacer rollback
+                return false;
+            }
+
+            // Consulta SQL para actualizar los datos del cliente
+            String sqlCliente = "UPDATE Cliente SET nombre = ?, apellido = ?, telReferencia = ?, email = ? WHERE id = ?";
+            psCliente = con.prepareStatement(sqlCliente);
+            psCliente.setString(1, nombre);
+            psCliente.setString(2, apellido);
+            psCliente.setString(3, telefono);
+            psCliente.setString(4, email);
+            psCliente.setInt(5, idCliente);
+
+            // Consulta SQL para actualizar los datos de la persona
+            String sqlPersona = "UPDATE Persona SET usuario = ?, password = ? WHERE id = ?";
+            psPersona = con.prepareStatement(sqlPersona);
+            psPersona.setString(1, usuario);
+            psPersona.setString(2, password);
+            psPersona.setInt(3, personaId);
+
+            // Ejecutar las actualizaciones
+            int filasCliente = psCliente.executeUpdate();
+            int filasPersona = psPersona.executeUpdate();
 
             // Confirmar o revertir transacción según el resultado
-            if (filasAfectadas > 0) {
+            if (filasCliente > 0 && filasPersona > 0) {
                 con.commit();  // Confirmar la transacción
                 return true;
             } else {
-                con.rollback();  // Revertir cambios si no se actualizó nada
+                con.rollback();  // Revertir cambios si algo falló
                 return false;
             }
         } catch (SQLException e) {
@@ -1786,8 +1819,14 @@ public class Modelo {
         } finally {
             // Cerrar los recursos
             try {
-                if (ps != null) {
-                    ps.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (psCliente != null) {
+                    psCliente.close();
+                }
+                if (psPersona != null) {
+                    psPersona.close();
                 }
                 if (con != null) {
                     con.close();
@@ -1796,6 +1835,7 @@ public class Modelo {
                 e.printStackTrace();
             }
         }
+
     }
 
     public Administrador obtenerAdministradorPorId(int idAdm) {
@@ -1831,7 +1871,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 String usuario = rs.getString("usuario");
                 String password = rs.getString("password");
                 // Crear el objeto Cliente con los datos obtenidos
-                adm = new Administrador(id, usuario,password);
+                adm = new Administrador(id, usuario, password);
             }
         } catch (SQLException e) {
             e.printStackTrace(); // Mostrar errores en la consola

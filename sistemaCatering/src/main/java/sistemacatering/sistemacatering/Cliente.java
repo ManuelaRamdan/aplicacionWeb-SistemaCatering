@@ -22,7 +22,7 @@ public class Cliente extends Persona {
     private int persona_id;
 
     // Constructor
-    public Cliente(int id, String nombre, String apellido, String telReferencia, String email, int persona_id) {
+    public Cliente(int id, String nombre, String apellido, String telReferencia, String email, int persona_id, String usuario, String password) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -30,6 +30,8 @@ public class Cliente extends Persona {
         this.email = email;
         reservas = new ArrayList<Reserva>();
         this.persona_id = persona_id;
+        setUsuario(usuario);
+        setPassword(password);
     }
 
     public int getPersona_id() {
@@ -39,7 +41,6 @@ public class Cliente extends Persona {
     public void setPersona_id(int persona_id) {
         this.persona_id = persona_id;
     }
-
 
     public List<Reserva> getReservas() {
         return reservas;

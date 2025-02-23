@@ -35,6 +35,8 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Password</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Email</th>
@@ -45,6 +47,8 @@
                         <!-- Mostrar los datos del cliente que se pasan desde el servlet -->
                         <tr>
                             <td>${cliente.id}</td>
+                            <td>${cliente.usuario}</td>
+                            <td>${cliente.password}</td>
                             <td>${cliente.nombre}</td>
                             <td>${cliente.apellido}</td>
                             <td>${cliente.email}</td>

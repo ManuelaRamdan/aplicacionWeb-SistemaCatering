@@ -51,6 +51,8 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Password</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
                             <th>Teléfono</th>
@@ -62,6 +64,8 @@
                         <c:forEach var="cliente" items="${clientes}">
                             <tr>
                                 <td>${cliente.id}</td>
+                                <td>${cliente.usuario}</td>
+                                <td>${cliente.password}</td>
                                 <td>${cliente.nombre}</td>
                                 <td>${cliente.apellido}</td>
                                 <td>${cliente.telReferencia}</td>
@@ -84,6 +88,10 @@
                 <form action="ControladorCoordinador" method="post">
                     <input type="hidden" name="action" value="actualizarCliente">
                     <input type="hidden" name="idCliente" value="${cliente.id}">
+                    <label>Usuario:</label>
+                    <input type="text" name="usuario" value="${cliente.usuario}" required>
+                    <label for="password">Contraseña:</label>
+                    <input type="password" name="password" value="${cliente.password}" required>
                     <label>Nombre:</label>
                     <input type="text" name="nombre" value="${cliente.nombre}">
                     <label>Apellido:</label>

@@ -43,6 +43,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Usuario</th>
+                                <th>Password</th>
                                 <th>Eliminar</th>
                             </tr>
                         </thead>
@@ -52,6 +53,8 @@
                                 <tr>
                                     <td>${coordinador.codCoordinador}</td>
                                     <td>${coordinador.usuario}</td>
+                                    <td>${coordinador.password}</td>
+
                                     <td>
                                         <!-- Formulario para eliminar coordinador con confirmación -->
                                         <form action="ControladorAdm" method="POST" style="display:inline;"
@@ -84,6 +87,8 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Password</th>
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Teléfono</th>
@@ -95,6 +100,8 @@
                             <c:forEach var="cliente" items="${clientes}">
                                 <tr>
                                     <td>${cliente.id}</td>
+                                    <td>${cliente.usuario}</td>
+                                    <td>${cliente.password}</td>
                                     <td>${cliente.nombre}</td>
                                     <td>${cliente.apellido}</td>
                                     <td>${cliente.telReferencia}</td>
@@ -131,6 +138,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Usuario</th>
+                            <th>Password</th>
                             <th>Eliminar</th> <!-- Columna para el botón -->
                         </tr>
                     </thead>
@@ -139,6 +147,7 @@
                             <tr>
                                 <td>${administrador.codAdministrador}</td>
                                 <td>${administrador.usuario}</td>
+                                <td>${administrador.password}</td>
                                 <td>
                                     <!-- Formulario para eliminar administrador con confirmación -->
                                     <form action="ControladorAdm" method="POST" style="display:inline;"
