@@ -36,6 +36,9 @@
             <div class="formulario-contenedor">
                 <h2>Eliminar Coordinador</h2>
 
+                <c:if test="${not empty mensajeBajaCoordinador}">
+                    <div class="mensaje">${mensajeBajaCoordinador}</div>
+                </c:if>
                 <!-- Verificación de si la lista de coordinadores no está vacía -->
                 <c:if test="${not empty coordinadores}">
                     <table border="1">
@@ -133,7 +136,9 @@
             <!-- Formulario Baja Administrador -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Administrador</h2>
-
+                <c:if test="${not empty mensajeBajaAdministrador}">
+                    <div class="mensaje">${mensajeBajaAdministrador}</div>
+                </c:if>
                 <table border="1">
                     <thead>
                         <tr>
@@ -173,7 +178,9 @@
             <!-- Formulario Baja de Platos -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Plato</h2>
-
+                <c:if test="${not empty mensajeBajaPlato}">
+                    <div class="mensaje">${mensajeBajaPlato}</div>
+                </c:if>
                 <!-- Verificación de si la lista de platos no está vacía -->
                 <c:if test="${not empty platos}">
                     <table border="1">
@@ -215,7 +222,9 @@
             <!-- Formulario Baja de Menú -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Menú</h2>
-
+                <c:if test="${not empty mensajeBajaMenu}">
+                    <div class="mensaje">${mensajeBajaMenu}</div>
+                </c:if>
                 <!-- Verificación de si la lista de menús no está vacía -->
                 <c:if test="${not empty menus}">
                     <table border="1">
@@ -275,8 +284,10 @@
             <!-- Formulario Baja Servicio -->
             <div class="formulario-contenedor">
                 <h2>Eliminar Servicio</h2>
+                <c:if test="${not empty mensajeBajaServicio}">
+                    <div class="mensaje">${mensajeBajaServicio}</div>
+                </c:if>
 
-                <!-- Verificación de si la lista de servicios no está vacía -->
                 <c:if test="${not empty servicios}">
                     <table border="1">
                         <thead>

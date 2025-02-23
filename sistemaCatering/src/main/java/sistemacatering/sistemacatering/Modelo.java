@@ -816,9 +816,9 @@ public class Modelo {
 
     public ArrayList<Cliente> obtenerClientesBd() {
         ArrayList<Cliente> listaClientes = new ArrayList<>();
-        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password\n"
+        String query = "SELECT c.id, c.nombre, c.apellido, c.telReferencia, c.email, c.persona_id, persona.usuario, persona.password \n"
                 + "FROM Cliente c \n"
-                + "JOIN persona on c.persona_id= persona.id\n"
+                + "JOIN persona on c.persona_id= persona.id \n"
                 + "WHERE c.estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
@@ -952,10 +952,9 @@ public class Modelo {
             // Actualizar el estado en la tabla Menu_Plato
             stmtMenuPlato = con.prepareStatement(queryMenuPlato);
             stmtMenuPlato.setInt(1, idPlato);
-            int filasAfectadasMenuPlato = stmtMenuPlato.executeUpdate();
 
             // Si ambas actualizaciones fueron exitosas, confirmar la transacción
-            if (filasAfectadasPlato > 0 && filasAfectadasMenuPlato > 0) {
+            if (filasAfectadasPlato > 0 ) {
                 con.commit(); // Confirmar la transacción
                 return true;
             } else {
@@ -1445,7 +1444,7 @@ public class Modelo {
     public boolean eliminarReserva(int idReserva) {
         // Sentencias SQL para actualizar el estado en Servicio, Servicio_Menu
         String queryReserva = "UPDATE Reserva SET estado = 0 WHERE id = ?";
-        String queryReservaServicio = "UPDATE reserva_servicio SET estado = 0 WHERE servicio_id = ?";
+        String queryReservaServicio = "UPDATE reserva_servicio SET estado = 0 WHERE reserva_id = ?";
 
         Connection con = null;
         PreparedStatement stmtReserva = null;
@@ -2180,7 +2179,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 + "FROM menu m "
                 + "JOIN menu_plato mp ON m.id = mp.menu_id "
                 + "JOIN plato p ON mp.plato_id = p.id "
-                + "WHERE m.estado = 1 AND mp.estado = 1";
+                + "WHERE m.estado = 1 AND mp.estado = 1 and p.estado = 1";
 
         try {
             // Establecer la conexión
@@ -2679,7 +2678,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         String sql = "SELECT p.id, p.nombre "
                 + "FROM plato p "
                 + "LEFT JOIN menu_plato mp ON p.id = mp.plato_id AND mp.menu_id = ? AND mp.tipo = ? "
-                + "WHERE mp.plato_id IS NULL";
+                + "WHERE mp.plato_id IS NULL and p.estado = 1";
 
         try {
             con = DriverManager.getConnection(urlRoot + dbName, "", "");
@@ -3386,8 +3385,9 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             // Procesamos el resultado
             if (rs.next()) {
                 int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
+                
                 if (count > 0) {
-                    personaExiste = true; // Cliente encontrado con estado 1
+                    personaExiste = true; // 
                 }
             }
 
@@ -3414,7 +3414,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarPlato(String nombrePlato) {
-        String query = "SELECT COUNT(*) FROM plato WHERE nombre = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM plato WHERE nombre = ? and estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3462,7 +3462,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarMenu(String nombre) {
-        String query = "SELECT COUNT(*) FROM menu WHERE nombreMenu = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM menu WHERE nombreMenu = ? and estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3510,7 +3510,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarServicio(String nombre) {
-        String query = "SELECT COUNT(*) FROM servicio WHERE nombreServicio = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM servicio WHERE nombreServicio = ? and estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3558,7 +3558,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarTelefono(String nombre) {
-        String query = "SELECT COUNT(*) FROM cliente WHERE telReferencia = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM cliente WHERE cliente.telReferencia = ? and cliente.estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3606,7 +3606,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
     }
 
     public boolean verificarEmail(String nombre) {
-        String query = "SELECT COUNT(*) FROM cliente WHERE email = ? estado = 1";
+        String query = "SELECT COUNT(*) FROM cliente WHERE cliente.email = ? and cliente.estado = 1";
         Connection con = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;

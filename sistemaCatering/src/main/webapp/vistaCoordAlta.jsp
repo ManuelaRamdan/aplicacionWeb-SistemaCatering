@@ -46,9 +46,13 @@
 
         <div class="contenido-central">
             <div class="formulario-contenedor">
-                <!-- Formulario para consultar servicios disponibles -->
-                <!-- Formulario para consultar servicios disponibles -->
+
                 <h2>Registrar Reserva</h2>
+
+                <c:if test="${not empty mensajeReserva}">
+                    <p>${mensajeReserva}</p>
+                </c:if>
+                    
                 <form action="ControladorCoordinador" method="POST">
                     <input type="hidden" name="action" value="buscarServiciosDisponibles">
 
@@ -67,23 +71,6 @@
 
                     <button type="submit">Buscar Servicios Disponibles</button>
                 </form>
-
-                <!-- Mostrar servicios disponibles 
-                                <div id="serviciosDisponibles">
-                <c:if test="${not empty serviciosDisponibles}">
-                    <h3>Servicios Disponibles:</h3>
-                    <div class="checkbox-container">
-                    <c:forEach var="servicio" items="${serviciosDisponibles}">
-                        <div>
-                            <input type="checkbox" id="servicio_${servicio.id}" name="serviciosSeleccionados" value="${servicio.id}"
-                        <c:if test="${not empty serviciosSeleccionados && serviciosSeleccionados.contains(servicio.id)}">checked</c:if>>
-                 <label for="servicio_${servicio.id}">${servicio.nombreServicio}</label>
-             </div>
-                    </c:forEach>
-                </div>
-                </c:if>-->
-
-                <!-- Formulario para registrar la reserva -->
 
                 <form action="ControladorCoordinador" method="POST">
                     <input type="hidden" name="action" value="registrarReserva">

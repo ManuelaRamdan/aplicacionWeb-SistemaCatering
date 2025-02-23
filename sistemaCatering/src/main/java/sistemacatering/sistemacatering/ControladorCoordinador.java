@@ -201,7 +201,7 @@ public class ControladorCoordinador extends HttpServlet {
                     // Verificar que el código del cliente es válido
                     boolean clienteExiste = modelo.verificarCliente(codCliente);
                     if (!clienteExiste) {
-                        request.setAttribute("error", "El código del cliente no existe.");
+                        request.setAttribute("mensajeReserva", "El código del cliente no existe.");
                         dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
                         dispatcher.forward(request, response);
                         return;
@@ -221,6 +221,16 @@ public class ControladorCoordinador extends HttpServlet {
 
                     if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
                         request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
+                        request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
+                        request.setAttribute("fechaFinEvento", fechaFinUsuario);
+                        dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+
+                    // Validar que la fecha de fin no sea menor que la de inicio
+                    if (fechaInicioLocal.isAfter(fechaFinLocal)) {
+                        request.setAttribute("mensajeReserva", "La fecha de fin no puede ser menor que la fecha de inicio.");
                         request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
                         request.setAttribute("fechaFinEvento", fechaFinUsuario);
                         dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
@@ -257,9 +267,9 @@ public class ControladorCoordinador extends HttpServlet {
                     }
 
                 } catch (NumberFormatException e) {
-                    request.setAttribute("error", "Formato incorrecto en los campos numéricos.");
+                    request.setAttribute("mensajeReserva", "Formato incorrecto en los campos numéricos.");
                 } catch (ParseException e) {
-                    request.setAttribute("error", "Error en el formato de fecha.");
+                    request.setAttribute("mensajeReserva", "Error en el formato de fecha.");
                 }
 
                 // Redirigir a la vista
@@ -274,7 +284,7 @@ public class ControladorCoordinador extends HttpServlet {
 
                 // Verificar si las fechas están presentes
                 if (fechaInicioUsuario == null || fechaFinUsuario == null || fechaInicioUsuario.isEmpty() || fechaFinUsuario.isEmpty()) {
-                    request.setAttribute("error", "Las fechas de inicio y fin son obligatorias.");
+                    request.setAttribute("mensajeReserva", "Las fechas de inicio y fin son obligatorias.");
                     dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
                     dispatcher.forward(request, response);
                     return;
@@ -304,10 +314,20 @@ public class ControladorCoordinador extends HttpServlet {
                     LocalDateTime hoy = LocalDateTime.now();
 
                     if (fechaInicioLocal.isBefore(hoy) || fechaFinLocal.isBefore(hoy)) {
-                        request.setAttribute("error", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
+                        request.setAttribute("mensajeReserva", "Las fechas de inicio y fin deben ser mayores a la fecha y hora actual.");
                         request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
                         request.setAttribute("fechaFinEvento", fechaFinUsuario);
                         dispatcher = request.getRequestDispatcher("vistaError.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
+
+                    // Validar que la fecha de fin no sea menor que la de inicio
+                    if (fechaInicioLocal.isAfter(fechaFinLocal)) {
+                        request.setAttribute("mensajeReserva", "La fecha de fin no puede ser menor que la fecha de inicio.");
+                        request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
+                        request.setAttribute("fechaFinEvento", fechaFinUsuario);
+                        dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
                         dispatcher.forward(request, response);
                         return;
                     }
@@ -322,7 +342,7 @@ public class ControladorCoordinador extends HttpServlet {
                 } catch (ParseException e) {
                     // Manejo de error si las fechas no se pueden parsear
                     e.printStackTrace();
-                    request.setAttribute("error", "Las fechas no tienen el formato correcto.");
+                    request.setAttribute("mensajeReserva", "Las fechas no tienen el formato correcto.");
                 }
 
                 // Redirigir a la vista
@@ -335,7 +355,7 @@ public class ControladorCoordinador extends HttpServlet {
                 String password = request.getParameter("password");
 
                 boolean personaRepetida = modelo.verificarPersona(usuario, password);
-                if (personaRepetida) {
+                if (!personaRepetida) {
 
                     String nombre = request.getParameter("nombre");
                     String apellido = request.getParameter("apellido");
@@ -344,7 +364,7 @@ public class ControladorCoordinador extends HttpServlet {
                     boolean telefonoRepetido = modelo.verificarTelefono(telefono);
                     boolean emailRepetido = modelo.verificarEmail(email);
 
-                    if (emailRepetido || telefonoRepetido) {
+                    if (!emailRepetido || !telefonoRepetido) {
                         boolean registrado = modelo.registrarCliente(usuario, password, nombre, apellido, telefono, email);
                         if (registrado) {
                             request.setAttribute("mensajeCliente", "Cliente registrado correctamente.");
@@ -377,19 +397,29 @@ public class ControladorCoordinador extends HttpServlet {
 
                 try {
                     idCliente = Integer.parseInt(request.getParameter("idCliente"));
+                    personaId = request.getParameter("persona_id");
+                    cliente = modelo.obtenerClientePorId(personaId);
                     usuario = request.getParameter("usuario");
                     password = request.getParameter("password");
+                    boolean telefonoRepetido = false;
+                    boolean emailRepetido = false;
+                    personaRepetida = false;
+                    if (!usuario.equals(cliente.getUsuario()) || !password.equals(cliente.getPassword())) {
+                        personaRepetida = modelo.verificarPersona(usuario, password);
+                    }
 
-                    personaRepetida = modelo.verificarPersona(usuario, password);
-                    if (personaRepetida) {
+                    if (!personaRepetida) {
                         String nombre = request.getParameter("nombre");
                         String apellido = request.getParameter("apellido");
                         String telefono = request.getParameter("telefono");
                         String email = request.getParameter("email");
-                        boolean telefonoRepetido = modelo.verificarTelefono(telefono);
-                        boolean emailRepetido = modelo.verificarEmail(email);
 
-                        if (emailRepetido || telefonoRepetido) {
+                        if (!email.equals(cliente.getEmail()) || !telefono.equals(cliente.getTelReferencia())) {
+                            telefonoRepetido = modelo.verificarTelefono(telefono);
+                            emailRepetido = modelo.verificarEmail(email);
+                        }
+
+                        if (!emailRepetido && !telefonoRepetido) {
                             boolean actualizado = modelo.actualizarCliente(idCliente, nombre, apellido, telefono, email, usuario, password);
 
                             if (actualizado) {
@@ -402,7 +432,7 @@ public class ControladorCoordinador extends HttpServlet {
 
                         }
                     } else {
-                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese usuario y password.");
+                        request.setAttribute("mensajeActualizarCliente", "Error, no se pudo actualizar el cliente ya se existe un cliente con ese usuario y contraseña.");
 
                     }
 
@@ -410,6 +440,8 @@ public class ControladorCoordinador extends HttpServlet {
                     request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
                 }
 
+                ArrayList<Cliente> clientes = modelo.obtenerClientesBd();
+                request.setAttribute("clientes", clientes);
                 dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
                 dispatcher.forward(request, response);
 
@@ -452,7 +484,7 @@ public class ControladorCoordinador extends HttpServlet {
                     // Verificar que el código del cliente es válido
                     boolean clienteExiste = modelo.verificarCliente(codCliente);
                     if (!clienteExiste) {
-                        request.setAttribute("error", "El código del cliente no existe.");
+                        request.setAttribute("mensajeModificarReserva", "El código del cliente no existe.");
                         dispatcher = request.getRequestDispatcher("vistaCoordModificarReserva.jsp");
                         dispatcher.forward(request, response);
                         return;
@@ -468,6 +500,15 @@ public class ControladorCoordinador extends HttpServlet {
                     ZoneId zoneId = ZoneId.systemDefault();
                     LocalDateTime fechaInicioLocal = fechaInicioEvento.toInstant().atZone(zoneId).toLocalDateTime();
                     LocalDateTime fechaFinLocal = fechaFinEvento.toInstant().atZone(zoneId).toLocalDateTime();
+
+                    if (fechaInicioLocal.isAfter(fechaFinLocal)) {
+                        request.setAttribute("mensajeModificarReserva", "La fecha de fin no puede ser menor que la fecha de inicio.");
+                        request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
+                        request.setAttribute("fechaFinEvento", fechaFinUsuario);
+                        dispatcher = request.getRequestDispatcher("vistaCoordAlta.jsp");
+                        dispatcher.forward(request, response);
+                        return;
+                    }
 
                     // Llamada al método de actualización de reserva, que ahora también acepta "estaEntregado"
                     boolean actualizado = modelo.actualizarReserva(idReserva, codCliente, fechaInicioEvento, fechaFinEvento, restriccionesDieteticas, preferenciaCliente, tipoServicio, cantidadPersonas, modoDeReserva, calle, altura, barrio, estaEntregado);

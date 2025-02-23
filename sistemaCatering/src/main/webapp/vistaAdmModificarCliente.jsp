@@ -88,6 +88,8 @@
                 <form action="ControladorAdm" method="post">
                     <input type="hidden" name="action" value="actualizarCliente">
                     <input type="hidden" name="idCliente" value="${cliente.id}">
+                    <input type="hidden" name="persona_id" value="${cliente.persona_id}">
+
                     <label>Usuario:</label>
                     <input type="text" name="usuario" value="${cliente.usuario}" required>
                     <label for="password">Contraseña:</label>
