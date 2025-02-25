@@ -6,6 +6,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="css/estiloIndex.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
+
         <title>servicio catering</title>
     </head>
     <body>

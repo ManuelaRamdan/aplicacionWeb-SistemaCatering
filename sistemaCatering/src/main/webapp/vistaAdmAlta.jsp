@@ -111,8 +111,6 @@
 
                     <input type="submit" value="Registrar Administrador">
 
-
-                    <!-- Usando JSTL para mostrar mensajes -->
                     <c:if test="${not empty mensajeAdm}">
                         <p>${mensajeAdm}</p>
                     </c:if>
@@ -131,7 +129,6 @@
 
                     <input type="submit" value="Registrar Plato">
 
-                    <!-- Usando JSTL para mostrar mensajes -->
                     <c:if test="${not empty mensajePlato}">
                         <p>${mensajePlato}</p>
                     </c:if>
@@ -148,11 +145,11 @@
 
                     <label>Nombre del Menú:</label>
                     <input type="text" name="nombreMenu" required>
-                    
+
                     <label>Precio:</label>
                     <input type="text" name="precio" required>
-                    
-                    <p>Selecciona los Platos de la entrada:</p>
+
+                    <label>Selecciona los Platos de la entrada:</label>
                     <c:if test="${not empty platosEntrada}">
                         <c:forEach var="plato" items="${platosEntrada}">
                             <label>
@@ -163,8 +160,7 @@
                     <c:if test="${empty platosEntrada}">
                         <p>No hay platos de entrada disponibles.</p>
                     </c:if>
-
-                    <p>Selecciona los Platos Principales:</p>
+                    <label>Selecciona los Platos Principales:</label>
                     <c:if test="${not empty platosPrincipal}">
                         <c:forEach var="plato" items="${platosPrincipal}">
                             <label>
@@ -194,8 +190,7 @@
                     <input type="hidden" name="action" value="registrarServicio">
                     <label>Nombre del Servicio:</label>
                     <input type="text" name="nombreServicio" required>
-
-                    <p>Selecciona los Menus:</p>
+                    <label>Selecciona los Menus:</label>
                     <c:if test="${not empty menus}">
                         <table border="1">
                             <thead>

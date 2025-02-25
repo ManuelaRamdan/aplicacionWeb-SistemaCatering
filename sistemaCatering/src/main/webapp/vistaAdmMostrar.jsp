@@ -16,6 +16,8 @@
         <meta charset="UTF-8">
         <title>Mostrar Datos</title>
         <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
+
     </head>
     <body>
 

@@ -16,19 +16,7 @@
         <title>Alta de Reserva</title>
         <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
         <link rel="stylesheet" type="text/css" href="css/estiloAlta.css">
-        <style>
-            .formulario-contenedor label {
-                display: block;
-                margin-top: 10px;
-            }
-            .fecha-container {
-                display: flex;
-                gap: 20px;
-            }
-            .fecha-container label {
-                display: inline;
-            }
-        </style>
+       
     </head>
     <body>
         <div class="menu-lateral">

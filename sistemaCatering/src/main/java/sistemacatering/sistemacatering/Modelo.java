@@ -30,7 +30,7 @@ public class Modelo {
     private ActionListener listener;
 
     public Modelo() {
-        //jdbcDriver = "com.mysql.cj.jdbc.Driver";
+        jdbcDriver = "com.mysql.cj.jdbc.Driver";
         //urlRoot = "jdbc:mysql://" + url + "/";
         //urlRoot = "jdbc:mysql://192.168.1.107:3306/" + dbName + "?user=" + usuarioBd + "&password=" + passwordBd + "&useUnicode=true&characterEncoding=UTF-8";
         //this.dbName = dbName;

@@ -12,6 +12,8 @@
         <title>Menú Cliente</title>
         <link rel="stylesheet" type="text/css" href="css/estiloIndex.css">
         <link rel="stylesheet" type="text/css" href="css/estiloCliente.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
+
 
     </head>
     <body>

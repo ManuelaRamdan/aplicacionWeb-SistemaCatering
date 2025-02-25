@@ -74,10 +74,17 @@ body {
     text-align: center;
     margin-left: 220px;
     padding-top: 50px;
+    color: rgb(138, 18, 138);
 }
 
 .menu-lateral a {
     text-decoration: none;  /* Elimina el subrayado */
     color: rgb(138, 18, 138);  /* Puedes cambiar este color según tu preferencia */
 
+}
+
+h2 {
+    color: rgb(138, 18, 138);
+    text-align: center;
+    margin-bottom: 15px;
 }

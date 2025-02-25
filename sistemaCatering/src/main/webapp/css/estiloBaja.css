@@ -17,11 +17,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     text-align: left;
 }
 
-h2 {
-    color: rgb(138, 18, 138);
-    text-align: center;
-    margin-bottom: 15px;
-}
+
 
 .formulario {
     display: flex;

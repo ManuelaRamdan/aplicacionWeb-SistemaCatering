@@ -14,6 +14,8 @@
         <meta charset="UTF-8">
         <title>Reservas</title>
         <link rel="stylesheet" type="text/css" href="css/estiloMostrar.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
+
     </head>
     <body>
 

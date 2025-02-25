@@ -14,6 +14,8 @@
         <meta charset="UTF-8">
         <title>Consultar cliente</title>
         <link rel="stylesheet" type="text/css" href="css/estiloCliente.css">
+        <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
+
 
     </head>
     <body>

@@ -32,7 +32,7 @@
             <h1>Modificar</h1>
 
             <!-- Pestañas -->
-            <div class="tabs">
+            <div class="menu-lateral">
                 <a href="ControladorAdm?accion=mostrarModificarAdministrador" class="tab">Modificar Administrador</a>
                 <a href="ControladorAdm?accion=mostrarModificarCoordinador" class="tab">Modificar Coordinador</a>
                 <a href="ControladorAdm?accion=mostrarModificarCliente" class="tab">Modificar Cliente</a>
