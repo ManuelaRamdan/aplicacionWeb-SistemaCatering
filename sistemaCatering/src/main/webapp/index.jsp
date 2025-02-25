@@ -25,8 +25,8 @@
                     <label for="contrasenia">Contraseña:</label>
                     <input type="password" id="contrasenia" name="contrasenia" required>
                 </p>
-                <input type="hidden" name="dirIP" value="localhost">
-                <input type="hidden" name="nomBD" value="catering">
+                <!--<input type="hidden" name="dirIP" value="192.168.1.107">
+                <input type="hidden" name="nomBD" value="catering">-->
                 <input type="submit" value="Iniciar sesión">
             </form>
         </div>

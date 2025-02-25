@@ -36,7 +36,7 @@ public class ControladorCoordinador extends HttpServlet {
         String idCoordinador = (String) session.getAttribute("userId");
 
         if (idCoordinador != null) {
-            Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la base de datos
+            Modelo modelo = new Modelo(); // Conexión con la base de datos
 
             // Obtener la acción que el administrador desea realizar (en caso de que haya una acción específica)
             String accion = request.getParameter("accion");
@@ -128,7 +128,7 @@ public class ControladorCoordinador extends HttpServlet {
         String action = request.getParameter("action");
 
         // Crear la instancia del modelo
-        Modelo modelo = new Modelo("localhost", "catering");
+        Modelo modelo = new Modelo();
         switch (action) {
             case "consultarCliente":
                 String personaId = request.getParameter("persona_id");  // Obtener persona_id

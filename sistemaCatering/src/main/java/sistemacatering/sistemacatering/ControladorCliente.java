@@ -29,7 +29,7 @@ public class ControladorCliente extends HttpServlet {
         String idCliente = (String) session.getAttribute("userId");
 
         if (idCliente != null) {
-            Modelo modelo = new Modelo("localhost", "catering"); // Conexión con la base de datos
+            Modelo modelo = new Modelo(); // Conexión con la base de datos
 
             // Obtener la acción que el administrador desea realizar (en caso de que haya una acción específica)
             String accion = request.getParameter("accion");

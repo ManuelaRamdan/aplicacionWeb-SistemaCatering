@@ -15,21 +15,27 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Modelo {
 
     private String jdbcDriver;
     private String dbName;
+    private String usuarioBd;
+
+    private String passwordBd;
+
     private String urlRoot;
     private ArrayList<Persona> resultado;
     private ActionListener listener;
 
-    public Modelo(String url, String dbName) {
-        jdbcDriver = "com.mysql.cj.jdbc.Driver";
-        urlRoot = "jdbc:mysql://" + url + "/";
-        this.dbName = dbName;
+    public Modelo() {
+        //jdbcDriver = "com.mysql.cj.jdbc.Driver";
+        //urlRoot = "jdbc:mysql://" + url + "/";
+        //urlRoot = "jdbc:mysql://192.168.1.107:3306/" + dbName + "?user=" + usuarioBd + "&password=" + passwordBd + "&useUnicode=true&characterEncoding=UTF-8";
+        //this.dbName = dbName;
+        //this.usuarioBd = "manu";
+        //this.passwordBd = "123";
         listener = null;
         resultado = new ArrayList<>();
         try {
@@ -37,6 +43,7 @@ public class Modelo {
         } catch (ClassNotFoundException e) {
             reportException(e.getMessage());
         }
+
     }
 
     public ArrayList<Persona> getResultado() {
@@ -57,7 +64,10 @@ public class Modelo {
     public String verificarUsuario(String usuario, String password) {
         String id = null;
         try {
-            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            Connection con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             Statement stmt = con.createStatement();
             stmt.execute("SELECT persona.id FROM Persona WHERE persona.estado = 1 and persona.usuario ='" + usuario + "' and persona.password ='" + password + "'");
             ResultSet rs = stmt.getResultSet();
@@ -75,7 +85,10 @@ public class Modelo {
     public String buscarTipoUsuario(String rol) {
         String tipo = null;
         try {
-            Connection con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            Connection con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             Statement stmt = con.createStatement();
             stmt.execute("SELECT\n"
                     + "    p.id AS persona_id,\n"
@@ -111,7 +124,11 @@ public class Modelo {
         ResultSet idGenerado = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
+
             con.setAutoCommit(false); // Iniciar transacción, puse false para que los cambios que se le hace a la bd no sea de inmediato
 
             // Insertar en Persona
@@ -178,7 +195,10 @@ public class Modelo {
         ResultSet idGenerado = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false); // Iniciar transacción, puse false para que los cambios que se le hace a la bd no sea de inmediato
 
             // Insertar en Persona
@@ -245,7 +265,10 @@ public class Modelo {
         ResultSet idGenerado = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false); // Iniciar transacción
 
             // Insertar en Persona
@@ -324,7 +347,10 @@ public class Modelo {
         PreparedStatement plato = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Insertar en Plato (el ID se genera automáticamente por ser AUTO_INCREMENT)
             String sqlPlato = "INSERT INTO Plato (nombre) VALUES (?)";
@@ -361,7 +387,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -401,7 +430,10 @@ public class Modelo {
         ResultSet idGenerado = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // 1. Insertar en Menu
@@ -497,7 +529,10 @@ public class Modelo {
         ResultSet idGenerado = null;
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // 1. Insertar en Servicio
@@ -571,7 +606,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y ejecutamos la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -614,7 +652,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -658,7 +699,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -719,7 +763,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -763,7 +810,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -826,7 +876,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -877,7 +930,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -939,7 +995,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -954,7 +1013,7 @@ public class Modelo {
             stmtMenuPlato.setInt(1, idPlato);
 
             // Si ambas actualizaciones fueron exitosas, confirmar la transacción
-            if (filasAfectadasPlato > 0 ) {
+            if (filasAfectadasPlato > 0) {
                 con.commit(); // Confirmar la transacción
                 return true;
             } else {
@@ -1002,7 +1061,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -1071,7 +1133,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -1132,7 +1197,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
             rs = stmt.executeQuery();
 
@@ -1176,8 +1244,10 @@ public class Modelo {
                 + "LEFT JOIN servicio s ON rs.servicio_id = s.id "
                 + "WHERE r.estado = 1"; // Filtrar por reservas activas
 
-        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
-
+        try (Connection con = MiConexion.ObtenerConexion(); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             // Creamos una lista para almacenar las reservas
             Reserva reservaActual = null;
             ArrayList<Servicio> servicios = new ArrayList<>();
@@ -1264,7 +1334,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
@@ -1321,8 +1394,11 @@ public class Modelo {
                 + "WHERE r.codCliente = (SELECT c.id FROM Cliente c WHERE c.persona_id = ?) "
                 + "  AND r.estado = 1";
 
-        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query)) {
+        try (Connection con = MiConexion.ObtenerConexion(); PreparedStatement stmt = con.prepareStatement(query)) {
 
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt.setString(1, persona_id);  // Establecer el parámetro para buscar por cliente
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -1377,8 +1453,10 @@ public class Modelo {
                 + "LEFT JOIN Domicilio d ON r.direccionDeEntrega_id = d.id "
                 + "WHERE c.estado = 1";
 
-        try (Connection con = DriverManager.getConnection(urlRoot + dbName, "", ""); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
-
+        try (Connection con = MiConexion.ObtenerConexion(); PreparedStatement stmt = con.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String nombre = rs.getString("nombre");
@@ -1452,7 +1530,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -1521,7 +1602,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -1572,7 +1656,10 @@ public class Modelo {
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -1622,7 +1709,10 @@ public class Modelo {
         int precio = obtenerPrecioReserva(reserva.getServicios(), reserva.getCantidadPersonas());
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // 1. Insertar domicilio primero
@@ -1759,7 +1849,10 @@ public class Modelo {
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -1856,7 +1949,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
@@ -1912,8 +2008,11 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         ResultSet rs = null;
 
         try {
-            // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            // Establecemos la conexión y la consulta                        
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
@@ -1958,7 +2057,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2014,7 +2116,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2076,7 +2181,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement
@@ -2121,7 +2229,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2183,7 +2294,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2265,7 +2379,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2356,7 +2473,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparar la consulta con el parámetro idMenu
             ps = con.prepareStatement(sql);
@@ -2421,7 +2541,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparar la consulta con el parámetro idServicio
             ps = con.prepareStatement(sql);
@@ -2484,7 +2607,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2541,7 +2667,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // 1. Asociar platos de entrada
@@ -2608,7 +2737,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // 1. Eliminar los platos de entrada
@@ -2681,7 +2813,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 + "WHERE mp.plato_id IS NULL and p.estado = 1";
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             ps = con.prepareStatement(sql);
             ps.setInt(1, idMenu);  // Establecemos el id del menú
             ps.setString(2, tipo);  // Establecemos el tipo de plato ('Entrada' o 'Principal')
@@ -2727,7 +2862,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 + "WHERE sm.menu_id IS NULL AND m.estado = 1";
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             ps = con.prepareStatement(sql);
             ps.setInt(1, idServicio); // Establecemos el id del servicio
             rs = ps.executeQuery();
@@ -2765,7 +2903,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -2821,7 +2962,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // SQL para insertar la relación entre los menús y el servicio
@@ -2876,7 +3020,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer conexión con la base de datos
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             con.setAutoCommit(false);
 
             // SQL para eliminar la relación entre los menús y el servicio
@@ -2944,7 +3091,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
                 + ")";
 
         try {
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             ps = con.prepareStatement(sql);
             ps.setInt(1, idReserva); // Establecemos el id de la reserva
             ps.setString(2, fechaFin);  // Fecha de fin
@@ -2998,7 +3148,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparar la consulta con el parámetro idReserva
             ps = con.prepareStatement(sql);
@@ -3083,7 +3236,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -3175,7 +3331,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         if (actualizado) {
             try {
                 // Establecer conexión con la base de datos
-                con = DriverManager.getConnection(urlRoot + dbName, "", "");
+                con = MiConexion.ObtenerConexion();
+                if (con == null) {
+                    System.out.println(MiConexion.ObtenerUltimoError());
+                }
                 con.setAutoCommit(false); // Desactivar el auto-commit para asegurar la atomicidad
 
                 // SQL para insertar la relación entre la reserva y los servicios
@@ -3242,7 +3401,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         if (actualizado) {
             try {
                 // Establecer conexión con la base de datos
-                con = DriverManager.getConnection(urlRoot + dbName, "", "");
+                con = MiConexion.ObtenerConexion();
+                if (con == null) {
+                    System.out.println(MiConexion.ObtenerUltimoError());
+                }
                 con.setAutoCommit(false); // Desactivamos el autocommit para hacer el commit manual
 
                 // SQL para eliminar la relación entre la reserva y los servicios seleccionados
@@ -3314,7 +3476,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecer la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Iniciar transacción
             con.setAutoCommit(false);
@@ -3372,7 +3537,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3385,7 +3553,7 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
             // Procesamos el resultado
             if (rs.next()) {
                 int count = rs.getInt(1); // El resultado de COUNT(*) está en la primera columna
-                
+
                 if (count > 0) {
                     personaExiste = true; // 
                 }
@@ -3422,7 +3590,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3470,7 +3641,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3518,7 +3692,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3565,8 +3742,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
         boolean existe = false; // Valor por defecto
 
         try {
-            // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3614,7 +3793,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
 
             // Preparamos la consulta
             stmt = con.prepareStatement(query);
@@ -3665,7 +3847,10 @@ WHERE administrador.id = 3 and administrador.estado = 1;*/
 
         try {
             // Establecemos la conexión y la consulta
-            con = DriverManager.getConnection(urlRoot + dbName, "", "");
+            con = MiConexion.ObtenerConexion();
+            if (con == null) {
+                System.out.println(MiConexion.ObtenerUltimoError());
+            }
             stmt = con.prepareStatement(query);
 
             // Establecemos el valor del parámetro (idCliente) en el PreparedStatement

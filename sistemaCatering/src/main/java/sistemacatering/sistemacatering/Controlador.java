@@ -25,10 +25,10 @@ public class Controlador extends HttpServlet {
             throws ServletException, IOException {
         String usuario = request.getParameter("usuario");
         String password = request.getParameter("contrasenia");
-        String ip = request.getParameter("dirIP");
-        String bd = request.getParameter("nomBD");
+        //String ip = request.getParameter("dirIP");
+        //String bd = request.getParameter("nomBD");
 
-        Modelo modelo = new Modelo(ip, bd);
+        Modelo modelo = new Modelo();
         String rol = modelo.verificarUsuario(usuario, password);
 
         if (rol != null) {
