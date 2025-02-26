@@ -55,19 +55,14 @@ public class ControladorCliente extends HttpServlet {
                     break;
 
                 case "misReservas":
-                    System.out.println("Entrando a misReservas");
+                    //System.out.println("Entrando a misReservas");
 
                     ArrayList<Reserva> reservas = modelo.obtenerReservasPorCliente(idCliente);
-                    System.out.println("Reservas obtenidas: " + reservas.size());  // Imprimir el tamaño de la lista de reservas
+                    //System.out.println("Reservas obtenidas: " + reservas.size());  // Imprimir el tamaño de la lista de reservas
 
                     request.setAttribute("reservas", reservas);
 
-                    // Asegurarnos de que se obtuvieron reservas
-                    for (Reserva reserva : reservas) {
-                        System.out.println("Reserva ID: " + reserva.getCodReserva());
-                        System.out.println("Cliente ID: " + reserva.getCodCliente());
-                        // ... otros campos
-                    }
+ 
 
                     request.getRequestDispatcher("vistaClienteReservas.jsp").forward(request, response);
                     break;

@@ -501,6 +501,25 @@ public class ControladorAdm extends HttpServlet {
                 } else {
                     request.setAttribute("mensajeBajaPlato", "Error, no se pudo eliminar");
                 }
+                
+                coordinadores = modelo.obtenerCoordinadoresBd();
+                administradores = modelo.obtenerAdministradoresBd();
+
+                request.setAttribute("coordinadores", coordinadores);
+                request.setAttribute("administradores", administradores);
+
+                clientes = modelo.obtenerClientesBd();
+                request.setAttribute("clientes", clientes);
+
+                platos = modelo.obtenerPlatosBd();
+                menus = modelo.obtenerMenusConPlatos();
+
+                request.setAttribute("platos", platos);
+
+                request.setAttribute("menus", menus);
+
+                servicios = modelo.obtenerServiciosConMenusYPlatos();
+                request.setAttribute("servicios", servicios);
 
                 dispatcher = request.getRequestDispatcher("vistaAdmBaja.jsp");
                 dispatcher.forward(request, response);

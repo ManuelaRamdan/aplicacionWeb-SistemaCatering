@@ -14,21 +14,25 @@
         <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
     </head>
     <body>
+        <div class="container">
+            <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+            <label for="menu-toggle" class="menu-icon">☰</label>
 
-        <div class="menu-lateral">
-            <ul>
-                <li><a href="ControladorAdm?accion=mostrarAlta">Alta</a></li>
-                <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
-                <li><a href="ControladorAdm?accion=mostrarModificarAdministrador">Modificación</a></li>
-                <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li>
-                <li><a href="ControladorAdm?accion=salir">Salir</a></li>
+            <div class="menu-lateral">
+                <ul>
+                    <li><a href="ControladorAdm?accion=mostrarAlta">Alta</a></li>
+                    <li><a href="ControladorAdm?accion=mostrarBaja">Baja</a></li>
+                    <li><a href="ControladorAdm?accion=mostrarModificarAdministrador">Modificación</a></li>
+                    <li><a href="ControladorAdm?accion=mostrar">Mostrar</a></li> 
+                    <li><a href="ControladorAdm?accion=salir">Salir</a></li>
 
 
-            </ul>
-        </div>
+                </ul>
+            </div>
 
-        <div class="contenido-central">
-            <h1>Bienvenido, ${usuario} </h1>
+            <div class="contenido-central">
+                <h1>Bienvenido, ${usuario} </h1>
+            </div>
         </div>
 
     </body>

@@ -7,11 +7,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Author     : MANUELA
 */
 
+/* Estilos generales */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     margin: 0;
     padding: 0;
+    font-size: 16px; /* Base para el uso de rem */
 }
 
 /* Estilos del menú lateral */
@@ -72,52 +74,20 @@ body {
 
 .contenido-central {
     text-align: center;
-    margin-left: 220px;
+    margin-left: 220px; /* 220px para dar espacio al menú lateral */
     padding-top: 50px;
     color: rgb(138, 18, 138);
 }
 
 .menu-lateral a {
-    text-decoration: none;  /* Elimina el subrayado */
-    color: rgb(138, 18, 138);  /* Puedes cambiar este color según tu preferencia */
-
+    text-decoration: none;
+    color: rgb(138, 18, 138);
 }
 
 h2 {
     color: rgb(138, 18, 138);
     text-align: center;
     margin-bottom: 15px;
-}
-
-
-@media screen and (max-width: 768px) {
-    .menu-lateral {
-        position: static;
-        width: 100%;
-        height: auto;
-        padding-top: 10px;
-    }
-
-    .contenido-central {
-        margin-left: 0;
-    }
-
-    .search-container form {
-        flex-direction: column;
-    }
-
-    .search-container input[type="text"], .search-container button {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    table {
-        font-size: 14px;
-    }
-
-    th, td {
-        padding: 10px;
-    }
 }
 
 /* Estilos de las pestañas */
@@ -130,9 +100,9 @@ h2 {
     display: inline-block;
     padding: 15px;
     font-size: 18px;
-    color: rgb(138, 18, 138);  /* Color de texto */
-    background-color: rgb(247, 244, 248);  /* Fondo similar al menú lateral */
-    text-decoration: none;  /* Elimina el subrayado */
+    color: rgb(138, 18, 138);
+    background-color: rgb(247, 244, 248);
+    text-decoration: none;
     border-radius: 10px;
     margin: 5px;
     cursor: pointer;
@@ -140,6 +110,123 @@ h2 {
 }
 
 .pestañas .tab:hover {
-    background-color: rgb(138, 18, 138);  /* Cambio de fondo en hover */
-    color: rgb(234, 217, 235);  /* Cambio de color de texto en hover */
+    background-color: rgb(138, 18, 138);
+    color: rgb(234, 217, 235);
+}
+
+/* Contenedor del formulario */
+.formulario-contenedor {
+    width: 75%;
+    margin-left: 220px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* Asegúrate de que el formulario ocupe todo el ancho disponible */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Ajuste del ancho del formulario */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button {
+    background-color: rgb(138, 18, 138);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: rgb(100, 12, 100);
+}
+
+/* Media Queries para pantallas pequeñas (Responsive) */
+@media screen and (max-width: 1024px) {
+    /* Reducción del tamaño del menú lateral en pantallas medianas */
+    .menu-lateral {
+        width: 180px;
+        padding: 15px;
+    }
+
+    /* Ajuste del contenido central */
+    .contenido-central {
+        margin-left: 200px;  /* Asegura que el contenido central no quede cubierto */
+    }
+
+    .formulario-contenedor {
+        width: 90%;  /* Hace que el formulario ocupe más espacio en pantallas medianas */
+        margin-left: 220px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    /* Menú lateral en pantallas móviles */
+    .menu-lateral {
+        position: static;
+        width: 100%;
+        height: auto;
+        padding: 10px;
+    }
+
+    /* El contenido central se ajusta en pantallas pequeñas */
+    .contenido-central {
+        margin-left: 0;
+        padding-top: 20px;
+    }
+
+    /* Reducción del tamaño de las pestañas */
+    .pestañas .tab {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    /* Formulario a pantalla completa */
+    .formulario-contenedor {
+        width: 100%;
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    /* Ajuste de los campos de texto en dispositivos móviles */
+    input[type="text"],
+    input[type="password"] {
+        font-size: 14px; /* Reduce el tamaño del texto en pantallas pequeñas */
+    }
+
+    /* Ajuste del botón en pantallas pequeñas */
+    button {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    /* Ajuste de la tabla */
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    /* Mostrar el submenú en pantallas pequeñas */
+    .menu-lateral li:hover .submenu {
+        display: none;
+    }
 }

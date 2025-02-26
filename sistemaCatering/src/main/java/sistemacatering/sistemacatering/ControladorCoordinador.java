@@ -161,6 +161,11 @@ public class ControladorCoordinador extends HttpServlet {
                     request.setAttribute("mensajeBajaCliente", "Error, no se puso eliminar");
                 }
 
+                ArrayList<Cliente> clientes = modelo.obtenerClientesBd();
+                request.setAttribute("clientes", clientes);
+
+                reservas = modelo.obtenerReservaBd();
+                request.setAttribute("reservas", reservas);
                 dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
                 dispatcher.forward(request, response);
                 break;
@@ -175,7 +180,11 @@ public class ControladorCoordinador extends HttpServlet {
                 } else {
                     request.setAttribute("mensajeBajaReserva", "Error, no se puso eliminar");
                 }
+                clientes = modelo.obtenerClientesBd();
+                request.setAttribute("clientes", clientes);
 
+                reservas = modelo.obtenerReservaBd();
+                request.setAttribute("reservas", reservas);
                 dispatcher = request.getRequestDispatcher("vistaCoordBaja.jsp");
                 dispatcher.forward(request, response);
                 break;
@@ -253,9 +262,7 @@ public class ControladorCoordinador extends HttpServlet {
                                 reserva.getServicios().add(servicio);
                             }
                         }
-                    } else {
-                        System.out.println("No se seleccionaron servicios.");
-                    }
+                    } 
 
                     // Registrar la reserva en el modelo
                     boolean registroExitoso = modelo.registrarReserva(reserva, domicilio);
@@ -333,7 +340,7 @@ public class ControladorCoordinador extends HttpServlet {
                     }
                     // Llamar al modelo para obtener los servicios disponibles con las fechas formateadas
                     ArrayList<Servicio> serviciosDisponibles = modelo.obtenerServiciosDisponibles(fechaInicioFormatted, fechaFinFormatted);
-                    System.out.println("Servicios disponibles: " + serviciosDisponibles);
+                    //System.out.println("Servicios disponibles: " + serviciosDisponibles);
 
                     request.setAttribute("fechaInicioEvento", fechaInicioUsuario);
                     request.setAttribute("fechaFinEvento", fechaFinUsuario);
@@ -440,7 +447,7 @@ public class ControladorCoordinador extends HttpServlet {
                     request.setAttribute("mensajeActualizarCliente", "Error: ID de cliente no válido.");
                 }
 
-                ArrayList<Cliente> clientes = modelo.obtenerClientesBd();
+                 clientes = modelo.obtenerClientesBd();
                 request.setAttribute("clientes", clientes);
                 dispatcher = request.getRequestDispatcher("vistaCoordModificarCliente.jsp");
                 dispatcher.forward(request, response);

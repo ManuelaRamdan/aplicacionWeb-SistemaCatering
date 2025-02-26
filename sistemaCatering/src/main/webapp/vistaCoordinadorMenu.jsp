@@ -15,21 +15,26 @@
     </head>
     <body>
 
-        <div class="menu-lateral">
-            <ul>
-                <li><a href="ControladorCoordinador?accion=mostrarAlta">Alta</a></li>
-                <li><a href="ControladorCoordinador?accion=mostrarBaja">Baja</a></li>
-                <li><a href="ControladorCoordinador?accion=mostrarModificarCliente">Modificación</a></li>
-                <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
-                <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
-                <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>
-                <li><a href="ControladorCoordinador?accion=salir">Salir</a></li>
+        <div class="container">
+            <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+            <label for="menu-toggle" class="menu-icon">☰</label>
 
-            </ul>
-        </div>
+            <div class="menu-lateral">
+                <ul>
+                    <li><a href="ControladorCoordinador?accion=mostrarAlta">Alta</a></li>
+                    <li><a href="ControladorCoordinador?accion=mostrarBaja">Baja</a></li>
+                    <li><a href="ControladorCoordinador?accion=mostrarModificarCliente">Modificación</a></li>
+                    <li><a href="ControladorCoordinador?accion=mostrarReservas">Mostrar Reservas</a></li>
+                    <li><a href="ControladorCoordinador?accion=mostrarCliente">Mostrar Cliente</a></li>
+                    <li><a href="ControladorCoordinador?accion=consultarCliente">Consultar Cliente</a></li>
+                    <li><a href="ControladorCoordinador?accion=salir">Salir</a></li>
 
-        <div class="contenido-central">
-            <h1>Bienvenido, ${usuario} </h1>
+                </ul>
+            </div>
+
+            <div class="contenido-central">
+                <h1>Bienvenido, ${usuario} </h1>
+            </div>
         </div>
 
     </body>

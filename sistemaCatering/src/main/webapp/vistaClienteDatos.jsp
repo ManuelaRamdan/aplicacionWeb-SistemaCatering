@@ -10,56 +10,62 @@
     <head>
         <meta charset="UTF-8">
         <title>Menú Cliente</title>
-        <link rel="stylesheet" type="text/css" href="css/estiloIndex.css">
+        <!--<link rel="stylesheet" type="text/css" href="css/estiloIndex.css">-->
         <link rel="stylesheet" type="text/css" href="css/estiloCliente.css">
         <link rel="stylesheet" type="text/css" href="css/estiloGeneral.css">
 
 
     </head>
     <body>
-        <div class="menu-lateral">
-            <ul>
-                <!-- Botones para cambiar entre las secciones -->
-                <li><a href="ControladorCliente?accion=misDatos">Mis Datos</a></li>
-                <li><a href="ControladorCliente?accion=misReservas">Mis Reservas</a></li>
-                <li><a href="ControladorCliente?accion=salir">Salir</a></li>
 
 
-            </ul>
-        </div>
+        <div class="container">
 
-        <div class="contenido-central">
-            <h1>Bienvenido, ${cliente.nombre} ${cliente.apellido}</h1>
+            <div class="menu-lateral">
+                <ul>
+                    <!-- Botones para cambiar entre las secciones -->
+                    <li><a href="ControladorCliente?accion=misDatos">Mis Datos</a></li>
+                    <li><a href="ControladorCliente?accion=misReservas">Mis Reservas</a></li>
+                    <li><a href="ControladorCliente?accion=salir">Salir</a></li>
 
-            <div>
-                <h2>Mis Datos</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Usuario</th>
-                            <th>Password</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Mostrar los datos del cliente que se pasan desde el servlet -->
-                        <tr>
-                            <td>${cliente.id}</td>
-                            <td>${cliente.usuario}</td>
-                            <td>${cliente.password}</td>
-                            <td>${cliente.nombre}</td>
-                            <td>${cliente.apellido}</td>
-                            <td>${cliente.email}</td>
-                            <td>${cliente.telReferencia}</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                </ul>
+            </div>
+
+            <div class="contenido-central">
+                <h1>Bienvenido, ${cliente.nombre} ${cliente.apellido}</h1>
+
+                <div>
+                    <h2>Mis Datos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Usuario</th>
+                                <th>Password</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Mostrar los datos del cliente que se pasan desde el servlet -->
+                            <tr>
+                                <td>${cliente.id}</td>
+                                <td>${cliente.usuario}</td>
+                                <td>${cliente.password}</td>
+                                <td>${cliente.nombre}</td>
+                                <td>${cliente.apellido}</td>
+                                <td>${cliente.email}</td>
+                                <td>${cliente.telReferencia}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+
     </body>
 </html>
 

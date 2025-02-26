@@ -41,7 +41,7 @@
                 <h1>Modificar Cliente y Reserva</h1>
 
                 <!-- Pestañas -->
-                <div class="tabs">
+                <div class="pestañas">
                     <a href="ControladorCoordinador?accion=mostrarModificarCliente" class="tab">Modificar Cliente</a>
                     <a href="ControladorCoordinador?accion=mostrarModificarReserva" class="tab">Modificar Reserva</a>
                 </div>
@@ -376,5 +376,6 @@
 
             </div>
         </div>
-    </body>
+
+</body>
 </html>
