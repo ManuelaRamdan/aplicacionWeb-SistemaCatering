@@ -149,7 +149,7 @@
                     <label>Precio:</label>
                     <input type="text" name="precio" required>
 
-                    <label>Selecciona los Platos de la entrada:</label>
+                    <p>Selecciona los Platos de la entrada:</p>
                     <c:if test="${not empty platosEntrada}">
                         <c:forEach var="plato" items="${platosEntrada}">
                             <label>
@@ -160,7 +160,7 @@
                     <c:if test="${empty platosEntrada}">
                         <p>No hay platos de entrada disponibles.</p>
                     </c:if>
-                    <label>Selecciona los Platos Principales:</label>
+                    <p>Selecciona los Platos Principales:</p>
                     <c:if test="${not empty platosPrincipal}">
                         <c:forEach var="plato" items="${platosPrincipal}">
                             <label>
@@ -190,7 +190,7 @@
                     <input type="hidden" name="action" value="registrarServicio">
                     <label>Nombre del Servicio:</label>
                     <input type="text" name="nombreServicio" required>
-                    <label>Selecciona los Menus:</label>
+                    <p>Selecciona los Menus:</p>
                     <c:if test="${not empty menus}">
                         <table border="1">
                             <thead>

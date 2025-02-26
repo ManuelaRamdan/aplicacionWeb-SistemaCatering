@@ -42,11 +42,11 @@ public class MiConexion {
             }
             String dbName = "mysql"; //:"mariadb";
             //Aqui modifica tus datos de acceso a la base
-            String host = "192.168.1.107";
+            String host = "localhost";
             int port = 3306;
             String database = "catering";
-            String userName = "manu";
-            String password = "123";
+            String userName = "";
+            String password = "";
             
             conn = DriverManager.getConnection("jdbc:" + dbName + "://" + host + ":" + port + "/" + database + "?user=" + userName + "&password=" + password);
             LASTERROR = "";

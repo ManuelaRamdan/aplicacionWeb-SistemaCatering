@@ -88,3 +88,58 @@ h2 {
     text-align: center;
     margin-bottom: 15px;
 }
+
+
+@media screen and (max-width: 768px) {
+    .menu-lateral {
+        position: static;
+        width: 100%;
+        height: auto;
+        padding-top: 10px;
+    }
+
+    .contenido-central {
+        margin-left: 0;
+    }
+
+    .search-container form {
+        flex-direction: column;
+    }
+
+    .search-container input[type="text"], .search-container button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+}
+
+/* Estilos de las pestañas */
+.pestañas {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pestañas .tab {
+    display: inline-block;
+    padding: 15px;
+    font-size: 18px;
+    color: rgb(138, 18, 138);  /* Color de texto */
+    background-color: rgb(247, 244, 248);  /* Fondo similar al menú lateral */
+    text-decoration: none;  /* Elimina el subrayado */
+    border-radius: 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pestañas .tab:hover {
+    background-color: rgb(138, 18, 138);  /* Cambio de fondo en hover */
+    color: rgb(234, 217, 235);  /* Cambio de color de texto en hover */
+}
